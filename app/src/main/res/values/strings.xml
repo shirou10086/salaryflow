@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">薪流</string>
+    <string name="notification_channel_live">实时工资</string>
+    <string name="notification_channel_live_desc">在通知栏实时显示今日已赚与已攒金额</string>
+    <string name="notification_channel_settlement">发薪日结算</string>
+    <string name="notification_channel_settlement_desc">发薪日自动把工资存进攒钱罐时的提醒</string>
+    <string name="widget_description">今日实时工资与已攒金额</string>
+    <string name="widget_status_working">搬砖中</string>
+    <string name="widget_amount_placeholder">¥0.00</string>
+    <string name="widget_detail_placeholder">今日已赚 · 已攒 ¥0.00</string>
+</resources>
