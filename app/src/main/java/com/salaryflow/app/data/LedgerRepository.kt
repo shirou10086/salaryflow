@@ -26,10 +26,10 @@ class LedgerRepository(private val dao: LedgerDao, private val zoneId: ZoneId = 
         dao.observeExpenseByCategory(month.startMillis(zoneId), month.endMillis(zoneId))
 
     /**
-     * 当前存款余额 = 手动/自动收入 - 支出 + 历次实际余额校准差额。
+     * 当前存款余额 = 手动/自动收入 - 支出 + 历次存款更新差额。
      *
      * 普通「存入/取出」在旧版本中代表攒钱罐内部转账，不算新的净收入或支出；
-     * 余额校准使用 [BALANCE_CALIBRATION_CATEGORY]，因此仍会计入该结果。
+     * 更新存款使用 [BALANCE_CALIBRATION_CATEGORY]，因此仍会计入该结果。
      */
     fun observeSavingsCents(): Flow<Long> = dao.observeSavingsCents()
 
@@ -67,7 +67,7 @@ class LedgerRepository(private val dao: LedgerDao, private val zoneId: ZoneId = 
     ) = add(type, amountCents, if (type == TxType.SAVING_IN) "manual_saving" else "saving_out", note, occurredAt)
 
     /**
-     * 把账本推算余额校准到用户看到的实际存款。
+     * 把当前存款更新为用户填写的金额。
      *
      * 差额会作为一条可追溯的攒钱流水写入，而不是直接覆盖历史记录。
      */
@@ -85,11 +85,7 @@ class LedgerRepository(private val dao: LedgerDao, private val zoneId: ZoneId = 
                 type = if (deltaCents > 0) TxType.SAVING_IN else TxType.SAVING_OUT,
                 amountCents = abs(deltaCents),
                 category = BALANCE_CALIBRATION_CATEGORY,
-                note = if (deltaCents > 0) {
-                    "按实际存款上调余额"
-                } else {
-                    "按实际存款下调余额"
-                },
+                note = if (deltaCents > 0) BALANCE_UP_NOTE else BALANCE_DOWN_NOTE,
                 occurredAt = occurredAt,
             ),
         )

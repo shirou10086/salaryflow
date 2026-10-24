@@ -26,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,13 +37,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.salaryflow.app.core.Money
+import com.salaryflow.app.core.TimeText
+import com.salaryflow.app.R
+import com.salaryflow.app.data.AUTO_SALARY_NOTE
+import com.salaryflow.app.data.BALANCE_DOWN_NOTE
+import com.salaryflow.app.data.BALANCE_UP_NOTE
 import com.salaryflow.app.data.Categories
 import com.salaryflow.app.data.TxType
 import com.salaryflow.app.data.TransactionEntity
 import com.salaryflow.app.ui.theme.BrandColors
 import java.time.Instant
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun SectionCard(
@@ -278,6 +283,14 @@ fun TransactionRow(
     trailing: (@Composable () -> Unit)? = null,
 ) {
     val category = Categories.find(transaction.category)
+    val categoryName = stringResource(category.nameRes)
+    val noteText = when (transaction.note) {
+        AUTO_SALARY_NOTE -> stringResource(R.string.transaction_auto_note)
+        BALANCE_UP_NOTE -> stringResource(R.string.transaction_balance_up_note)
+        BALANCE_DOWN_NOTE -> stringResource(R.string.transaction_balance_down_note)
+        else -> transaction.note
+    }
+    val automaticLabel = stringResource(R.string.automatic)
     val (amountColor, sign) = when (transaction.type) {
         TxType.EXPENSE -> BrandColors.expense to "−"
         TxType.INCOME -> BrandColors.savings to "+"
@@ -291,15 +304,18 @@ fun TransactionRow(
             .padding(vertical = 11.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CategoryBadge(category.name, contentColor = amountColor)
+        CategoryBadge(categoryName, contentColor = amountColor)
         Spacer(Modifier.size(12.dp))
         Column(Modifier.weight(1f)) {
-            Text(category.name, style = MaterialTheme.typography.titleMedium)
+            Text(categoryName, style = MaterialTheme.typography.titleMedium)
             val detail = buildString {
-                if (transaction.note.isNotBlank()) append(transaction.note)
+                if (noteText.isNotBlank()) append(noteText)
                 if (isNotEmpty()) append(" · ")
                 append(transaction.occurredAt.asTimeText())
-                if (transaction.auto) append(" · 自动")
+                if (transaction.auto) {
+                    append(" · ")
+                    append(automaticLabel)
+                }
             }
             Text(
                 detail,
@@ -324,4 +340,5 @@ fun TransactionRow(
 fun Long.asTimeText(): String =
     Instant.ofEpochMilli(this)
         .atZone(ZoneId.systemDefault())
-        .format(DateTimeFormatter.ofPattern("HH:mm"))
+        .toLocalTime()
+        .let(TimeText::clock)

@@ -55,7 +55,7 @@ class PaydaySettlementManager(
                         type = TxType.INCOME,
                         amountCents = settings.monthlySalaryCents,
                         category = "salary",
-                        note = "发薪日自动记账 · ${period.label}",
+                        note = AUTO_SALARY_NOTE,
                         occurredAt = occurredAt,
                         settlementKey = "income:${period.key}",
                         periodEnd = period.key,

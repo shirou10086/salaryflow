@@ -58,6 +58,10 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
     val settings: StateFlow<AppSettings> = settingsStore.settings
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppSettings())
 
+    val settingsLoaded: StateFlow<Boolean> = settingsStore.settings
+        .map { true }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val savingsCents: StateFlow<Long> = ledger.observeSavingsCents()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0L)
 
@@ -214,6 +218,7 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
                     workStartMinute = result.workStartMinute,
                     workEndMinute = result.workEndMinute,
                     savingsRatePercent = 0,
+                    counterPaused = false,
                     balanceReminderEnabled = result.enableBalanceReminder,
                     lastBalanceReminderMonth = YearMonth.now().toString(),
                     lastSettledPeriodEnd = null,

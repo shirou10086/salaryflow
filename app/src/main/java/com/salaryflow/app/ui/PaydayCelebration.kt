@@ -33,12 +33,14 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.salaryflow.app.R
 import com.salaryflow.app.core.Money
 import com.salaryflow.app.ui.theme.BrandColors
 import kotlin.math.PI
@@ -110,6 +112,7 @@ fun PaydayCelebrationOverlay(
     val amountProgress = smoothstep(((progress.value - 0.22f) / 0.78f).coerceIn(0f, 1f))
     val shownAmount = (amountCents * amountProgress).toLong()
     val amountText = "¥${Money.centsToYuan(shownAmount)}"
+    val jarLabel = stringResource(R.string.celebration_jar_label)
     val amountSize = when {
         amountText.length >= 20 -> 30.sp
         amountText.length >= 16 -> 38.sp
@@ -277,7 +280,7 @@ fun PaydayCelebrationOverlay(
             )
             drawText(
                 textMeasurer = textMeasurer,
-                text = "薪流存款",
+                text = jarLabel,
                 topLeft = Offset(labelLeft + labelWidth * 0.2f, labelTop + labelHeight * 0.22f),
                 style = TextStyle(
                     color = Color(0xFF7B4A00),
@@ -353,13 +356,15 @@ fun PaydayCelebrationOverlay(
         ) {
             Spacer(Modifier.height(28.dp))
             Text(
-                "工资已经到账",
+                stringResource(R.string.celebration_title),
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White,
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                periodLabel?.let { "周期 $it 的虚拟工资" } ?: "虚拟工资正在落袋",
+                periodLabel?.let {
+                    stringResource(R.string.celebration_period, it)
+                } ?: stringResource(R.string.celebration_falling),
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.White.copy(alpha = 0.78f),
             )
@@ -373,7 +378,11 @@ fun PaydayCelebrationOverlay(
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                if (amountProgress >= 1f) "已经落进真实存款" else "正在变成存款里的真钱",
+                if (amountProgress >= 1f) {
+                    stringResource(R.string.celebration_saved)
+                } else {
+                    stringResource(R.string.celebration_landing)
+                },
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White.copy(alpha = 0.9f),
             )
@@ -384,7 +393,7 @@ fun PaydayCelebrationOverlay(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                "每一秒的工作，都变成了看得见的存款。",
+                stringResource(R.string.celebration_message),
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White.copy(alpha = 0.82f),
             )
@@ -397,11 +406,17 @@ fun PaydayCelebrationOverlay(
                     contentColor = Color(0xFF3D2A00),
                 ),
             ) {
-                Text("收下这笔钱", fontWeight = FontWeight.Bold)
+                Text(
+                    stringResource(R.string.celebration_dismiss),
+                    fontWeight = FontWeight.Bold,
+                )
             }
             Spacer(Modifier.height(6.dp))
             TextButton(onClick = onOpenLedger) {
-                Text("去账本看看", color = Color.White.copy(alpha = 0.9f))
+                Text(
+                    stringResource(R.string.celebration_open_ledger),
+                    color = Color.White.copy(alpha = 0.9f),
+                )
             }
         }
     }

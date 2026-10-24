@@ -26,10 +26,7 @@ import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 /**
- * 每月提醒用户核对一次真实存款余额。
- *
- * 个人银行、支付宝和微信零钱没有面向普通开发者的余额读取接口，因此这里不尝试
- * 绕过平台限制；用户只需输入一次当前余额，应用会用后续收支自动推算，再用月度校准纠偏。
+ * 每月提醒用户核对一次当前存款。
  */
 class BalanceReminderWorker(
     context: Context,
@@ -120,16 +117,19 @@ private object BalanceReminderNotifier {
             SalaryFlowApp.BALANCE_REMINDER_CHANNEL_ID,
         )
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("这个月的存款还准吗？")
-            .setContentText("花 10 秒输入实际余额，避免记账误差越积越多。")
+            .setContentTitle(context.getString(R.string.balance_reminder_title))
+            .setContentText(context.getString(R.string.balance_reminder_text))
             .setStyle(
                 NotificationCompat.BigTextStyle().bigText(
-                    "花 10 秒输入实际余额。薪流会生成一笔可追溯的校准记录，" +
-                        "之后继续用收入和支出自动推算。",
+                    context.getString(R.string.balance_reminder_big_text),
                 ),
             )
             .setContentIntent(contentIntent)
-            .addAction(R.drawable.ic_action_balance, "更新余额", contentIntent)
+            .addAction(
+                R.drawable.ic_action_balance,
+                context.getString(R.string.balance_reminder_action),
+                contentIntent,
+            )
             .setAutoCancel(true)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .build()

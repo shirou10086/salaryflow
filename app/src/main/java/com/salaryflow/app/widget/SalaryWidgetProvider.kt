@@ -49,21 +49,39 @@ class SalaryWidgetProvider : AppWidgetProvider() {
         private fun views(context: Context, settings: AppSettings, snapshot: SalarySnapshot): RemoteViews {
             val views = RemoteViews(context.packageName, R.layout.widget_salary)
             val hidden = settings.hideAmounts
+            val hiddenAmount = context.getString(R.string.amount_hidden_short)
             views.setTextViewText(
                 R.id.widget_today,
-                if (hidden) "¥•••" else "¥" + Money.centsToYuan(snapshot.todayEarnedCents),
+                if (hidden) {
+                    hiddenAmount
+                } else {
+                    "¥" + Money.centsToYuan(snapshot.todayEarnedCents)
+                },
             )
             views.setTextViewText(
                 R.id.widget_detail,
                 if (hidden) {
-                    "今日已赚 · 已攒 ¥•••"
+                    context.getString(R.string.widget_detail_hidden, hiddenAmount)
                 } else if (snapshot.settledToday) {
-                    "已攒 ¥${Money.centsToYuan(snapshot.savingsCents)} · 今日已结算"
+                    context.getString(
+                        R.string.widget_detail_settled,
+                        "¥${Money.centsToYuan(snapshot.savingsCents)}",
+                    )
                 } else {
-                    "已攒 ¥${Money.centsToYuan(snapshot.savingsCents)} · 距发薪 ${snapshot.daysToPayday} 天"
+                    context.getString(
+                        R.string.widget_detail_payday,
+                        "¥${Money.centsToYuan(snapshot.savingsCents)}",
+                        context.getString(
+                            R.string.home_days_to_payday,
+                            snapshot.daysToPayday,
+                        ),
+                    )
                 },
             )
-            views.setTextViewText(R.id.widget_status, statusText(settings, snapshot))
+            views.setTextViewText(
+                R.id.widget_status,
+                statusText(context, settings, snapshot),
+            )
             val intent = PendingIntent.getActivity(
                 context,
                 20,
@@ -74,13 +92,16 @@ class SalaryWidgetProvider : AppWidgetProvider() {
             return views
         }
 
-        private fun statusText(settings: AppSettings, snapshot: SalarySnapshot): String = when {
-            settings.counterPaused -> "已暂停 ⏸"
-            snapshot.status == WorkStatus.REST_DAY -> "休息日"
-            snapshot.status == WorkStatus.BEFORE_WORK -> "还没开工"
-            snapshot.status == WorkStatus.FINISHED -> "已下班"
-            snapshot.status == WorkStatus.UNPAID_BREAK -> "午休中"
-            else -> "工作中"
+        private fun statusText(
+            context: Context,
+            settings: AppSettings,
+            snapshot: SalarySnapshot,
+        ): String = when {
+            snapshot.status == WorkStatus.REST_DAY -> context.getString(R.string.widget_status_rest)
+            snapshot.status == WorkStatus.BEFORE_WORK -> context.getString(R.string.widget_status_before_work)
+            snapshot.status == WorkStatus.FINISHED -> context.getString(R.string.widget_status_finished)
+            snapshot.status == WorkStatus.UNPAID_BREAK -> context.getString(R.string.widget_status_break)
+            else -> context.getString(R.string.widget_status_working)
         }
     }
 }

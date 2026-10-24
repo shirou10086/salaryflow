@@ -31,9 +31,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.salaryflow.app.R
 import com.salaryflow.app.core.Money
+import com.salaryflow.app.core.TimeText
 import com.salaryflow.app.data.Categories
 import com.salaryflow.app.ui.MonthPoint
 import com.salaryflow.app.ui.SalaryFlowViewModel
@@ -78,9 +81,12 @@ fun StatsScreen(
     ) {
         item {
             Column {
-                Text("统计", style = MaterialTheme.typography.headlineSmall)
                 Text(
-                    "${month.year} 年 ${month.monthValue} 月 · 数据来自本机账本",
+                    stringResource(R.string.stats_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+                Text(
+                    TimeText.monthYear(month),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -93,10 +99,20 @@ fun StatsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    StatTile("本月支出", expense, hidden, BrandColors.expense)
-                    StatTile("本月收入", income, hidden, BrandColors.savings)
                     StatTile(
-                        "本月结余",
+                        stringResource(R.string.monthly_expense),
+                        expense,
+                        hidden,
+                        BrandColors.expense,
+                    )
+                    StatTile(
+                        stringResource(R.string.monthly_income),
+                        income,
+                        hidden,
+                        BrandColors.savings,
+                    )
+                    StatTile(
+                        stringResource(R.string.monthly_balance),
                         income - expense,
                         hidden,
                         if (income >= expense) BrandColors.savings else BrandColors.expense,
@@ -104,12 +120,19 @@ fun StatsScreen(
                 }
                 Spacer(Modifier.height(14.dp))
                 Text(
-                    buildString {
-                        append("收支结余 ")
-                        append(if (hidden) "¥•••" else "¥${Money.centsToYuan(income - expense)}")
-                        append("，当前存款 ")
-                        append(if (hidden) "¥•••" else "¥${Money.centsToYuan(savings)}")
-                    },
+                    stringResource(
+                        R.string.stats_monthly_summary,
+                        if (hidden) {
+                            stringResource(R.string.amount_hidden_short)
+                        } else {
+                            "¥${Money.centsToYuan(income - expense)}"
+                        },
+                        if (hidden) {
+                            stringResource(R.string.amount_hidden_short)
+                        } else {
+                            "¥${Money.centsToYuan(savings)}"
+                        },
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -118,7 +141,10 @@ fun StatsScreen(
 
         item {
             SectionCard {
-                SectionHeader(title = "近 6 个月支出", subtitle = "按月汇总的手动与自动记账")
+                SectionHeader(
+                    title = stringResource(R.string.stats_six_month_expense),
+                    subtitle = stringResource(R.string.stats_six_month_expense_subtitle),
+                )
                 Spacer(Modifier.height(16.dp))
                 BarChart(
                     points = recentMonths,
@@ -129,11 +155,14 @@ fun StatsScreen(
 
         item {
             SectionCard {
-                SectionHeader(title = "支出分类", subtitle = "看看钱都花在哪了")
+                SectionHeader(
+                    title = stringResource(R.string.stats_expense_categories),
+                    subtitle = stringResource(R.string.stats_expense_categories_subtitle),
+                )
                 Spacer(Modifier.height(16.dp))
                 if (categories.isEmpty()) {
                     Text(
-                        "本月还没有支出记录。",
+                        stringResource(R.string.stats_no_expenses),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -150,15 +179,16 @@ fun StatsScreen(
                         ) {
                             categories.take(5).forEachIndexed { index, total ->
                                 val category = Categories.find(total.category)
+                                val categoryName = stringResource(category.nameRes)
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     CategoryBadge(
-                                        categoryName = category.name,
+                                        categoryName = categoryName,
                                         size = 26,
                                         contentColor = donutPalette[index % donutPalette.size],
                                     )
                                     Spacer(Modifier.width(8.dp))
                                     Text(
-                                        category.name,
+                                        categoryName,
                                         style = MaterialTheme.typography.labelLarge,
                                         modifier = Modifier.weight(1f),
                                     )
@@ -178,29 +208,42 @@ fun StatsScreen(
         item {
             SectionCard {
                 SectionHeader(
-                    title = "存款走势",
-                    subtitle = "${month.monthValue} 月每日余额",
+                    title = stringResource(R.string.stats_savings_trend),
+                    subtitle = stringResource(
+                        R.string.stats_savings_trend_subtitle,
+                        TimeText.monthYear(month),
+                    ),
                 )
                 Spacer(Modifier.height(16.dp))
-                SavingsLineChart(series = savingsSeries)
+                SavingsLineChart(series = savingsSeries, hidden = hidden)
             }
         }
 
         item {
             SectionCard {
                 SectionHeader(
-                    title = "存款余额",
-                    subtitle = "收入与支出自动推算，实际余额可随时校准",
+                    title = stringResource(R.string.stats_savings_balance),
+                    subtitle = stringResource(R.string.stats_savings_balance_subtitle),
                 )
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    if (hidden) "当前存款 ¥•••" else "当前存款 ¥${Money.centsToYuan(savings)}",
+                    if (hidden) {
+                        stringResource(
+                            R.string.stats_current_savings_hidden,
+                            stringResource(R.string.amount_hidden_short),
+                        )
+                    } else {
+                        stringResource(
+                            R.string.stats_current_savings,
+                            Money.centsToYuan(savings),
+                        )
+                    },
                     style = MaterialTheme.typography.titleLarge,
                     color = BrandColors.savings,
                 )
                 Spacer(Modifier.height(5.dp))
                 Text(
-                    "发薪日会记入完整工资收入；每月校准只新增一条调整记录，不改写历史流水。",
+                    stringResource(R.string.stats_payday_note),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -224,7 +267,11 @@ private fun StatTile(
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            if (hidden) "¥•••" else "¥${Money.compactYuan(cents)}",
+            if (hidden) {
+                stringResource(R.string.amount_hidden_short)
+            } else {
+                "¥${Money.compactYuan(cents)}"
+            },
             style = MaterialTheme.typography.titleLarge,
             color = color,
         )
@@ -274,7 +321,7 @@ private fun BarChart(points: List<MonthPoint>, hidden: Boolean) {
         Row(modifier = Modifier.fillMaxWidth()) {
             points.forEach { point ->
                 Text(
-                    "${point.month.monthValue}月",
+                    TimeText.monthShort(point.month),
                     style = labelStyle,
                     modifier = Modifier.weight(1f),
                 )
@@ -283,9 +330,15 @@ private fun BarChart(points: List<MonthPoint>, hidden: Boolean) {
         Spacer(Modifier.height(4.dp))
         Text(
             if (hidden) {
-                "最近一个月支出 ¥•••"
+                stringResource(
+                    R.string.stats_last_month_expense_hidden,
+                    stringResource(R.string.amount_hidden_short),
+                )
             } else {
-                "最近一个月支出 ¥${Money.centsToYuan(points.last().expenseCents)}"
+                stringResource(
+                    R.string.stats_last_month_expense,
+                    Money.centsToYuan(points.last().expenseCents),
+                )
             },
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -317,7 +370,7 @@ private fun DonutChart(values: List<Long>, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun SavingsLineChart(series: List<Long>) {
+private fun SavingsLineChart(series: List<Long>, hidden: Boolean) {
     if (series.size < 2) {
         Spacer(Modifier.height(120.dp))
         return
@@ -362,9 +415,23 @@ private fun SavingsLineChart(series: List<Long>) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text("月初", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
-                "月末 ¥${Money.compactYuan(series.last())}",
+                stringResource(R.string.stats_month_start),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                if (hidden) {
+                    stringResource(
+                        R.string.stats_month_end_hidden,
+                        stringResource(R.string.amount_hidden_short),
+                    )
+                } else {
+                    stringResource(
+                        R.string.stats_month_end,
+                        Money.compactYuan(series.last()),
+                    )
+                },
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

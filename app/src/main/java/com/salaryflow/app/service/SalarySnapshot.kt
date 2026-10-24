@@ -55,13 +55,13 @@ object SalarySnapshotFactory {
     ): SalarySnapshot {
         val clock = SalaryClock(settings.toSalaryConfig())
         val status = clock.status(now)
-        val working = status == WorkStatus.WORKING && !settings.counterPaused
+        val working = status == WorkStatus.WORKING
         return SalarySnapshot(
             todayEarnedCents = clock.earnedToday(now),
             periodAccruedCents = clock.accruedCentsIn(clock.accruingPeriod(now), now),
             savingsCents = savingsCents,
             todayExpenseCents = todayExpenseCents,
-            status = if (settings.counterPaused) WorkStatus.BEFORE_WORK else status,
+            status = status,
             workStartAt = settings.toSalaryConfig().schedule.startTime,
             offWorkAt = settings.toSalaryConfig().schedule.endTime,
             nextPayday = clock.nextPaydayAfter(now.toLocalDate().minusDays(1)),

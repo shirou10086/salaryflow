@@ -15,8 +15,8 @@ android {
         applicationId = "com.salaryflow.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.1.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -48,6 +48,12 @@ android {
 
     packaging {
         resources.excludes += setOf("/META-INF/{AL2.0,LGPL2.1}")
+    }
+
+    lint {
+        // Android Lint 8.7 crashes while building FIR supertypes for Kotlin unit tests.
+        // The production source set is still linted normally.
+        checkTestSources = false
     }
 }
 

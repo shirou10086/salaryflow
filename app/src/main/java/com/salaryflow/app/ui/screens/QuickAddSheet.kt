@@ -31,9 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.salaryflow.app.R
 import com.salaryflow.app.core.Money
 import com.salaryflow.app.data.Categories
 import com.salaryflow.app.data.Category
@@ -43,8 +45,8 @@ import com.salaryflow.app.ui.components.PillSelect
 import com.salaryflow.app.ui.theme.BrandColors
 
 private val addTypes = listOf(
-    TxType.EXPENSE to "支出",
-    TxType.INCOME to "收入",
+    TxType.EXPENSE,
+    TxType.INCOME,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,11 +72,11 @@ fun QuickAddSheet(
         TxType.SAVING_IN -> MaterialTheme.colorScheme.primary
         TxType.SAVING_OUT -> MaterialTheme.colorScheme.tertiary
     }
-    val sheetTitle = when (type) {
-        TxType.EXPENSE -> "记一笔支出"
-        TxType.INCOME -> "记一笔收入"
-        TxType.SAVING_IN -> "存入攒钱罐"
-        TxType.SAVING_OUT -> "从攒钱罐取出"
+    val sheetTitleRes = when (type) {
+        TxType.EXPENSE -> R.string.quick_add_expense_title
+        TxType.INCOME -> R.string.quick_add_income_title
+        TxType.SAVING_IN -> R.string.quick_add_saving_title
+        TxType.SAVING_OUT -> R.string.quick_add_withdraw_title
     }
 
     ModalBottomSheet(
@@ -96,9 +98,12 @@ fun QuickAddSheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column {
-                    Text(sheetTitle, style = MaterialTheme.typography.headlineSmall)
                     Text(
-                        "只记真实收支，余额会自动推算",
+                        stringResource(sheetTitleRes),
+                        style = MaterialTheme.typography.headlineSmall,
+                    )
+                    Text(
+                        stringResource(R.string.quick_add_subtitle),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -108,12 +113,7 @@ fun QuickAddSheet(
                     color = accent.copy(alpha = 0.1f),
                 ) {
                     Text(
-                        when (type) {
-                            TxType.EXPENSE -> "支出"
-                            TxType.INCOME -> "收入"
-                            TxType.SAVING_IN -> "攒钱"
-                            TxType.SAVING_OUT -> "取出"
-                        },
+                        stringResource(typeShortLabelRes(type)),
                         style = MaterialTheme.typography.labelMedium,
                         color = accent,
                         fontWeight = FontWeight.SemiBold,
@@ -127,9 +127,9 @@ fun QuickAddSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                addTypes.forEach { (candidate, label) ->
+                addTypes.forEach { candidate ->
                     PillSelect(
-                        text = label,
+                        text = stringResource(typeShortLabelRes(candidate)),
                         selected = type == candidate,
                         onClick = { type = candidate },
                         selectedContainerColor = when (candidate) {
@@ -148,7 +148,7 @@ fun QuickAddSheet(
                 onValueChange = { input ->
                     amountText = input.filter { it.isDigit() || it == '.' }.take(12)
                 },
-                label = { Text("金额") },
+                label = { Text(stringResource(R.string.quick_add_amount)) },
                 prefix = { Text("¥ ") },
                 placeholder = { Text("0.00") },
                 singleLine = true,
@@ -159,7 +159,10 @@ fun QuickAddSheet(
             )
 
             Spacer(Modifier.height(20.dp))
-            Text("分类", style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(R.string.quick_add_category),
+                style = MaterialTheme.typography.titleMedium,
+            )
             Spacer(Modifier.height(9.dp))
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -179,8 +182,8 @@ fun QuickAddSheet(
             OutlinedTextField(
                 value = note,
                 onValueChange = { note = it.take(40) },
-                label = { Text("备注") },
-                placeholder = { Text("可选") },
+                label = { Text(stringResource(R.string.quick_add_note)) },
+                placeholder = { Text(stringResource(R.string.quick_add_optional)) },
                 singleLine = true,
                 shape = RoundedCornerShape(14.dp),
                 modifier = Modifier.fillMaxWidth(),
@@ -202,9 +205,12 @@ fun QuickAddSheet(
             ) {
                 Text(
                     if (valid) {
-                        "保存 ¥${Money.centsToYuan(amountCents)}"
+                        stringResource(
+                            R.string.quick_add_save_amount,
+                            Money.centsToYuan(amountCents),
+                        )
                     } else {
-                        "请输入金额"
+                        stringResource(R.string.quick_add_enter_amount)
                     },
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -220,6 +226,7 @@ private fun CategoryChip(
     accent: Color,
     onClick: () -> Unit,
 ) {
+    val categoryName = stringResource(category.nameRes)
     Surface(
         modifier = Modifier
             .clickable(onClick = onClick),
@@ -233,14 +240,21 @@ private fun CategoryChip(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CategoryBadge(
-                categoryName = category.name,
+                categoryName = categoryName,
                 size = 28,
                 contentColor = if (selected) Color.White else accent,
             )
             Spacer(Modifier.size(7.dp))
-            Text(category.name, style = MaterialTheme.typography.labelLarge)
+            Text(categoryName, style = MaterialTheme.typography.labelLarge)
         }
     }
+}
+
+private fun typeShortLabelRes(type: TxType): Int = when (type) {
+    TxType.EXPENSE -> R.string.expense
+    TxType.INCOME -> R.string.income
+    TxType.SAVING_IN -> R.string.saving
+    TxType.SAVING_OUT -> R.string.withdrawal
 }
 
 private fun categoriesFor(type: TxType): List<Category> = when (type) {

@@ -12,6 +12,7 @@ import com.salaryflow.app.MainActivity
 import com.salaryflow.app.R
 import com.salaryflow.app.SalaryFlowApp
 import com.salaryflow.app.core.Money
+import com.salaryflow.app.core.TimeText
 import com.salaryflow.app.data.SettlementResult
 
 object SettlementNotifier {
@@ -35,18 +36,31 @@ object SettlementNotifier {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
 
-        val text = buildString {
-            append("¥${Money.centsToYuan(result.landedCents)} 已计入本月存款")
-            if (result.periodsSettled > 1) append("（补记 ${result.periodsSettled} 期）")
+        val amount = "¥${Money.centsToYuan(result.landedCents)}"
+        val text = if (result.periodsSettled > 1) {
+            context.getString(
+                R.string.settlement_notification_multiple,
+                amount,
+                result.periodsSettled,
+            )
+        } else {
+            context.getString(R.string.settlement_notification_body, amount)
         }
+        val locale = context.resources.configuration.locales[0]
+        val periodLabel = TimeText.period(result.period.start, result.period.end, locale)
 
         val notification = NotificationCompat.Builder(context, SalaryFlowApp.SETTLEMENT_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("工资已经到账")
+            .setContentTitle(context.getString(R.string.settlement_notification_title))
             .setContentText(text)
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText("$text\n周期：${result.period.label}"),
+                    .bigText(
+                        text + "\n" + context.getString(
+                            R.string.settlement_notification_period,
+                            periodLabel,
+                        ),
+                    ),
             )
             .setContentIntent(contentIntent)
             .setAutoCancel(true)

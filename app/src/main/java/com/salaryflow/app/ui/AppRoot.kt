@@ -6,7 +6,10 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.Add
@@ -31,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,6 +45,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.salaryflow.app.core.SalaryClock
+import com.salaryflow.app.core.TimeText
+import com.salaryflow.app.R
 import com.salaryflow.app.data.TxType
 import com.salaryflow.app.ui.screens.BalanceCalibrationSheet
 import com.salaryflow.app.ui.screens.HomeScreen
@@ -53,15 +59,15 @@ import java.time.LocalDate
 
 private data class NavItem(
     val route: String,
-    val label: String,
+    val labelRes: Int,
     val icon: androidx.compose.ui.graphics.vector.ImageVector,
 )
 
 private val navItems = listOf(
-    NavItem("home", "首页", Icons.Rounded.Home),
-    NavItem("ledger", "账本", Icons.AutoMirrored.Rounded.ReceiptLong),
-    NavItem("stats", "统计", Icons.Rounded.BarChart),
-    NavItem("settings", "设置", Icons.Rounded.Settings),
+    NavItem("home", R.string.nav_home, Icons.Rounded.Home),
+    NavItem("ledger", R.string.nav_ledger, Icons.AutoMirrored.Rounded.ReceiptLong),
+    NavItem("stats", R.string.nav_stats, Icons.Rounded.BarChart),
+    NavItem("settings", R.string.nav_settings, Icons.Rounded.Settings),
 )
 
 @Composable
@@ -76,6 +82,7 @@ fun AppRoot(
 ) {
     val navController = rememberNavController()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val settingsLoaded by viewModel.settingsLoaded.collectAsStateWithLifecycle()
     val savingsCents by viewModel.savingsCents.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var quickAddType by remember { mutableStateOf<TxType?>(null) }
@@ -127,6 +134,15 @@ fun AppRoot(
         }
     }
 
+    if (!settingsLoaded) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+        )
+        return
+    }
+
     if (!settings.onboarded) {
         OnboardingScreen(
             onComplete = { result ->
@@ -149,6 +165,7 @@ fun AppRoot(
                     tonalElevation = 0.dp,
                 ) {
                     navItems.forEach { item ->
+                        val label = stringResource(item.labelRes)
                         NavigationBarItem(
                             selected = backStackEntry?.destination?.hierarchy?.any { it.route == item.route } == true,
                             onClick = {
@@ -158,8 +175,8 @@ fun AppRoot(
                                     restoreState = true
                                 }
                             },
-                            icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) },
+                            icon = { Icon(item.icon, contentDescription = label) },
+                            label = { Text(label) },
                             colors = NavigationBarItemDefaults.colors(
                                 selectedIconColor = MaterialTheme.colorScheme.primary,
                                 selectedTextColor = MaterialTheme.colorScheme.primary,
@@ -180,7 +197,10 @@ fun AppRoot(
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 2.dp),
                 ) {
-                    Icon(Icons.Rounded.Add, contentDescription = "记一笔")
+                    Icon(
+                        Icons.Rounded.Add,
+                        contentDescription = stringResource(R.string.add_transaction),
+                    )
                 }
             }
         },
@@ -253,7 +273,7 @@ fun AppRoot(
                 runCatching {
                     SalaryClock(settings.toSalaryConfig())
                         .periodEndingAt(LocalDate.parse(key))
-                        .label
+                        .let { period -> TimeText.period(period.start, period.end) }
                 }.getOrNull()
             }
         PaydayCelebrationOverlay(

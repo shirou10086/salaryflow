@@ -1,6 +1,11 @@
 package com.salaryflow.app.data
 
 import androidx.room.TypeConverter
+import com.salaryflow.app.R
+
+const val AUTO_SALARY_NOTE = "note:auto_salary_settlement"
+const val BALANCE_UP_NOTE = "note:balance_up"
+const val BALANCE_DOWN_NOTE = "note:balance_down"
 
 enum class TxType {
     EXPENSE,
@@ -11,7 +16,7 @@ enum class TxType {
 
 data class Category(
     val key: String,
-    val name: String,
+    val nameRes: Int,
 )
 
 data class CategoryTotal(
@@ -29,35 +34,36 @@ class Converters {
 
 object Categories {
     val expenses = listOf(
-        Category("food", "餐饮"),
-        Category("transport", "交通"),
-        Category("shopping", "购物"),
-        Category("housing", "居住"),
-        Category("fun", "娱乐"),
-        Category("health", "医疗"),
-        Category("study", "学习"),
-        Category("social", "人情"),
-        Category("other", "其他"),
+        Category("food", R.string.category_food),
+        Category("transport", R.string.category_transport),
+        Category("shopping", R.string.category_shopping),
+        Category("housing", R.string.category_housing),
+        Category("fun", R.string.category_fun),
+        Category("health", R.string.category_health),
+        Category("study", R.string.category_study),
+        Category("social", R.string.category_social),
+        Category("other", R.string.category_other),
     )
 
     val incomes = listOf(
-        Category("salary", "工资"),
-        Category("bonus", "奖金"),
-        Category("invest", "理财"),
-        Category("side", "副业"),
-        Category("other_income", "其他"),
+        Category("salary", R.string.category_salary),
+        Category("bonus", R.string.category_bonus),
+        Category("invest", R.string.category_invest),
+        Category("side", R.string.category_side),
+        Category("other_income", R.string.category_other_income),
     )
 
     val savings = listOf(
-        Category("auto_saving", "自动寄存"),
-        Category("manual_saving", "手动存入"),
-        Category("saving_out", "取出"),
-        Category(BALANCE_CALIBRATION_CATEGORY, "余额校准"),
+        Category("auto_saving", R.string.category_auto_saving),
+        Category("manual_saving", R.string.category_manual_saving),
+        Category("saving_out", R.string.category_saving_out),
+        Category(BALANCE_CALIBRATION_CATEGORY, R.string.category_balance_calibration),
     )
 
     private val all = expenses + incomes + savings
 
-    fun find(key: String): Category = all.firstOrNull { it.key == key } ?: Category(key, key)
+    fun find(key: String): Category =
+        all.firstOrNull { it.key == key } ?: Category(key, R.string.category_other)
 }
 
 fun TransactionEntity.balanceDeltaCents(): Long = when {

@@ -18,7 +18,6 @@ import com.salaryflow.app.SalaryFlowApp
 import com.salaryflow.app.appContainer
 import com.salaryflow.app.core.Money
 import com.salaryflow.app.core.SalaryClock
-import com.salaryflow.app.core.TimeText
 import com.salaryflow.app.core.WorkStatus
 import com.salaryflow.app.data.AppSettings
 import com.salaryflow.app.data.TxType
@@ -38,10 +37,10 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 /**
- * 常驻通知栏的实时工资服务。
+ * 常驻通知栏的工资服务。
  *
- * 每秒（可配置）重算一次今日已赚金额并刷新通知；同时按小时检查发薪日结算，
- * 保证 App 未打开时也能自动把工资存进攒钱罐。
+ * 每秒（可配置）重算一次今日收入并刷新通知；同时按小时检查发薪日结算，
+ * 保证 App 未打开时也能自动把工资存进存款。
  */
 class SalaryTickerService : Service() {
 
@@ -83,11 +82,6 @@ class SalaryTickerService : Service() {
                 return START_NOT_STICKY
             }
 
-            ACTION_TOGGLE_PAUSE -> {
-                scope.launch {
-                    appContainer.settingsStore.update { it.copy(counterPaused = !it.counterPaused) }
-                }
-            }
         }
 
         if (tickerJob == null) {
@@ -172,50 +166,19 @@ class SalaryTickerService : Service() {
 
     private fun buildNotification(settings: AppSettings, snapshot: SalarySnapshot): Notification {
         val hidden = settings.hideAmounts
-        val earned = if (hidden) "¥•••" else "¥" + Money.centsToYuan(snapshot.todayEarnedCents)
-        val savings = if (hidden) "¥•••" else "¥" + Money.centsToYuan(snapshot.savingsCents)
-        val expense = if (hidden) "¥•••" else "¥" + Money.centsToYuan(snapshot.todayExpenseCents)
-
-        val title = when {
-            settings.counterPaused -> "已暂停 · 工资暂停上涨"
-            snapshot.status == WorkStatus.REST_DAY -> "今天休息 · 今日已赚 $earned"
-            snapshot.status == WorkStatus.BEFORE_WORK -> "还没开工 · 今日已赚 $earned"
-            snapshot.status == WorkStatus.FINISHED -> "今日收工 · 一共赚了 $earned"
-            else -> "今日已赚 $earned"
+        val hiddenAmount = getString(R.string.amount_hidden_short)
+        val earned = if (hidden) {
+            hiddenAmount
+        } else {
+            "¥" + Money.centsToYuan(snapshot.todayEarnedCents)
         }
-
-        val countdown = when (snapshot.status) {
-            WorkStatus.WORKING, WorkStatus.UNPAID_BREAK -> {
-                val remaining = java.time.Duration.between(
-                    LocalDateTime.now(),
-                    LocalDate.now().atTime(snapshot.offWorkAt),
-                )
-                "距下班 ${TimeText.countdown(remaining)}"
-            }
-            WorkStatus.BEFORE_WORK -> {
-                val remaining = java.time.Duration.between(
-                    LocalDateTime.now(),
-                    LocalDate.now().atTime(snapshot.workStartAt),
-                )
-                "距上班 ${TimeText.countdown(remaining)}"
-            }
-            WorkStatus.FINISHED -> "今天辛苦了"
-            WorkStatus.REST_DAY -> "好好休息"
+        val savings = if (hidden) {
+            hiddenAmount
+        } else {
+            "¥" + Money.centsToYuan(snapshot.savingsCents)
         }
-
-        val payday = when {
-            snapshot.settledToday -> "本期工资已到账"
-            snapshot.daysToPayday <= 0L -> "今天是发薪日"
-            else -> "距发薪日 ${snapshot.daysToPayday} 天"
-        }
-
-        val bigText = buildString {
-            append("存款 $savings · 今日支出 $expense\n")
-            append("$countdown · $payday\n")
-            if (!hidden) {
-                append("每秒 +¥${Money.centsToYuanHighPrecision(snapshot.centsPerSecond)}")
-            }
-        }
+        val title = getString(R.string.notification_today_income, earned)
+        val content = getString(R.string.notification_total_savings, savings)
 
         val contentIntent = PendingIntent.getActivity(
             this,
@@ -235,19 +198,18 @@ class SalaryTickerService : Service() {
             MainActivity.quickAddIntent(this, TxType.INCOME),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        val toggleIntent = PendingIntent.getService(
-            this,
-            2,
-            Intent(this, SalaryTickerService::class.java).setAction(ACTION_TOGGLE_PAUSE),
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
-
         val builder = NotificationCompat.Builder(this, SalaryFlowApp.LIVE_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
-            .setContentText("存款 $savings · 今日支出 $expense · $payday")
-            .setSubText(if (hidden) "薪流 · 金额已隐藏" else "薪流 · 每秒都在涨")
-            .setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
+            .setContentText(content)
+            .setSubText(
+                if (hidden) {
+                    getString(R.string.notification_subtext_hidden)
+                } else {
+                    getString(R.string.notification_subtext)
+                },
+            )
+            .setStyle(NotificationCompat.BigTextStyle().bigText(content))
             .setContentIntent(contentIntent)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
@@ -255,13 +217,15 @@ class SalaryTickerService : Service() {
             .setShowWhen(false)
             .setCategory(NotificationCompat.CATEGORY_STATUS)
             .setVisibility(if (hidden) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PUBLIC)
-            .setProgress(1000, (snapshot.dayProgress * 1000).toInt().coerceIn(0, 1000), false)
-            .addAction(R.drawable.ic_action_expense, "记支出", expenseIntent)
-            .addAction(R.drawable.ic_action_income, "记收入", incomeIntent)
             .addAction(
-                R.drawable.ic_action_pause,
-                if (settings.counterPaused) "继续" else "暂停",
-                toggleIntent,
+                R.drawable.ic_action_expense,
+                getString(R.string.notification_action_expense),
+                expenseIntent,
+            )
+            .addAction(
+                R.drawable.ic_action_income,
+                getString(R.string.notification_action_income),
+                incomeIntent,
             )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -278,7 +242,6 @@ class SalaryTickerService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
-        const val ACTION_TOGGLE_PAUSE = "com.salaryflow.app.action.TOGGLE_PAUSE"
         const val ACTION_STOP = "com.salaryflow.app.action.STOP"
 
         private const val REFRESH_DB_EVERY_TICKS = 5

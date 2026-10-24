@@ -37,11 +37,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.salaryflow.app.BuildConfig
+import com.salaryflow.app.R
 import com.salaryflow.app.core.Money
 import com.salaryflow.app.core.TimeText
 import com.salaryflow.app.data.AppSettings
@@ -73,6 +75,8 @@ fun SettingsScreen(
     var showGoalAmountDialog by remember { mutableStateOf(false) }
     var showClearDialog by remember { mutableStateOf(false) }
     var editingTime by remember { mutableStateOf<TimeField?>(null) }
+    val defaultGoalName = stringResource(R.string.default_goal_name)
+    val goalName = settings.goalName.ifBlank { defaultGoalName }
 
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
@@ -81,9 +85,9 @@ fun SettingsScreen(
     ) {
         item {
             Column {
-                Text("设置", style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.headlineSmall)
                 Text(
-                    "算薪规则、通知栏与结算方式",
+                    stringResource(R.string.settings_subtitle),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -92,50 +96,53 @@ fun SettingsScreen(
 
         item {
             SectionCard {
-                SectionHeader(title = "薪资与工时", subtitle = "决定每秒涨多少钱")
+                SectionHeader(
+                    title = stringResource(R.string.settings_salary_section),
+                    subtitle = stringResource(R.string.settings_salary_section_subtitle),
+                )
                 Spacer(Modifier.height(6.dp))
                 SettingRow(
-                    title = "月薪",
+                    title = stringResource(R.string.settings_monthly_salary),
                     value = "¥${Money.centsToYuan(settings.monthlySalaryCents)}",
                     onClick = { showSalaryDialog = true },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SettingRow(
-                    title = "每月计薪天数",
-                    subtitle = "国内常见 21.75 天",
+                    title = stringResource(R.string.settings_paid_days),
+                    subtitle = stringResource(R.string.settings_paid_days_hint),
                     value = "${settings.paidDaysPerMonth}",
                     onClick = { showPaidDaysDialog = true },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SettingRow(
-                    title = "上班时间",
+                    title = stringResource(R.string.settings_work_start),
                     value = TimeText.clock(AppSettings.minuteToTime(settings.workStartMinute)),
                     onClick = { editingTime = TimeField.WORK_START },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SettingRow(
-                    title = "下班时间",
+                    title = stringResource(R.string.settings_work_end),
                     value = TimeText.clock(AppSettings.minuteToTime(settings.workEndMinute)),
                     onClick = { editingTime = TimeField.WORK_END },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SettingRow(
-                    title = "午休",
-                    subtitle = "默认 12:00 - 13:00",
+                    title = stringResource(R.string.settings_lunch),
+                    subtitle = stringResource(R.string.settings_lunch_hint),
                     value = "${TimeText.clock(AppSettings.minuteToTime(settings.lunchStartMinute))} - " +
                         TimeText.clock(AppSettings.minuteToTime(settings.lunchEndMinute)),
                     onClick = { editingTime = TimeField.LUNCH_START },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SwitchRow(
-                    title = "午休也计薪",
-                    subtitle = "开启后午休时间工资继续上涨",
+                    title = stringResource(R.string.settings_lunch_paid),
+                    subtitle = stringResource(R.string.settings_lunch_paid_hint),
                     checked = settings.lunchPaid,
                     onChange = { value -> viewModel.updateSettings { it.copy(lunchPaid = value) } },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 Text(
-                    "工作日",
+                    stringResource(R.string.settings_work_days),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(top = 12.dp, bottom = 6.dp),
                 )
@@ -143,7 +150,7 @@ fun SettingsScreen(
                     DayOfWeek.entries.forEach { day ->
                         val mask = 1 shl (day.value - 1)
                         PillSelect(
-                            text = TimeText.weekNames[day.value - 1].removePrefix("周"),
+                            text = TimeText.weekdayForPill(day),
                             selected = settings.workDaysMask and mask != 0,
                             onClick = {
                                 viewModel.updateSettings {
@@ -159,27 +166,27 @@ fun SettingsScreen(
         item {
             SectionCard {
                 SectionHeader(
-                    title = "发薪与收入",
-                    subtitle = "完整工资自动进入收入和存款",
+                    title = stringResource(R.string.settings_payday_section),
+                    subtitle = stringResource(R.string.settings_payday_section_subtitle),
                 )
                 Spacer(Modifier.height(8.dp))
                 SettingRow(
-                    title = "发薪日",
-                    subtitle = "每月这一天自动记录完整工资收入",
-                    value = "每月 ${settings.payday} 号",
+                    title = stringResource(R.string.settings_payday),
+                    subtitle = stringResource(R.string.settings_payday_hint),
+                    value = stringResource(R.string.settings_payday_value, settings.payday),
                     onClick = { showPaydayDialog = true },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SwitchRow(
-                    title = "发薪日自动结算",
-                    subtitle = "关闭后不会自动记录工资收入",
+                    title = stringResource(R.string.settings_auto_settle),
+                    subtitle = stringResource(R.string.settings_auto_settle_hint),
                     checked = settings.autoSettleEnabled,
                     onChange = { value -> viewModel.updateSettings { it.copy(autoSettleEnabled = value) } },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SwitchRow(
-                    title = "同时记录工资收入",
-                    subtitle = "账本里会多一条「工资」收入",
+                    title = stringResource(R.string.settings_auto_income),
+                    subtitle = stringResource(R.string.settings_auto_income_hint),
                     checked = settings.autoIncomeEnabled,
                     onChange = { value -> viewModel.updateSettings { it.copy(autoIncomeEnabled = value) } },
                 )
@@ -187,20 +194,20 @@ fun SettingsScreen(
                 OutlinedButton(
                     onClick = viewModel::requestDemoCelebration,
                     modifier = Modifier.fillMaxWidth(),
-                ) { Text("试播工资到账动画") }
+                ) { Text(stringResource(R.string.settings_preview_celebration)) }
             }
         }
 
         item {
             SectionCard {
                 SectionHeader(
-                    title = "存款与校准",
-                    subtitle = "收入增加、支出减少，漏记时用手里的真实余额纠偏",
+                    title = stringResource(R.string.settings_savings_section),
+                    subtitle = stringResource(R.string.settings_savings_section_subtitle),
                 )
                 Spacer(Modifier.height(10.dp))
                 SettingRow(
-                    title = "当前存款",
-                    subtitle = "账本推算值",
+                    title = stringResource(R.string.current_savings),
+                    subtitle = stringResource(R.string.current_savings_subtitle),
                     value = if (settings.hideAmounts) {
                         "¥••••"
                     } else {
@@ -210,8 +217,8 @@ fun SettingsScreen(
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SwitchRow(
-                    title = "每月提醒校准",
-                    subtitle = "每月 1 日提醒输入一次实际余额",
+                    title = stringResource(R.string.settings_balance_reminder),
+                    subtitle = stringResource(R.string.settings_balance_reminder_hint),
                     checked = settings.balanceReminderEnabled,
                     onChange = viewModel::setBalanceReminderEnabled,
                 )
@@ -220,30 +227,26 @@ fun SettingsScreen(
                     onClick = onCalibrateBalance,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text("更新为实际存款余额")
+                    Text(stringResource(R.string.settings_update_savings))
                 }
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    "支付宝、微信零钱和个人网银没有面向普通开发者的余额读取接口。" +
-                        "薪流不会监听通知或使用无障碍抓屏，校准差额会作为一条可追溯流水保存在本机。",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
             }
         }
 
         item {
             SectionCard {
-                SectionHeader(title = "存款目标", subtitle = "给存款设一个里程碑")
+                SectionHeader(
+                    title = stringResource(R.string.settings_goal_section),
+                    subtitle = stringResource(R.string.settings_goal_section_subtitle),
+                )
                 Spacer(Modifier.height(6.dp))
                 SettingRow(
-                    title = "目标名称",
-                    value = settings.goalName,
+                    title = stringResource(R.string.settings_goal_name),
+                    value = goalName,
                     onClick = { showGoalNameDialog = true },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SettingRow(
-                    title = "目标金额",
+                    title = stringResource(R.string.settings_goal_amount),
                     value = "¥${Money.centsToYuan(settings.goalAmountCents)}",
                     onClick = { showGoalAmountDialog = true },
                 )
@@ -252,11 +255,14 @@ fun SettingsScreen(
 
         item {
             SectionCard {
-                SectionHeader(title = "通知栏", subtitle = "随时看到工资在涨")
+                SectionHeader(
+                    title = stringResource(R.string.settings_notification_section),
+                    subtitle = stringResource(R.string.settings_notification_section_subtitle),
+                )
                 Spacer(Modifier.height(6.dp))
                 SwitchRow(
-                    title = "显示实时工资通知",
-                    subtitle = "常驻通知栏，需保持服务开启",
+                    title = stringResource(R.string.settings_show_notification),
+                    subtitle = stringResource(R.string.settings_show_notification_hint),
                     checked = settings.serviceEnabled,
                     onChange = { value ->
                         if (!value) {
@@ -277,28 +283,33 @@ fun SettingsScreen(
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SwitchRow(
-                    title = "隐藏金额",
-                    subtitle = "通知栏与界面显示 ¥••••",
+                    title = stringResource(R.string.settings_hide_amounts),
+                    subtitle = stringResource(R.string.settings_hide_amounts_hint),
                     checked = settings.hideAmounts,
                     onChange = { value -> viewModel.updateSettings { it.copy(hideAmounts = value) } },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SwitchRow(
-                    title = "开机自动开启",
-                    subtitle = "重启手机后恢复通知栏实时工资",
+                    title = stringResource(R.string.settings_boot_start),
+                    subtitle = stringResource(R.string.settings_boot_start_hint),
                     checked = settings.bootStartEnabled,
                     onChange = { value -> viewModel.updateSettings { it.copy(bootStartEnabled = value) } },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 Text(
-                    "刷新频率",
+                    stringResource(R.string.settings_refresh_rate),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(top = 12.dp, bottom = 6.dp),
                 )
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(1 to "1 秒", 5 to "5 秒", 10 to "10 秒", 60 to "1 分钟").forEach { (seconds, label) ->
+                    listOf(
+                        1 to R.string.settings_refresh_one_second,
+                        5 to R.string.settings_refresh_five_seconds,
+                        10 to R.string.settings_refresh_ten_seconds,
+                        60 to R.string.settings_refresh_one_minute,
+                    ).forEach { (seconds, labelRes) ->
                         PillSelect(
-                            text = label,
+                            text = stringResource(labelRes),
                             selected = settings.tickSeconds == seconds,
                             onClick = { viewModel.updateSettings { it.copy(tickSeconds = seconds) } },
                         )
@@ -306,7 +317,7 @@ fun SettingsScreen(
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "越快的刷新越耗电，1 秒适合想看「每秒都在涨」的时候。",
+                    stringResource(R.string.settings_refresh_hint),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -315,12 +326,19 @@ fun SettingsScreen(
 
         item {
             SectionCard {
-                SectionHeader(title = "外观", subtitle = "跟随系统或手动指定")
+                SectionHeader(
+                    title = stringResource(R.string.settings_appearance),
+                    subtitle = stringResource(R.string.settings_appearance_subtitle),
+                )
                 Spacer(Modifier.height(8.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf("system" to "跟随系统", "light" to "浅色", "dark" to "深色").forEach { (key, label) ->
+                    listOf(
+                        "system" to R.string.settings_theme_system,
+                        "light" to R.string.settings_theme_light,
+                        "dark" to R.string.settings_theme_dark,
+                    ).forEach { (key, labelRes) ->
                         PillSelect(
-                            text = label,
+                            text = stringResource(labelRes),
                             selected = settings.themeMode == key,
                             onClick = { viewModel.updateSettings { it.copy(themeMode = key) } },
                         )
@@ -331,15 +349,18 @@ fun SettingsScreen(
 
         item {
             SectionCard {
-                SectionHeader(title = "数据", subtitle = "全部保存在本机 SQLite")
+                SectionHeader(
+                    title = stringResource(R.string.settings_data),
+                    subtitle = stringResource(R.string.settings_data_subtitle),
+                )
                 Spacer(Modifier.height(10.dp))
                 OutlinedButton(
                     onClick = { showClearDialog = true },
                     modifier = Modifier.fillMaxWidth(),
-                ) { Text("清空所有流水与结算记录") }
+                ) { Text(stringResource(R.string.settings_clear_data)) }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "清空后不可恢复，请谨慎操作。",
+                    stringResource(R.string.settings_clear_data_hint),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -348,18 +369,13 @@ fun SettingsScreen(
 
         item {
             SectionCard {
-                SectionHeader(title = "关于", subtitle = "薪流 SalaryFlow")
+                SectionHeader(
+                    title = stringResource(R.string.settings_about),
+                )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "版本 ${BuildConfig.VERSION_NAME} · MIT License",
+                    stringResource(R.string.settings_version, BuildConfig.VERSION_NAME),
                     style = MaterialTheme.typography.bodyMedium,
-                )
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    "纯本地记账与实时工资工具。不联网、不上传、不读取其他应用，" +
-                        "也不提供金融建议。",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -367,7 +383,7 @@ fun SettingsScreen(
 
     if (showSalaryDialog) {
         NumberInputDialog(
-            title = "月薪（元）",
+            title = stringResource(R.string.settings_salary_dialog_title),
             initial = (settings.monthlySalaryCents / 100.0).toString(),
             onDismiss = { showSalaryDialog = false },
             onConfirm = { value ->
@@ -381,7 +397,7 @@ fun SettingsScreen(
 
     if (showPaidDaysDialog) {
         NumberInputDialog(
-            title = "每月计薪天数",
+            title = stringResource(R.string.settings_paid_days_dialog_title),
             initial = settings.paidDaysPerMonth.toString(),
             onDismiss = { showPaidDaysDialog = false },
             onConfirm = { value ->
@@ -395,7 +411,7 @@ fun SettingsScreen(
 
     if (showPaydayDialog) {
         NumberInputDialog(
-            title = "发薪日（1-31）",
+            title = stringResource(R.string.settings_payday_dialog_title),
             initial = settings.payday.toString(),
             onDismiss = { showPaydayDialog = false },
             onConfirm = { value ->
@@ -409,11 +425,11 @@ fun SettingsScreen(
 
     if (showGoalNameDialog) {
         TextInputDialog(
-            title = "目标名称",
-            initial = settings.goalName,
+            title = stringResource(R.string.settings_goal_name_dialog_title),
+            initial = goalName,
             onDismiss = { showGoalNameDialog = false },
             onConfirm = { value ->
-                viewModel.updateSettings { it.copy(goalName = value.ifBlank { "第一笔存款" }) }
+                viewModel.updateSettings { it.copy(goalName = value.trim()) }
                 showGoalNameDialog = false
             },
         )
@@ -421,7 +437,7 @@ fun SettingsScreen(
 
     if (showGoalAmountDialog) {
         NumberInputDialog(
-            title = "目标金额（元）",
+            title = stringResource(R.string.settings_goal_amount_dialog_title),
             initial = (settings.goalAmountCents / 100.0).toString(),
             onDismiss = { showGoalAmountDialog = false },
             onConfirm = { value ->
@@ -435,7 +451,7 @@ fun SettingsScreen(
 
     editingTime?.let { field ->
         TimeInputDialog(
-            title = field.title,
+            title = stringResource(field.titleRes),
             initial = field.current(settings),
             onDismiss = { editingTime = null },
             onConfirm = { time ->
@@ -450,6 +466,7 @@ fun SettingsScreen(
                 }
                 editingTime = null
             },
+            showLunchNextHint = field == TimeField.LUNCH_START,
             onSecondStep = {
                 if (field == TimeField.LUNCH_START) editingTime = TimeField.LUNCH_END
             },
@@ -459,28 +476,30 @@ fun SettingsScreen(
     if (showClearDialog) {
         AlertDialog(
             onDismissRequest = { showClearDialog = false },
-            title = { Text("清空所有数据？") },
-            text = { Text("会删除全部流水、自动结算记录与存款余额，无法恢复。") },
+            title = { Text(stringResource(R.string.settings_clear_dialog_title)) },
+            text = { Text(stringResource(R.string.settings_clear_dialog_text)) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         viewModel.clearAllData()
                         showClearDialog = false
                     },
-                ) { Text("确认清空") }
+                ) { Text(stringResource(R.string.settings_clear_confirm)) }
             },
             dismissButton = {
-                TextButton(onClick = { showClearDialog = false }) { Text("取消") }
+                TextButton(onClick = { showClearDialog = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
             },
         )
     }
 }
 
-private enum class TimeField(val title: String) {
-    WORK_START("上班时间"),
-    WORK_END("下班时间"),
-    LUNCH_START("午休开始"),
-    LUNCH_END("午休结束");
+private enum class TimeField(val titleRes: Int) {
+    WORK_START(R.string.time_work_start),
+    WORK_END(R.string.time_work_end),
+    LUNCH_START(R.string.time_lunch_start),
+    LUNCH_END(R.string.time_lunch_end);
 
     fun current(settings: AppSettings): LocalTime = when (this) {
         WORK_START -> AppSettings.minuteToTime(settings.workStartMinute)
@@ -586,10 +605,12 @@ private fun NumberInputDialog(
             )
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(value) }) { Text("保存") }
+            TextButton(onClick = { onConfirm(value) }) {
+                Text(stringResource(R.string.action_save))
+            }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         },
     )
 }
@@ -613,8 +634,14 @@ private fun TextInputDialog(
                 modifier = Modifier.fillMaxWidth(),
             )
         },
-        confirmButton = { TextButton(onClick = { onConfirm(value) }) { Text("保存") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(value) }) {
+                Text(stringResource(R.string.action_save))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        },
     )
 }
 
@@ -625,6 +652,7 @@ private fun TimeInputDialog(
     initial: LocalTime,
     onDismiss: () -> Unit,
     onConfirm: (LocalTime) -> Unit,
+    showLunchNextHint: Boolean,
     onSecondStep: () -> Unit = {},
 ) {
     val state = rememberTimePickerState(
@@ -638,9 +666,9 @@ private fun TimeInputDialog(
         text = {
             Column {
                 TimePicker(state = state)
-                if (title == "午休开始") {
+                if (showLunchNextHint) {
                     Text(
-                        "保存后继续设置午休结束时间。",
+                        stringResource(R.string.time_lunch_next_hint),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -653,8 +681,10 @@ private fun TimeInputDialog(
                     onConfirm(LocalTime.of(state.hour, state.minute))
                     onSecondStep()
                 },
-            ) { Text("保存") }
+            ) { Text(stringResource(R.string.action_save)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        },
     )
 }

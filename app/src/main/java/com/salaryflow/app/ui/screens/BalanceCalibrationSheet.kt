@@ -29,16 +29,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.salaryflow.app.R
 import com.salaryflow.app.core.Money
 import com.salaryflow.app.ui.theme.BrandColors
 
 /**
- * 用用户看到的真实余额覆盖账本推算值。
- *
- * 校准不会改写历史流水，而是写入一笔明确的余额调整，用户之后可以在账本中查看或删除。
+ * 用用户填写的金额更新当前存款。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,19 +75,23 @@ fun BalanceCalibrationSheet(
             ) {
                 Column {
                     Text(
-                        "账本推算余额",
+                        stringResource(R.string.current_savings),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(Modifier.height(5.dp))
                     Text(
-                        if (hidden) "¥••••" else "¥${Money.centsToYuan(currentCents)}",
+                        if (hidden) {
+                            stringResource(R.string.amount_hidden_long)
+                        } else {
+                            "¥${Money.centsToYuan(currentCents)}"
+                        },
                         style = MaterialTheme.typography.displayMedium,
                         color = BrandColors.savings,
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "工资收入增加，支出减少；可能因漏记或账户转账产生误差。",
+                        stringResource(R.string.current_savings_subtitle),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -95,10 +99,13 @@ fun BalanceCalibrationSheet(
             }
 
             Spacer(Modifier.height(22.dp))
-            Text("输入你现在的实际存款", style = MaterialTheme.typography.titleLarge)
+            Text(
+                stringResource(R.string.balance_update_title),
+                style = MaterialTheme.typography.titleLarge,
+            )
             Spacer(Modifier.height(4.dp))
             Text(
-                "可以填银行卡、支付宝、微信等账户的合计，只保存在本机。",
+                stringResource(R.string.balance_update_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -109,7 +116,7 @@ fun BalanceCalibrationSheet(
                 onValueChange = { input ->
                     amountText = input.filter { it.isDigit() || it == '.' }.take(14)
                 },
-                label = { Text("实际余额") },
+                label = { Text(stringResource(R.string.current_savings)) },
                 prefix = { Text("¥ ") },
                 placeholder = { Text("0.00") },
                 singleLine = true,
@@ -122,9 +129,9 @@ fun BalanceCalibrationSheet(
             if (deltaCents != null) {
                 Spacer(Modifier.height(12.dp))
                 val direction = when {
-                    deltaCents > 0 -> "将向上校准"
-                    deltaCents < 0 -> "将向下校准"
-                    else -> "无需调整"
+                    deltaCents > 0 -> stringResource(R.string.balance_update_increase)
+                    deltaCents < 0 -> stringResource(R.string.balance_update_decrease)
+                    else -> stringResource(R.string.balance_update_unchanged)
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -165,14 +172,11 @@ fun BalanceCalibrationSheet(
                     contentColor = Color.White,
                 ),
             ) {
-                Text("保存实际余额", fontWeight = FontWeight.SemiBold)
+                Text(
+                    stringResource(R.string.balance_update_save),
+                    fontWeight = FontWeight.SemiBold,
+                )
             }
-            Spacer(Modifier.height(8.dp))
-            Text(
-                "保存后会在账本中生成一笔「余额校准」，不会删除原来的流水。",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }

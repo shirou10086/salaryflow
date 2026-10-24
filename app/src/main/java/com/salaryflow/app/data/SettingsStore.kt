@@ -33,7 +33,7 @@ data class AppSettings(
     /** bit0 = 周一 … bit6 = 周日。 */
     val workDaysMask: Int = 0b0011111,
     /**
-     * 旧版本用于发薪日额外转存。新版本以实际存款校准和收支流水为准，
+     * 旧版本用于发薪日额外转存。新版本以存款更新和收支流水为准，
      * 保留字段仅用于兼容旧配置与计薪配置序列化。
      */
     val savingsRatePercent: Int = 0,
@@ -45,7 +45,7 @@ data class AppSettings(
     val autoSettleEnabled: Boolean = true,
     val autoIncomeEnabled: Boolean = true,
     val bootStartEnabled: Boolean = true,
-    val goalName: String = "第一笔存款",
+    val goalName: String = "",
     val goalAmountCents: Long = 1_000_000L,
     val lastSettledPeriodEnd: String? = null,
     val pendingCelebrationKey: String? = null,

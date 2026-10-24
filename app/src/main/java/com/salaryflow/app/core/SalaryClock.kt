@@ -69,14 +69,10 @@ data class SettlementPeriod(
 ) {
     /** 结算去重用的稳定 key。 */
     val key: String get() = end.toString()
-
-    val label: String
-        get() = "${start.monthValue}月${start.dayOfMonth}日 - ${end.monthValue}月${end.dayOfMonth}日"
 }
 
 data class DayMilestone(
     val time: LocalTime,
-    val label: String,
 )
 
 /**
@@ -155,15 +151,15 @@ class SalaryClock(val config: SalaryConfig) {
         val schedule = config.schedule
         val list = mutableListOf<DayMilestone>()
         if (schedule.lunchEnabled) {
-            list += DayMilestone(schedule.lunchStart, "午饭")
+            list += DayMilestone(schedule.lunchStart)
         }
         val five = LocalTime.of(17, 0)
         if (five > schedule.startTime && five < schedule.endTime &&
             Duration.between(five, schedule.endTime).toMinutes() >= 30
         ) {
-            list += DayMilestone(five, "17点")
+            list += DayMilestone(five)
         }
-        list += DayMilestone(schedule.endTime, "下班")
+        list += DayMilestone(schedule.endTime)
         return list
     }
 

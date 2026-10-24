@@ -65,11 +65,13 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.salaryflow.app.R
 import com.salaryflow.app.core.Money
 import com.salaryflow.app.core.SalaryClock
 import com.salaryflow.app.core.TimeText
@@ -83,6 +85,7 @@ import com.salaryflow.app.ui.components.StatusChip
 import com.salaryflow.app.ui.components.TransactionRow
 import com.salaryflow.app.ui.theme.BrandColors
 import java.time.LocalDateTime
+import java.time.YearMonth
 
 @Composable
 fun HomeScreen(
@@ -107,6 +110,7 @@ fun HomeScreen(
     val period = clock.accruingPeriod(now)
     val daysToPayday = clock.daysToPayday(now.toLocalDate())
     val paydayToday = daysToPayday == 0L
+    val dayProgress = if (status == WorkStatus.REST_DAY) 0f else clock.dayProgress(now)
     val settledToday = transactions.any { transaction ->
         transaction.periodEnd == now.toLocalDate().toString() &&
             transaction.auto &&
@@ -134,7 +138,7 @@ fun HomeScreen(
     ) {
         item {
             HomeTopBar(
-                dateText = "${now.monthValue}月${now.dayOfMonth}日 · ${TimeText.weekNames[now.dayOfWeek.value - 1]}",
+                dateText = TimeText.day(now.toLocalDate()) + " · " + TimeText.weekday(now.dayOfWeek),
                 serviceEnabled = settings.serviceEnabled,
                 hidden = settings.hideAmounts,
                 onToggleService = onToggleService,
@@ -147,8 +151,8 @@ fun HomeScreen(
                 earnedToday = earnedToday,
                 hidden = settings.hideAmounts,
                 status = status,
-                paused = settings.counterPaused,
-                progress = clock.dayProgress(now),
+                paused = false,
+                progress = dayProgress,
                 milestones = clock.milestones(),
                 now = now,
                 centsPerSecond = clock.centsPerSecond,
@@ -168,7 +172,8 @@ fun HomeScreen(
         }
 
         item {
-            FundsSummaryCard(
+            MonthlyOverviewCard(
+                monthLabel = TimeText.monthYear(YearMonth.from(now)),
                 savingsCents = savingsCents,
                 todayExpenseCents = todayExpenseCents,
                 monthExpenseCents = monthExpenseCents,
@@ -183,8 +188,9 @@ fun HomeScreen(
 
         item {
             IncomeArrivalCard(
-                periodLabel = displayPeriod.label,
-                paydayLabel = "${displayPeriod.end.monthValue}月${displayPeriod.end.dayOfMonth}日",
+                periodLabel = TimeText.period(displayPeriod.start, displayPeriod.end),
+                cycleStartLabel = TimeText.day(displayPeriod.start),
+                paydayLabel = TimeText.day(displayPeriod.end),
                 expectedCents = settings.monthlySalaryCents,
                 accruedCents = displayAccrued,
                 daysToPayday = daysToPayday,
@@ -196,11 +202,11 @@ fun HomeScreen(
 
         item {
             SectionHeader(
-                title = "最近流水",
-                subtitle = "自动记账和手动记账都在这里",
+                title = stringResource(R.string.recent_transactions),
+                subtitle = stringResource(R.string.recent_transactions_subtitle),
                 trailing = {
                     Text(
-                        "查看账本",
+                        stringResource(R.string.view_ledger),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
@@ -216,7 +222,7 @@ fun HomeScreen(
             item {
                 SectionCard {
                     Text(
-                        "还没有流水。从上面的快捷入口记下第一笔，或者等发薪日自动入账。",
+                        stringResource(R.string.recent_transactions_empty),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -237,14 +243,6 @@ fun HomeScreen(
             }
         }
 
-        item {
-            Text(
-                "所有数据只保存在本机，不联网，也不上传。",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
     }
 }
 
@@ -262,7 +260,7 @@ private fun HomeTopBar(
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Column {
-            Text("薪流", style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineSmall)
             Text(
                 dateText,
                 style = MaterialTheme.typography.labelMedium,
@@ -272,13 +270,21 @@ private fun HomeTopBar(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TopBarIconButton(
                 icon = if (hidden) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
-                contentDescription = if (hidden) "显示金额" else "隐藏金额",
+                contentDescription = stringResource(
+                    if (hidden) R.string.show_amounts else R.string.hide_amounts,
+                ),
                 active = false,
                 onClick = onToggleHidden,
             )
             TopBarIconButton(
                 icon = if (serviceEnabled) Icons.Rounded.NotificationsActive else Icons.Rounded.NotificationsOff,
-                contentDescription = if (serviceEnabled) "关闭实时工资通知" else "开启实时工资通知",
+                contentDescription = stringResource(
+                    if (serviceEnabled) {
+                        R.string.disable_salary_notification
+                    } else {
+                        R.string.enable_salary_notification
+                    },
+                ),
                 active = serviceEnabled,
                 onClick = onToggleService,
             )
@@ -358,9 +364,9 @@ private fun HeroSalaryCard(
                 )
                 Text(
                     when {
-                        settledToday -> "本期已到账"
-                        daysToPayday <= 0L -> "今天发薪"
-                        else -> "${daysToPayday} 天后发薪"
+                        settledToday -> stringResource(R.string.home_settled_this_cycle)
+                        daysToPayday <= 0L -> stringResource(R.string.home_payday_today)
+                        else -> stringResource(R.string.home_days_to_payday, daysToPayday)
                     },
                     style = MaterialTheme.typography.labelMedium,
                     color = BrandColors.heroAccent,
@@ -383,15 +389,28 @@ private fun HeroSalaryCard(
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
                     if (hidden) {
-                        "每秒 +¥••••"
+                        stringResource(
+                            R.string.home_per_second,
+                            stringResource(R.string.amount_hidden_long).removePrefix("¥"),
+                        )
                     } else {
-                        "每秒 +¥${Money.centsToYuanHighPrecision(centsPerSecond)}"
+                        stringResource(
+                            R.string.home_per_second,
+                            Money.centsToYuanHighPrecision(centsPerSecond),
+                        )
                     },
                     style = MaterialTheme.typography.labelMedium,
                     color = BrandColors.heroAccent,
                 )
                 Text(
-                    "日薪 " + if (hidden) "¥••••" else "¥${Money.centsToYuan(dailyPayCents)}",
+                    stringResource(
+                        R.string.home_daily_pay,
+                        if (hidden) {
+                            stringResource(R.string.amount_hidden_long).removePrefix("¥")
+                        } else {
+                            Money.centsToYuan(dailyPayCents)
+                        },
+                    ),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.White.copy(alpha = 0.68f),
                 )
@@ -414,27 +433,41 @@ private fun HeroSalaryCard(
             ) {
                 Column {
                     Text(
-                        if (status == WorkStatus.FINISHED || status == WorkStatus.REST_DAY) "今天" else "距离下班",
+                        stringResource(
+                            if (status == WorkStatus.FINISHED || status == WorkStatus.REST_DAY) {
+                                R.string.home_today
+                            } else {
+                                R.string.home_until_off_work
+                            },
+                        ),
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.White.copy(alpha = 0.62f),
                     )
                     Text(
-                        if (status == WorkStatus.FINISHED || status == WorkStatus.REST_DAY) "已收工" else offWorkCountdown,
+                        if (status == WorkStatus.REST_DAY) {
+                            stringResource(R.string.home_day_off)
+                        } else if (status == WorkStatus.FINISHED) {
+                            stringResource(R.string.home_off_work_done)
+                        } else {
+                            offWorkCountdown
+                        },
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White,
                     )
                 }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        "今日计薪进度",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.White.copy(alpha = 0.62f),
-                    )
-                    Text(
-                        "${(progress * 100).toInt()}%",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White,
-                    )
+                if (status != WorkStatus.REST_DAY) {
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            stringResource(R.string.home_day_progress),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White.copy(alpha = 0.62f),
+                        )
+                        Text(
+                            "${(progress * 100).toInt()}%",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = Color.White,
+                        )
+                    }
                 }
             }
         }
@@ -515,7 +548,7 @@ private fun QuickEntryRow(
         QuickEntryButton(
             modifier = Modifier.weight(1f),
             icon = Icons.AutoMirrored.Rounded.TrendingDown,
-            title = "记支出",
+            title = stringResource(R.string.quick_add_expense),
             subtitle = "−",
             accent = BrandColors.expense,
             onClick = onExpense,
@@ -523,7 +556,7 @@ private fun QuickEntryRow(
         QuickEntryButton(
             modifier = Modifier.weight(1f),
             icon = Icons.AutoMirrored.Rounded.TrendingUp,
-            title = "记收入",
+            title = stringResource(R.string.quick_add_income),
             subtitle = "+",
             accent = BrandColors.savings,
             onClick = onIncome,
@@ -582,7 +615,8 @@ private fun QuickEntryButton(
 }
 
 @Composable
-private fun FundsSummaryCard(
+private fun MonthlyOverviewCard(
+    monthLabel: String,
     savingsCents: Long,
     todayExpenseCents: Long,
     monthExpenseCents: Long,
@@ -593,76 +627,96 @@ private fun FundsSummaryCard(
     hidden: Boolean,
     onCalibrate: () -> Unit,
 ) {
+    val monthBalanceCents = monthIncomeCents - monthExpenseCents
+    val displayGoalName = goalName.ifBlank { stringResource(R.string.default_goal_name) }
+
     SectionCard {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top,
+        SectionHeader(
+            title = stringResource(R.string.monthly_overview),
+            subtitle = monthLabel,
+            trailing = {
+                TextButton(onClick = onCalibrate) {
+                    Text(stringResource(R.string.update_balance))
+                }
+            },
+        )
+
+        Spacer(Modifier.height(14.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(BrandColors.savings.copy(alpha = 0.075f))
+                .padding(horizontal = 16.dp, vertical = 15.dp),
         ) {
-            Column {
-                Text(
-                    "当前存款",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.height(5.dp))
-                AnimatedMoneyText(
-                    cents = savingsCents.toDouble(),
-                    hidden = hidden,
-                    style = MaterialTheme.typography.displayMedium,
-                    color = BrandColors.savings,
-                    animated = false,
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    "由实际余额校准，收入和支出继续自动推算",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            TextButton(onClick = onCalibrate) {
-                Text("更新余额")
-            }
+            Text(
+                stringResource(R.string.current_savings),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(4.dp))
+            AnimatedMoneyText(
+                cents = savingsCents.toDouble(),
+                hidden = hidden,
+                style = MaterialTheme.typography.displayMedium,
+                color = BrandColors.savings,
+                animated = false,
+            )
+            Spacer(Modifier.height(3.dp))
+            Text(
+                stringResource(R.string.current_savings_subtitle),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
 
-        Spacer(Modifier.height(14.dp))
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(MaterialTheme.colorScheme.outlineVariant),
-        )
-        Spacer(Modifier.height(14.dp))
-
+        Spacer(Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             SummaryMetric(
-                label = "今日支出",
-                value = if (hidden) "¥••••" else "¥${Money.centsToYuan(todayExpenseCents)}",
+                modifier = Modifier.weight(1f),
+                label = stringResource(R.string.monthly_income),
+                value = if (hidden) {
+                    stringResource(R.string.amount_hidden_short)
+                } else {
+                    "+¥${Money.compactYuan(monthIncomeCents)}"
+                },
+                color = BrandColors.savings,
+            )
+            SummaryMetric(
+                modifier = Modifier.weight(1f),
+                label = stringResource(R.string.monthly_expense),
+                value = if (hidden) {
+                    stringResource(R.string.amount_hidden_short)
+                } else {
+                    "−¥${Money.compactYuan(monthExpenseCents)}"
+                },
+                sub = stringResource(
+                    R.string.today_expense_value,
+                    if (hidden) {
+                        stringResource(R.string.amount_hidden_short)
+                    } else {
+                        "¥${Money.centsToYuan(todayExpenseCents)}"
+                    },
+                ),
                 color = BrandColors.expense,
             )
             SummaryMetric(
-                label = "本月收入",
-                value = if (hidden) "¥••••" else "¥${Money.compactYuan(monthIncomeCents)}",
-                color = BrandColors.savings,
-                alignEnd = true,
-            )
-            SummaryMetric(
-                label = "本月结余",
+                modifier = Modifier.weight(1f),
+                label = stringResource(R.string.monthly_balance),
                 value = if (hidden) {
-                    "¥••••"
+                    stringResource(R.string.amount_hidden_short)
                 } else {
-                    val balance = monthIncomeCents - monthExpenseCents
-                    (if (balance >= 0) "+" else "−") + "¥${Money.compactYuan(kotlin.math.abs(balance))}"
+                    (if (monthBalanceCents >= 0) "+" else "−") +
+                        "¥${Money.compactYuan(kotlin.math.abs(monthBalanceCents))}"
                 },
-                color = if (monthIncomeCents >= monthExpenseCents) {
-                    MaterialTheme.colorScheme.onSurface
+                color = if (monthBalanceCents >= 0) {
+                    BrandColors.savings
                 } else {
                     BrandColors.expense
                 },
-                alignEnd = true,
             )
         }
 
@@ -682,16 +736,20 @@ private fun FundsSummaryCard(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                goalName,
+                displayGoalName,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 if (hidden) {
-                    "目标进度已隐藏"
+                    stringResource(R.string.goal_progress_hidden)
                 } else {
-                    "目标进度 ${(goalProgress * 100).toInt()}% · " +
-                        "¥${Money.compactYuan(savingsCents)} / ¥${Money.compactYuan(goalAmountCents)}"
+                    stringResource(
+                        R.string.goal_progress,
+                        (goalProgress * 100).toInt(),
+                        Money.compactYuan(savingsCents),
+                        Money.compactYuan(goalAmountCents),
+                    )
                 },
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -705,9 +763,14 @@ private fun SummaryMetric(
     label: String,
     value: String,
     color: Color,
+    modifier: Modifier = Modifier,
+    sub: String? = null,
     alignEnd: Boolean = false,
 ) {
-    Column(horizontalAlignment = if (alignEnd) Alignment.End else Alignment.Start) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = if (alignEnd) Alignment.End else Alignment.Start,
+    ) {
         Text(
             label,
             style = MaterialTheme.typography.labelSmall,
@@ -715,12 +778,22 @@ private fun SummaryMetric(
         )
         Spacer(Modifier.height(4.dp))
         Text(value, style = MaterialTheme.typography.titleLarge, color = color, maxLines = 1)
+        if (sub != null) {
+            Spacer(Modifier.height(3.dp))
+            Text(
+                sub,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+            )
+        }
     }
 }
 
 @Composable
 private fun IncomeArrivalCard(
     periodLabel: String,
+    cycleStartLabel: String,
     paydayLabel: String,
     expectedCents: Long,
     accruedCents: Double,
@@ -753,6 +826,7 @@ private fun IncomeArrivalCard(
         IncomeArrivalSurface(
             landed = isLanded,
             periodLabel = periodLabel,
+            cycleStartLabel = cycleStartLabel,
             paydayLabel = paydayLabel,
             expectedCents = expectedCents,
             accruedCents = accruedCents,
@@ -768,6 +842,7 @@ private fun IncomeArrivalCard(
 private fun IncomeArrivalSurface(
     landed: Boolean,
     periodLabel: String,
+    cycleStartLabel: String,
     paydayLabel: String,
     expectedCents: Long,
     accruedCents: Double,
@@ -795,6 +870,7 @@ private fun IncomeArrivalSurface(
             IncomeArrivalBody(
                 landed = true,
                 periodLabel = periodLabel,
+                cycleStartLabel = cycleStartLabel,
                 paydayLabel = paydayLabel,
                 expectedCents = expectedCents,
                 accruedCents = accruedCents,
@@ -821,6 +897,7 @@ private fun IncomeArrivalSurface(
             IncomeArrivalBody(
                 landed = false,
                 periodLabel = periodLabel,
+                cycleStartLabel = cycleStartLabel,
                 paydayLabel = paydayLabel,
                 expectedCents = expectedCents,
                 accruedCents = accruedCents,
@@ -837,6 +914,7 @@ private fun IncomeArrivalSurface(
 private fun IncomeArrivalBody(
     landed: Boolean,
     periodLabel: String,
+    cycleStartLabel: String,
     paydayLabel: String,
     expectedCents: Long,
     accruedCents: Double,
@@ -855,25 +933,33 @@ private fun IncomeArrivalBody(
         ) {
             Column(Modifier.weight(1f)) {
                 Text(
-                    if (landed) "工资已到账" else "待发工资",
+                    stringResource(
+                        if (landed) {
+                            R.string.income_arrival_landed
+                        } else {
+                            R.string.income_arrival_pending
+                        },
+                    ),
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    if (landed) {
-                        "已记入工资收入，并计入当前存款"
-                    } else {
-                        "发薪日自动记入收入，存款同步增加"
-                    },
+                    stringResource(
+                        if (landed) {
+                            R.string.income_arrival_landed_subtitle
+                        } else {
+                            R.string.income_arrival_pending_subtitle
+                        },
+                    ),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             StatusChip(
                 text = when {
-                    landed -> "已到账"
-                    daysToPayday <= 0L -> "今日到账"
-                    else -> "还有 $daysToPayday 天"
+                    landed -> stringResource(R.string.income_arrival_landed_chip)
+                    daysToPayday <= 0L -> stringResource(R.string.income_arrival_today_chip)
+                    else -> stringResource(R.string.income_arrival_days_chip, daysToPayday)
                 },
                 containerColor = if (landed) {
                     MaterialTheme.colorScheme.primaryContainer
@@ -890,7 +976,13 @@ private fun IncomeArrivalBody(
 
         Spacer(Modifier.height(18.dp))
         Text(
-            if (landed) "本期工资" else "预计工资",
+            stringResource(
+                if (landed) {
+                    R.string.income_arrival_this_cycle
+                } else {
+                    R.string.income_arrival_expected
+                },
+            ),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -903,9 +995,9 @@ private fun IncomeArrivalBody(
         Spacer(Modifier.height(3.dp))
         Text(
             if (landed) {
-                "$periodLabel · 已入账"
+                stringResource(R.string.income_arrival_period_landed, periodLabel)
             } else {
-                "$periodLabel · $paydayLabel 发薪"
+                stringResource(R.string.income_arrival_period_pending, periodLabel, paydayLabel)
             },
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -919,12 +1011,12 @@ private fun IncomeArrivalBody(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                "周期开始",
+                stringResource(R.string.income_arrival_cycle_start),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                paydayLabel,
+                cycleStartLabel,
                 style = MaterialTheme.typography.labelSmall,
                 color = accent,
                 fontWeight = FontWeight.SemiBold,
@@ -937,13 +1029,27 @@ private fun IncomeArrivalBody(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             IncomeMetric(
-                label = if (landed) "本期工资" else "本期已累积",
-                value = if (hidden) "¥••••" else "¥${Money.centsToYuan(accruedCents)}",
+                label = stringResource(
+                    if (landed) {
+                        R.string.income_arrival_this_cycle
+                    } else {
+                        R.string.income_arrival_accrued
+                    },
+                ),
+                value = if (hidden) {
+                    stringResource(R.string.amount_hidden_long)
+                } else {
+                    "¥${Money.centsToYuan(accruedCents)}"
+                },
                 color = accent,
             )
             IncomeMetric(
-                label = "到账金额",
-                value = if (hidden) "¥••••" else "¥${Money.centsToYuan(expectedCents)}",
+                label = stringResource(R.string.income_arrival_amount),
+                value = if (hidden) {
+                    stringResource(R.string.amount_hidden_long)
+                } else {
+                    "¥${Money.centsToYuan(expectedCents)}"
+                },
                 color = BrandColors.savings,
                 alignEnd = true,
             )
@@ -963,21 +1069,21 @@ private fun IncomeArrivalBody(
                 )
                 Spacer(Modifier.width(7.dp))
                 Text(
-                    "完整工资已计入存款与账本",
+                    stringResource(R.string.income_arrival_fully_saved),
                     style = MaterialTheme.typography.labelMedium,
                     color = BrandColors.savings,
                     modifier = Modifier.weight(1f),
                 )
             } else {
                 Text(
-                    "到账后自动转为实线",
+                    stringResource(R.string.income_arrival_auto_solid),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.weight(1f))
             }
             Text(
-                "预览到账动画",
+                stringResource(R.string.income_arrival_preview),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
@@ -1097,19 +1203,21 @@ private fun Modifier.dashedBorder(
     )
 }
 
+@Composable
 private fun statusText(status: WorkStatus, paused: Boolean): String = when {
-    paused -> "已暂停"
-    status == WorkStatus.WORKING -> "工作中"
-    status == WorkStatus.UNPAID_BREAK -> "午休中"
-    status == WorkStatus.BEFORE_WORK -> "未开工"
-    status == WorkStatus.FINISHED -> "已下班"
-    else -> "休息日"
+    paused -> stringResource(R.string.status_paused)
+    status == WorkStatus.WORKING -> stringResource(R.string.status_working)
+    status == WorkStatus.UNPAID_BREAK -> stringResource(R.string.status_break)
+    status == WorkStatus.BEFORE_WORK -> stringResource(R.string.status_before_work)
+    status == WorkStatus.FINISHED -> stringResource(R.string.status_finished)
+    else -> stringResource(R.string.status_rest_day)
 }
 
+@Composable
 private fun statusLabel(status: WorkStatus): String = when (status) {
-    WorkStatus.WORKING -> "今天已挣"
-    WorkStatus.UNPAID_BREAK -> "今天已挣 · 午休不计薪"
-    WorkStatus.BEFORE_WORK -> "今天尚未开工"
-    WorkStatus.FINISHED -> "今日收工，一共挣了"
-    WorkStatus.REST_DAY -> "今天休息，不营业"
+    WorkStatus.WORKING -> stringResource(R.string.home_today_earned)
+    WorkStatus.UNPAID_BREAK -> stringResource(R.string.home_unpaid_break)
+    WorkStatus.BEFORE_WORK -> stringResource(R.string.home_today_not_started)
+    WorkStatus.FINISHED -> stringResource(R.string.home_today_finished)
+    WorkStatus.REST_DAY -> stringResource(R.string.home_day_off)
 }
