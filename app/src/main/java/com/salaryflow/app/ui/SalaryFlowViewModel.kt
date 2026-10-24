@@ -1,8 +1,10 @@
 package com.salaryflow.app.ui
 
 import android.app.Application
+import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.salaryflow.app.BuildConfig
 import com.salaryflow.app.appContainer
 import com.salaryflow.app.core.SalaryClock
 import com.salaryflow.app.core.toYearMonth
@@ -17,17 +19,23 @@ import com.salaryflow.app.service.SalaryTickerService
 import com.salaryflow.app.ui.screens.OnboardingResult
 import com.salaryflow.app.work.BalanceReminderScheduler
 import com.salaryflow.app.work.PaydaySettlementScheduler
+import com.salaryflow.app.update.UpdateCheckResult
+import com.salaryflow.app.update.UpdateManager
+import com.salaryflow.app.update.UpdateRelease
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
@@ -48,12 +56,35 @@ data class MonthPoint(
     val savingCents: Long,
 )
 
+sealed interface UpdateUiState {
+    data object Idle : UpdateUiState
+    data object Checking : UpdateUiState
+    data class Available(val release: UpdateRelease) : UpdateUiState
+    data class Downloading(val release: UpdateRelease, val progress: Int) : UpdateUiState
+    data class ReadyToInstall(val release: UpdateRelease, val file: File) : UpdateUiState
+    data object UpToDate : UpdateUiState
+    data class Failed(val reason: UpdateFailure, val release: UpdateRelease? = null) : UpdateUiState
+}
+
+enum class UpdateFailure {
+    CHECK,
+    DOWNLOAD,
+    INSTALL,
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class SalaryFlowViewModel(application: Application) : AndroidViewModel(application) {
 
     private val container = application.appContainer
     private val settingsStore: SettingsStore = container.settingsStore
     private val ledger: LedgerRepository = container.ledgerRepository
+    private val updateManager: UpdateManager = container.updateManager
+
+    private val _updateState = MutableStateFlow<UpdateUiState>(UpdateUiState.Idle)
+    val updateState: StateFlow<UpdateUiState> = _updateState.asStateFlow()
+    private var autoUpdateCheckRequested = false
+    private var updateCheckJob: Job? = null
+    private var updateDownloadJob: Job? = null
 
     val settings: StateFlow<AppSettings> = settingsStore.settings
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppSettings())
@@ -157,6 +188,110 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
 
     fun updateSettings(transform: (AppSettings) -> AppSettings) {
         viewModelScope.launch { settingsStore.update(transform) }
+    }
+
+    fun checkForUpdatesAutomatically() {
+        if (autoUpdateCheckRequested) return
+        autoUpdateCheckRequested = true
+        requestUpdateCheck(manual = false)
+    }
+
+    fun checkForUpdates() {
+        requestUpdateCheck(manual = true)
+    }
+
+    private fun requestUpdateCheck(manual: Boolean) {
+        if (updateCheckJob?.isActive == true || updateDownloadJob?.isActive == true) return
+        updateCheckJob = viewModelScope.launch {
+            val settings = settingsStore.current()
+            if (!manual) {
+                if (!settings.autoUpdateEnabled) return@launch
+                val lastCheck = settings.lastUpdateCheckAt
+                if (lastCheck != null && System.currentTimeMillis() - lastCheck < UPDATE_CHECK_INTERVAL_MS) {
+                    return@launch
+                }
+            }
+            _updateState.value = UpdateUiState.Checking
+            try {
+                val result = updateManager.checkForUpdate(BuildConfig.VERSION_NAME)
+                settingsStore.update { it.copy(lastUpdateCheckAt = System.currentTimeMillis()) }
+                _updateState.value = when (result) {
+                    UpdateCheckResult.UpToDate -> if (manual) {
+                        UpdateUiState.UpToDate
+                    } else {
+                        UpdateUiState.Idle
+                    }
+
+                    is UpdateCheckResult.Available -> UpdateUiState.Available(result.release)
+                }
+            } catch (_: Throwable) {
+                _updateState.value = if (manual) {
+                    UpdateUiState.Failed(UpdateFailure.CHECK)
+                } else {
+                    UpdateUiState.Idle
+                }
+            }
+        }
+    }
+
+    fun downloadUpdate() {
+        val release = (_updateState.value as? UpdateUiState.Available)?.release ?: return
+        if (updateDownloadJob?.isActive == true) return
+        updateDownloadJob = viewModelScope.launch {
+            _updateState.value = UpdateUiState.Downloading(release, progress = 0)
+            try {
+                val file = updateManager.download(release) { progress ->
+                    _updateState.value = UpdateUiState.Downloading(release, progress)
+                }
+                _updateState.value = UpdateUiState.ReadyToInstall(release, file)
+            } catch (_: Throwable) {
+                _updateState.value = UpdateUiState.Failed(UpdateFailure.DOWNLOAD, release)
+            }
+        }
+    }
+
+    fun needsInstallPermission(): Boolean = updateManager.needsInstallPermission()
+
+    fun installPermissionIntent(): Intent = updateManager.installPermissionIntent()
+
+    fun installReadyUpdate() {
+        val ready = _updateState.value as? UpdateUiState.ReadyToInstall ?: return
+        when (updateManager.install(ready.file)) {
+            com.salaryflow.app.update.InstallResult.Started -> {
+                _updateState.value = UpdateUiState.Idle
+            }
+
+            com.salaryflow.app.update.InstallResult.PermissionRequired -> Unit
+            com.salaryflow.app.update.InstallResult.Failed -> {
+                _updateState.value = UpdateUiState.Failed(UpdateFailure.INSTALL, ready.release)
+            }
+        }
+    }
+
+    fun retryUpdate() {
+        val failed = _updateState.value as? UpdateUiState.Failed ?: return
+        if (failed.release == null) {
+            checkForUpdates()
+        } else {
+            _updateState.value = UpdateUiState.Available(failed.release)
+            downloadUpdate()
+        }
+    }
+
+    fun dismissUpdateState() {
+        if (_updateState.value !is UpdateUiState.Downloading) {
+            _updateState.value = UpdateUiState.Idle
+        }
+    }
+
+    fun setAutoUpdateEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsStore.update { it.copy(autoUpdateEnabled = enabled) }
+            if (enabled) {
+                autoUpdateCheckRequested = false
+                checkForUpdatesAutomatically()
+            }
+        }
     }
 
     fun updatePayday(payday: Int) {
@@ -283,4 +418,8 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
     /** 供预览/测试使用：当前时刻的今日已赚。 */
     fun earnedToday(now: LocalDateTime = LocalDateTime.now()): Double =
         salaryClock().earnedToday(now)
+
+    companion object {
+        private const val UPDATE_CHECK_INTERVAL_MS = 24L * 60L * 60L * 1000L
+    }
 }

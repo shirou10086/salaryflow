@@ -55,6 +55,8 @@ data class AppSettings(
     val balanceReminderEnabled: Boolean = true,
     val lastBalanceReminderMonth: String? = null,
     val lastBalanceCalibrationAt: Long? = null,
+    val autoUpdateEnabled: Boolean = true,
+    val lastUpdateCheckAt: Long? = null,
 ) {
     val savingsRate: Double get() = savingsRatePercent.coerceIn(0, 100) / 100.0
 
@@ -143,6 +145,8 @@ private object Keys {
     val balanceReminderEnabled = booleanPreferencesKey("balance_reminder_enabled")
     val lastBalanceReminderMonth = stringPreferencesKey("last_balance_reminder_month")
     val lastBalanceCalibrationAt = longPreferencesKey("last_balance_calibration_at")
+    val autoUpdateEnabled = booleanPreferencesKey("auto_update_enabled")
+    val lastUpdateCheckAt = longPreferencesKey("last_update_check_at")
 }
 
 private fun Preferences.toAppSettings(): AppSettings {
@@ -175,6 +179,8 @@ private fun Preferences.toAppSettings(): AppSettings {
         balanceReminderEnabled = this[Keys.balanceReminderEnabled] ?: defaults.balanceReminderEnabled,
         lastBalanceReminderMonth = this[Keys.lastBalanceReminderMonth],
         lastBalanceCalibrationAt = this[Keys.lastBalanceCalibrationAt],
+        autoUpdateEnabled = this[Keys.autoUpdateEnabled] ?: defaults.autoUpdateEnabled,
+        lastUpdateCheckAt = this[Keys.lastUpdateCheckAt],
     )
 }
 
@@ -210,4 +216,8 @@ private fun MutablePreferences.writeFrom(settings: AppSettings) {
     settings.lastBalanceCalibrationAt
         ?.let { this[Keys.lastBalanceCalibrationAt] = it }
         ?: remove(Keys.lastBalanceCalibrationAt)
+    this[Keys.autoUpdateEnabled] = settings.autoUpdateEnabled
+    settings.lastUpdateCheckAt
+        ?.let { this[Keys.lastUpdateCheckAt] = it }
+        ?: remove(Keys.lastUpdateCheckAt)
 }

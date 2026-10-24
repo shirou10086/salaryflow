@@ -7,7 +7,7 @@
 ## 下载安装
 
 前往 [GitHub Releases](https://github.com/shirou10086/salaryflow/releases/latest) 下载已签名的
-[`SalaryFlow-v0.1.3.apk`](https://github.com/shirou10086/salaryflow/releases/latest/download/SalaryFlow-v0.1.3.apk)。
+[`SalaryFlow-v0.2.0.apk`](https://github.com/shirou10086/salaryflow/releases/latest/download/SalaryFlow-v0.2.0.apk)。
 
 - 最低支持 Android 8.0（API 26）；
 - 首次安装时，系统可能要求允许当前浏览器或文件管理器安装未知应用；
@@ -27,6 +27,9 @@
 ## 功能
 
 自动跟随系统语言，支持中文和英文；Android 13 及以上还可以在系统的“应用语言”中单独切换。
+
+可在“设置 → 关于 → 语言”直接打开语言设置。Android 13 及以上可只修改薪流的语言，
+Android 12 及以下会跟随系统语言。
 
 ### 工资通知
 
@@ -73,6 +76,13 @@
 ### 桌面小组件
 
 2×2 小组件显示今日收入、总存款与服务状态。
+
+### 应用更新
+
+- 默认每天在应用启动时自动检查 GitHub 正式版本；
+- 发现新版本后可显示更新说明、下载进度并交给系统完成安装；
+- 安装前会校验 APK 包名、版本和签名，保留现有账本数据；
+- Android 出于安全限制，首次更新需要在系统页面允许薪流安装应用。
 
 ## 计算规则
 

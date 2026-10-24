@@ -5,6 +5,7 @@
     <string name="action_save">保存</string>
     <string name="action_cancel">取消</string>
     <string name="action_delete">删除</string>
+    <string name="action_close">关闭</string>
     <string name="amount_hidden_short">¥•••</string>
     <string name="amount_hidden_long">¥••••</string>
 
@@ -29,9 +30,11 @@
     <string name="notification_channel_balance">存款更新提醒</string>
     <string name="notification_channel_balance_desc">每月提醒核对当前存款</string>
 
-    <string name="notification_today_income">今天已挣 %1$s</string>
+    <string name="notification_today_income">今日 %1$s</string>
     <string name="notification_action_expense">记支出</string>
     <string name="notification_action_income">记收入</string>
+    <string name="notification_action_expense_short">支出</string>
+    <string name="notification_action_income_short">收入</string>
 
     <string name="settlement_notification_title">工资已经到账</string>
     <string name="settlement_notification_body">%1$s 已计入本月存款</string>
@@ -195,6 +198,33 @@
     <string name="settings_clear_data_hint">清空后不可恢复。</string>
     <string name="settings_about">关于</string>
     <string name="settings_version">版本 %1$s · MIT 许可证</string>
+    <string name="settings_update_section">软件更新</string>
+    <string name="settings_update_section_subtitle">自动检查 GitHub 上的正式版本</string>
+    <string name="settings_auto_update">自动检查更新</string>
+    <string name="settings_auto_update_hint">启动应用时每天检查一次，下载后由系统确认安装</string>
+    <string name="settings_check_update">检查更新</string>
+    <string name="settings_checking_update">正在检查…</string>
+    <string name="settings_update_install_hint">系统会在安装前再次确认；首次升级需允许薪流安装应用。</string>
+    <string name="settings_language">语言</string>
+    <string name="settings_language_hint">Android 13 及以上可单独设置应用语言，旧版本跟随系统</string>
+    <string name="settings_language_value">中文 / English</string>
+
+    <string name="update_available_title">发现新版本 %1$s</string>
+    <string name="update_available_message">安装包大小 %1$s。更新不会清除账本数据。</string>
+    <string name="update_now">立即更新</string>
+    <string name="update_later">稍后</string>
+    <string name="update_downloading_title">正在下载更新</string>
+    <string name="update_downloading_message">已完成 %1$d%%</string>
+    <string name="update_ready_title">更新已下载</string>
+    <string name="update_ready_message">点击“立即安装”，并在系统提示中确认。更新不会清除账本数据。</string>
+    <string name="update_install_now">立即安装</string>
+    <string name="update_latest_title">已是最新版本</string>
+    <string name="update_latest_message">当前已经是最新正式版本。</string>
+    <string name="update_failed_title">更新失败</string>
+    <string name="update_check_failed">无法连接更新服务，请稍后重试。</string>
+    <string name="update_download_failed">更新下载失败，请检查网络后重试。</string>
+    <string name="update_install_failed">无法打开系统安装程序，请稍后重试。</string>
+    <string name="update_retry">重试</string>
     <string name="settings_salary_dialog_title">月薪（元）</string>
     <string name="settings_paid_days_dialog_title">每月计薪天数</string>
     <string name="settings_payday_dialog_title">发薪日（1-31）</string>

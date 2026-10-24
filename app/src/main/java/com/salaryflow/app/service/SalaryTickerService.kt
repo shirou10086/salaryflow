@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.os.SystemClock
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -172,7 +173,7 @@ class SalaryTickerService : Service() {
         } else {
             "¥" + Money.centsToYuan(snapshot.todayEarnedCents)
         }
-        val title = getString(R.string.notification_today_income, earned)
+        val amountText = getString(R.string.notification_today_income, earned)
 
         val contentIntent = PendingIntent.getActivity(
             this,
@@ -192,26 +193,24 @@ class SalaryTickerService : Service() {
             MainActivity.quickAddIntent(this, TxType.INCOME),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
+        val compactViews = RemoteViews(packageName, R.layout.notification_live).apply {
+            setTextViewText(R.id.notification_live_amount, amountText)
+            setOnClickPendingIntent(R.id.notification_live_expense, expenseIntent)
+            setOnClickPendingIntent(R.id.notification_live_income, incomeIntent)
+        }
+
         val builder = NotificationCompat.Builder(this, SalaryFlowApp.LIVE_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle(title)
+            .setContentTitle(amountText)
             .setContentIntent(contentIntent)
+            .setCustomContentView(compactViews)
+            .setCustomBigContentView(compactViews)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setSilent(true)
             .setShowWhen(false)
             .setCategory(NotificationCompat.CATEGORY_STATUS)
             .setVisibility(if (hidden) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PUBLIC)
-            .addAction(
-                R.drawable.ic_action_expense,
-                getString(R.string.notification_action_expense),
-                expenseIntent,
-            )
-            .addAction(
-                R.drawable.ic_action_income,
-                getString(R.string.notification_action_income),
-                incomeIntent,
-            )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             builder.setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)

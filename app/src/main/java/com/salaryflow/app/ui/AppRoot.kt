@@ -84,6 +84,7 @@ fun AppRoot(
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val settingsLoaded by viewModel.settingsLoaded.collectAsStateWithLifecycle()
     val savingsCents by viewModel.savingsCents.collectAsStateWithLifecycle()
+    val updateState by viewModel.updateState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var quickAddType by remember { mutableStateOf<TxType?>(null) }
     var forceCelebration by remember { mutableStateOf(false) }
@@ -95,6 +96,10 @@ fun AppRoot(
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted -> if (granted) viewModel.startTickerService() },
+    )
+    val installPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { viewModel.installReadyUpdate() },
     )
     val enableLiveNotification = {
         val needsPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -111,6 +116,12 @@ fun AppRoot(
 
     LaunchedEffect(settings.onboarded) {
         if (settings.onboarded) viewModel.settleIfDue()
+    }
+
+    LaunchedEffect(settingsLoaded, settings.onboarded) {
+        if (settingsLoaded && settings.onboarded) {
+            viewModel.checkForUpdatesAutomatically()
+        }
     }
 
     LaunchedEffect(quickAddRequest) {
@@ -291,5 +302,42 @@ fun AppRoot(
                 navController.navigate("ledger")
             },
         )
+    }
+
+    when (val state = updateState) {
+        is UpdateUiState.Available -> {
+            AvailableUpdateDialog(
+                release = state.release,
+                onUpdate = viewModel::downloadUpdate,
+                onDismiss = viewModel::dismissUpdateState,
+            )
+        }
+
+        is UpdateUiState.Downloading -> {
+            DownloadingUpdateDialog(progress = state.progress)
+        }
+
+        is UpdateUiState.ReadyToInstall -> {
+            ReadyToInstallDialog(
+                onInstall = {
+                    if (viewModel.needsInstallPermission()) {
+                        installPermissionLauncher.launch(viewModel.installPermissionIntent())
+                    } else {
+                        viewModel.installReadyUpdate()
+                    }
+                },
+                onDismiss = viewModel::dismissUpdateState,
+            )
+        }
+
+        UpdateUiState.UpToDate, is UpdateUiState.Failed -> {
+            UpdateResultDialog(
+                state = state,
+                onDismiss = viewModel::dismissUpdateState,
+                onRetry = viewModel::retryUpdate,
+            )
+        }
+
+        UpdateUiState.Idle, UpdateUiState.Checking -> Unit
     }
 }

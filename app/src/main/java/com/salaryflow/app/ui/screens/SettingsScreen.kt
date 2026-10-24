@@ -1,8 +1,11 @@
 package com.salaryflow.app.ui.screens
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +51,7 @@ import com.salaryflow.app.core.Money
 import com.salaryflow.app.core.TimeText
 import com.salaryflow.app.data.AppSettings
 import com.salaryflow.app.ui.SalaryFlowViewModel
+import com.salaryflow.app.ui.UpdateUiState
 import com.salaryflow.app.ui.components.PillSelect
 import com.salaryflow.app.ui.components.SectionCard
 import com.salaryflow.app.ui.components.SectionHeader
@@ -62,6 +66,7 @@ fun SettingsScreen(
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val savingsCents by viewModel.savingsCents.collectAsStateWithLifecycle()
+    val updateState by viewModel.updateState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -350,6 +355,45 @@ fun SettingsScreen(
         item {
             SectionCard {
                 SectionHeader(
+                    title = stringResource(R.string.settings_update_section),
+                    subtitle = stringResource(R.string.settings_update_section_subtitle),
+                )
+                Spacer(Modifier.height(6.dp))
+                SwitchRow(
+                    title = stringResource(R.string.settings_auto_update),
+                    subtitle = stringResource(R.string.settings_auto_update_hint),
+                    checked = settings.autoUpdateEnabled,
+                    onChange = viewModel::setAutoUpdateEnabled,
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                OutlinedButton(
+                    onClick = viewModel::checkForUpdates,
+                    enabled = updateState != UpdateUiState.Checking &&
+                        updateState !is UpdateUiState.Downloading,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        stringResource(
+                            if (updateState == UpdateUiState.Checking) {
+                                R.string.settings_checking_update
+                            } else {
+                                R.string.settings_check_update
+                            },
+                        ),
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.settings_update_install_hint),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
+        item {
+            SectionCard {
+                SectionHeader(
                     title = stringResource(R.string.settings_data),
                     subtitle = stringResource(R.string.settings_data_subtitle),
                 )
@@ -376,6 +420,26 @@ fun SettingsScreen(
                 Text(
                     stringResource(R.string.settings_version, BuildConfig.VERSION_NAME),
                     style = MaterialTheme.typography.bodyMedium,
+                )
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    modifier = Modifier.padding(top = 12.dp),
+                )
+                SettingRow(
+                    title = stringResource(R.string.settings_language),
+                    subtitle = stringResource(R.string.settings_language_hint),
+                    value = stringResource(R.string.settings_language_value),
+                    onClick = {
+                        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            Intent(
+                                Settings.ACTION_APP_LOCALE_SETTINGS,
+                                Uri.parse("package:${context.packageName}"),
+                            )
+                        } else {
+                            Intent(Settings.ACTION_LOCALE_SETTINGS)
+                        }
+                        runCatching { context.startActivity(intent) }
+                    },
                 )
             }
         }
