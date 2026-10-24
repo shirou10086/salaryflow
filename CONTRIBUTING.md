@@ -5,13 +5,16 @@
 ## 开发环境
 
 - JDK 17
-- Android Studio Ladybug 及以上（或命令行 SDK 35）
-- `./gradlew :app:testDebugUnitTest` 必须通过
+- Android Studio（支持 API 36）及以上，或命令行 Android SDK 36
+- GitHub 与 Play flavor 的单元测试都必须通过
 
 ## 提交前检查
 
 ```bash
-./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+./gradlew :app:testGithubDebugUnitTest :app:lintGithubDebug \
+  :app:assembleGithubDebug
+./gradlew :app:testPlayDebugUnitTest :app:lintPlayDebug \
+  :app:bundlePlayDebug
 ```
 
 ## 代码约定
@@ -19,7 +22,8 @@
 - 计薪 / 结算等纯逻辑写在 `core` 与 `data` 层，保持可在 JVM 上单测；
 - 新增计薪规则时，请在 `SalaryClockTest` 补对应用例；
 - UI 文案使用中文，金额展示统一走 `Money` 工具，避免各页面格式不一致；
-- 不要引入网络依赖：本项目的核心承诺是「不联网」。
+- 账本和设置保持本地存储；除 GitHub flavor 的版本检查与 APK 下载外，不要引入业务网络依赖；
+- Play flavor 不应引入自更新、安装未知应用或敏感权限。
 
 ## Issue / PR
 
