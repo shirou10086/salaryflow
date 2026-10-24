@@ -45,8 +45,6 @@ import com.salaryflow.app.ui.theme.BrandColors
 private val addTypes = listOf(
     TxType.EXPENSE to "支出",
     TxType.INCOME to "收入",
-    TxType.SAVING_IN to "存入",
-    TxType.SAVING_OUT to "取出",
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,7 +98,7 @@ fun QuickAddSheet(
                 Column {
                     Text(sheetTitle, style = MaterialTheme.typography.headlineSmall)
                     Text(
-                        "数据只记录在本机",
+                        "只记真实收支，余额会自动推算",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

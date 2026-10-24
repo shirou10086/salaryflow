@@ -12,7 +12,10 @@ import com.salaryflow.app.data.TxType
 import com.salaryflow.app.data.LedgerRepository
 import com.salaryflow.app.data.SettingsStore
 import com.salaryflow.app.data.TransactionEntity
+import com.salaryflow.app.data.balanceDeltaCents
 import com.salaryflow.app.service.SalaryTickerService
+import com.salaryflow.app.ui.screens.OnboardingResult
+import com.salaryflow.app.work.BalanceReminderScheduler
 import com.salaryflow.app.work.PaydaySettlementScheduler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -87,15 +90,15 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
             transactions.map { list ->
                 val days = month.lengthOfMonth()
                 var running = list
-                    .filter { (it.type == TxType.SAVING_IN || it.type == TxType.SAVING_OUT) && it.occurredAt.toYearMonth() < month }
-                    .sumOf { if (it.type == TxType.SAVING_IN) it.amountCents else -it.amountCents }
+                    .filter { it.occurredAt.toYearMonth() < month }
+                    .sumOf { it.balanceDeltaCents() }
                 (1..days).map { day ->
                     val zone = java.time.ZoneId.systemDefault()
                     val dayStart = month.atDay(day).atStartOfDay(zone).toInstant().toEpochMilli()
                     val dayEnd = month.atDay(day).plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
                     running += list
                         .filter { it.occurredAt >= dayStart && it.occurredAt < dayEnd }
-                        .sumOf { if (it.type == TxType.SAVING_IN) it.amountCents else if (it.type == TxType.SAVING_OUT) -it.amountCents else 0 }
+                        .sumOf { it.balanceDeltaCents() }
                     running
                 }
             }
@@ -184,8 +187,10 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
 
     fun startTickerService() {
         val context = getApplication<Application>()
-        updateSettings { it.copy(serviceEnabled = true) }
-        runCatching { SalaryTickerService.start(context) }
+        viewModelScope.launch {
+            settingsStore.update { it.copy(serviceEnabled = true) }
+            runCatching { SalaryTickerService.start(context) }
+        }
     }
 
     fun stopTickerService() {
@@ -198,8 +203,48 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
         updateSettings { it.copy(counterPaused = !it.counterPaused) }
     }
 
-    fun markOnboarded() {
-        updateSettings { it.copy(onboarded = true) }
+    fun completeOnboarding(result: OnboardingResult) {
+        val context = getApplication<Application>()
+        viewModelScope.launch {
+            settingsStore.update {
+                it.copy(
+                    monthlySalaryCents = result.monthlySalaryCents,
+                    paidDaysPerMonth = result.paidDaysPerMonth,
+                    payday = result.payday,
+                    workStartMinute = result.workStartMinute,
+                    workEndMinute = result.workEndMinute,
+                    savingsRatePercent = 0,
+                    balanceReminderEnabled = result.enableBalanceReminder,
+                    lastBalanceReminderMonth = YearMonth.now().toString(),
+                    lastSettledPeriodEnd = null,
+                )
+            }
+            ledger.calibrateBalance(result.actualSavingsCents)
+            settingsStore.update {
+                it.copy(
+                    onboarded = true,
+                    lastBalanceCalibrationAt = System.currentTimeMillis(),
+                )
+            }
+            PaydaySettlementScheduler.ensureScheduled(context)
+            BalanceReminderScheduler.ensureScheduled(context)
+            container.settlementManager.settleIfDue()
+        }
+    }
+
+    fun calibrateBalance(actualCents: Long) {
+        viewModelScope.launch {
+            ledger.calibrateBalance(actualCents)
+            settingsStore.update { it.copy(lastBalanceCalibrationAt = System.currentTimeMillis()) }
+        }
+    }
+
+    fun setBalanceReminderEnabled(enabled: Boolean) {
+        val context = getApplication<Application>()
+        viewModelScope.launch {
+            settingsStore.update { it.copy(balanceReminderEnabled = enabled) }
+            BalanceReminderScheduler.ensureScheduled(context)
+        }
     }
 
     fun requestDemoCelebration() {
@@ -210,10 +255,6 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
         viewModelScope.launch { settingsStore.clearCelebration() }
     }
 
-    fun settleCurrentPeriodEarly() {
-        viewModelScope.launch { container.settlementManager.settleCurrentPeriodEarly() }
-    }
-
     fun clearAllData() {
         viewModelScope.launch {
             ledger.clearAll()
@@ -222,6 +263,8 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
                     lastSettledPeriodEnd = null,
                     pendingCelebrationKey = null,
                     lastSettlementAmountCents = 0L,
+                    lastBalanceCalibrationAt = null,
+                    lastBalanceReminderMonth = null,
                 )
             }
         }

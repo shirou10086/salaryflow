@@ -52,9 +52,18 @@ object Categories {
         Category("auto_saving", "自动寄存"),
         Category("manual_saving", "手动存入"),
         Category("saving_out", "取出"),
+        Category(BALANCE_CALIBRATION_CATEGORY, "余额校准"),
     )
 
     private val all = expenses + incomes + savings
 
     fun find(key: String): Category = all.firstOrNull { it.key == key } ?: Category(key, key)
+}
+
+fun TransactionEntity.balanceDeltaCents(): Long = when {
+    type == TxType.INCOME -> amountCents
+    type == TxType.EXPENSE -> -amountCents
+    type == TxType.SAVING_IN && category == BALANCE_CALIBRATION_CATEGORY -> amountCents
+    type == TxType.SAVING_OUT && category == BALANCE_CALIBRATION_CATEGORY -> -amountCents
+    else -> 0L
 }

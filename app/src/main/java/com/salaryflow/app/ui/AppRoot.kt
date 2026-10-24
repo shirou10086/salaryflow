@@ -42,8 +42,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.salaryflow.app.core.SalaryClock
 import com.salaryflow.app.data.TxType
+import com.salaryflow.app.ui.screens.BalanceCalibrationSheet
 import com.salaryflow.app.ui.screens.HomeScreen
 import com.salaryflow.app.ui.screens.LedgerScreen
+import com.salaryflow.app.ui.screens.OnboardingScreen
 import com.salaryflow.app.ui.screens.QuickAddSheet
 import com.salaryflow.app.ui.screens.SettingsScreen
 import com.salaryflow.app.ui.screens.StatsScreen
@@ -65,30 +67,48 @@ private val navItems = listOf(
 @Composable
 fun AppRoot(
     viewModel: SalaryFlowViewModel,
-    quickAddRequest: Boolean,
+    quickAddRequest: TxType?,
     celebrationRequest: Boolean,
+    balanceUpdateRequest: Boolean,
     onQuickAddConsumed: () -> Unit,
     onCelebrationConsumed: () -> Unit,
+    onBalanceUpdateConsumed: () -> Unit,
 ) {
     val navController = rememberNavController()
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val savingsCents by viewModel.savingsCents.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var quickAddType by remember { mutableStateOf<TxType?>(null) }
     var forceCelebration by remember { mutableStateOf(false) }
+    var showBalanceCalibration by remember { mutableStateOf(false) }
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route ?: "home"
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
-        onResult = { },
+        onResult = { granted -> if (granted) viewModel.startTickerService() },
     )
+    val enableLiveNotification = {
+        val needsPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS,
+            ) != PackageManager.PERMISSION_GRANTED
+        if (needsPermission) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            viewModel.startTickerService()
+        }
+    }
 
-    LaunchedEffect(Unit) { viewModel.settleIfDue() }
+    LaunchedEffect(settings.onboarded) {
+        if (settings.onboarded) viewModel.settleIfDue()
+    }
 
     LaunchedEffect(quickAddRequest) {
-        if (quickAddRequest) {
-            quickAddType = TxType.EXPENSE
+        quickAddRequest?.let { type ->
+            quickAddType = type
             onQuickAddConsumed()
         }
     }
@@ -98,6 +118,25 @@ fun AppRoot(
             forceCelebration = true
             onCelebrationConsumed()
         }
+    }
+
+    LaunchedEffect(balanceUpdateRequest) {
+        if (balanceUpdateRequest) {
+            showBalanceCalibration = true
+            onBalanceUpdateConsumed()
+        }
+    }
+
+    if (!settings.onboarded) {
+        OnboardingScreen(
+            onComplete = { result ->
+                viewModel.completeOnboarding(result)
+                if (result.enableLiveNotification) {
+                    enableLiveNotification()
+                }
+            },
+        )
+        return
     }
 
     Scaffold(
@@ -160,17 +199,10 @@ fun AppRoot(
                         if (settings.serviceEnabled) {
                             viewModel.stopTickerService()
                         } else {
-                            val needsPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                                ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.POST_NOTIFICATIONS,
-                                ) != PackageManager.PERMISSION_GRANTED
-                            if (needsPermission) {
-                                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                            }
-                            viewModel.startTickerService()
+                            enableLiveNotification()
                         }
                     },
+                    onCalibrateBalance = { showBalanceCalibration = true },
                 )
             }
             composable("ledger") {
@@ -180,7 +212,12 @@ fun AppRoot(
                 )
             }
             composable("stats") { StatsScreen(viewModel = viewModel) }
-            composable("settings") { SettingsScreen(viewModel = viewModel) }
+            composable("settings") {
+                SettingsScreen(
+                    viewModel = viewModel,
+                    onCalibrateBalance = { showBalanceCalibration = true },
+                )
+            }
         }
     }
 
@@ -199,6 +236,15 @@ fun AppRoot(
         )
     }
 
+    if (showBalanceCalibration) {
+        BalanceCalibrationSheet(
+            currentCents = savingsCents,
+            hidden = settings.hideAmounts,
+            onDismiss = { showBalanceCalibration = false },
+            onSubmit = viewModel::calibrateBalance,
+        )
+    }
+
     val pendingKey = settings.pendingCelebrationKey
     if (pendingKey != null || forceCelebration) {
         val periodLabel = pendingKey
@@ -213,10 +259,7 @@ fun AppRoot(
         PaydayCelebrationOverlay(
             amountCents = settings.lastSettlementAmountCents
                 .takeIf { it > 0 }
-                ?: com.salaryflow.app.core.Money.ratioToCents(
-                    settings.savingsRate,
-                    settings.monthlySalaryCents,
-                ),
+                ?: settings.monthlySalaryCents,
             periodLabel = periodLabel,
             onDismiss = {
                 forceCelebration = false

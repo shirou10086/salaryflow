@@ -277,7 +277,7 @@ fun PaydayCelebrationOverlay(
             )
             drawText(
                 textMeasurer = textMeasurer,
-                text = "薪流攒钱罐",
+                text = "薪流存款",
                 topLeft = Offset(labelLeft + labelWidth * 0.2f, labelTop + labelHeight * 0.22f),
                 style = TextStyle(
                     color = Color(0xFF7B4A00),
@@ -373,7 +373,7 @@ fun PaydayCelebrationOverlay(
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                if (amountProgress >= 1f) "已经落进攒钱罐" else "正在变成罐子里的真钱",
+                if (amountProgress >= 1f) "已经落进真实存款" else "正在变成存款里的真钱",
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White.copy(alpha = 0.9f),
             )

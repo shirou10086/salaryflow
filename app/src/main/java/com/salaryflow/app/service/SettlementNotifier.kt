@@ -36,7 +36,7 @@ object SettlementNotifier {
         )
 
         val text = buildString {
-            append("¥${Money.centsToYuan(result.savingCents)} 已存进攒钱罐")
+            append("¥${Money.centsToYuan(result.landedCents)} 已计入本月存款")
             if (result.periodsSettled > 1) append("（补记 ${result.periodsSettled} 期）")
         }
 

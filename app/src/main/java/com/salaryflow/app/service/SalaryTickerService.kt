@@ -21,6 +21,7 @@ import com.salaryflow.app.core.SalaryClock
 import com.salaryflow.app.core.TimeText
 import com.salaryflow.app.core.WorkStatus
 import com.salaryflow.app.data.AppSettings
+import com.salaryflow.app.data.TxType
 import com.salaryflow.app.widget.SalaryWidgetProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -209,7 +210,7 @@ class SalaryTickerService : Service() {
         }
 
         val bigText = buildString {
-            append("已攒 $savings · 今日支出 $expense\n")
+            append("存款 $savings · 今日支出 $expense\n")
             append("$countdown · $payday\n")
             if (!hidden) {
                 append("每秒 +¥${Money.centsToYuanHighPrecision(snapshot.centsPerSecond)}")
@@ -222,10 +223,16 @@ class SalaryTickerService : Service() {
             MainActivity.intent(this),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        val quickAddIntent = PendingIntent.getActivity(
+        val expenseIntent = PendingIntent.getActivity(
             this,
-            1,
-            MainActivity.quickAddIntent(this),
+            11,
+            MainActivity.quickAddIntent(this, TxType.EXPENSE),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        val incomeIntent = PendingIntent.getActivity(
+            this,
+            12,
+            MainActivity.quickAddIntent(this, TxType.INCOME),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         val toggleIntent = PendingIntent.getService(
@@ -234,17 +241,11 @@ class SalaryTickerService : Service() {
             Intent(this, SalaryTickerService::class.java).setAction(ACTION_TOGGLE_PAUSE),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        val stopIntent = PendingIntent.getService(
-            this,
-            3,
-            Intent(this, SalaryTickerService::class.java).setAction(ACTION_STOP),
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
 
         val builder = NotificationCompat.Builder(this, SalaryFlowApp.LIVE_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
-            .setContentText("已攒 $savings · 今日支出 $expense · $payday")
+            .setContentText("存款 $savings · 今日支出 $expense · $payday")
             .setSubText(if (hidden) "薪流 · 金额已隐藏" else "薪流 · 每秒都在涨")
             .setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
             .setContentIntent(contentIntent)
@@ -255,13 +256,13 @@ class SalaryTickerService : Service() {
             .setCategory(NotificationCompat.CATEGORY_STATUS)
             .setVisibility(if (hidden) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PUBLIC)
             .setProgress(1000, (snapshot.dayProgress * 1000).toInt().coerceIn(0, 1000), false)
-            .addAction(R.drawable.ic_notification, "记一笔", quickAddIntent)
+            .addAction(R.drawable.ic_action_expense, "记支出", expenseIntent)
+            .addAction(R.drawable.ic_action_income, "记收入", incomeIntent)
             .addAction(
-                R.drawable.ic_notification,
+                R.drawable.ic_action_pause,
                 if (settings.counterPaused) "继续" else "暂停",
                 toggleIntent,
             )
-            .addAction(R.drawable.ic_notification, "停止", stopIntent)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             builder.setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)

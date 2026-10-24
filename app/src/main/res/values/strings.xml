@@ -4,7 +4,9 @@
     <string name="notification_channel_live">实时工资</string>
     <string name="notification_channel_live_desc">在通知栏实时显示今日已赚与已攒金额</string>
     <string name="notification_channel_settlement">发薪日结算</string>
-    <string name="notification_channel_settlement_desc">发薪日自动把工资存进攒钱罐时的提醒</string>
+    <string name="notification_channel_settlement_desc">发薪日把工资计入账本和存款余额时的提醒</string>
+    <string name="notification_channel_balance">月度余额校准</string>
+    <string name="notification_channel_balance_desc">每月提醒核对实际存款余额，减少记账误差</string>
     <string name="widget_description">今日实时工资与已攒金额</string>
     <string name="widget_status_working">搬砖中</string>
     <string name="widget_amount_placeholder">¥0.00</string>

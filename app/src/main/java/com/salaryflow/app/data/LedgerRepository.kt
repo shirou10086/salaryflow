@@ -1,6 +1,7 @@
 package com.salaryflow.app.data
 
 import kotlinx.coroutines.flow.Flow
+import kotlin.math.abs
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
@@ -24,6 +25,12 @@ class LedgerRepository(private val dao: LedgerDao, private val zoneId: ZoneId = 
     fun observeExpenseByCategory(month: YearMonth): Flow<List<CategoryTotal>> =
         dao.observeExpenseByCategory(month.startMillis(zoneId), month.endMillis(zoneId))
 
+    /**
+     * 当前存款余额 = 手动/自动收入 - 支出 + 历次实际余额校准差额。
+     *
+     * 普通「存入/取出」在旧版本中代表攒钱罐内部转账，不算新的净收入或支出；
+     * 余额校准使用 [BALANCE_CALIBRATION_CATEGORY]，因此仍会计入该结果。
+     */
     fun observeSavingsCents(): Flow<Long> = dao.observeSavingsCents()
 
     /** 今日支出，用于首页与通知栏。 */
@@ -59,6 +66,35 @@ class LedgerRepository(private val dao: LedgerDao, private val zoneId: ZoneId = 
         type: TxType = TxType.SAVING_IN,
     ) = add(type, amountCents, if (type == TxType.SAVING_IN) "manual_saving" else "saving_out", note, occurredAt)
 
+    /**
+     * 把账本推算余额校准到用户看到的实际存款。
+     *
+     * 差额会作为一条可追溯的攒钱流水写入，而不是直接覆盖历史记录。
+     */
+    suspend fun calibrateBalance(
+        actualCents: Long,
+        occurredAt: Long = System.currentTimeMillis(),
+    ) {
+        if (actualCents < 0) return
+        val currentCents = dao.savingsCentsNow()
+        val deltaCents = actualCents - currentCents
+        if (deltaCents == 0L) return
+
+        dao.insert(
+            TransactionEntity(
+                type = if (deltaCents > 0) TxType.SAVING_IN else TxType.SAVING_OUT,
+                amountCents = abs(deltaCents),
+                category = BALANCE_CALIBRATION_CATEGORY,
+                note = if (deltaCents > 0) {
+                    "按实际存款上调余额"
+                } else {
+                    "按实际存款下调余额"
+                },
+                occurredAt = occurredAt,
+            ),
+        )
+    }
+
     private suspend fun add(
         type: TxType,
         amountCents: Long,
@@ -82,6 +118,8 @@ class LedgerRepository(private val dao: LedgerDao, private val zoneId: ZoneId = 
 
     suspend fun clearAll() = dao.clearAll()
 }
+
+const val BALANCE_CALIBRATION_CATEGORY = "balance_calibration"
 
 private fun YearMonth.startMillis(zoneId: ZoneId): Long =
     atDay(1).atStartOfDay(zoneId).toInstant().toEpochMilli()

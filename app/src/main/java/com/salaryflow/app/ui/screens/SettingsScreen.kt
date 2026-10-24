@@ -55,13 +55,15 @@ import java.time.LocalTime
 @Composable
 fun SettingsScreen(
     viewModel: SalaryFlowViewModel,
+    onCalibrateBalance: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val savingsCents by viewModel.savingsCents.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
-        onResult = { },
+        onResult = { granted -> if (granted) viewModel.startTickerService() },
     )
 
     var showSalaryDialog by remember { mutableStateOf(false) }
@@ -156,33 +158,21 @@ fun SettingsScreen(
 
         item {
             SectionCard {
-                SectionHeader(title = "攒钱与结算", subtitle = "发薪日自动寄存")
-                Spacer(Modifier.height(10.dp))
-                Text(
-                    "攒钱比例",
-                    style = MaterialTheme.typography.titleMedium,
+                SectionHeader(
+                    title = "发薪与收入",
+                    subtitle = "完整工资自动进入收入和存款",
                 )
-                Spacer(Modifier.height(6.dp))
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(0, 10, 20, 30, 50, 100).forEach { rate ->
-                        PillSelect(
-                            text = "$rate%",
-                            selected = settings.savingsRatePercent == rate,
-                            onClick = { viewModel.updateSettings { it.copy(savingsRatePercent = rate) } },
-                        )
-                    }
-                }
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(8.dp))
                 SettingRow(
                     title = "发薪日",
-                    subtitle = "每月这一天把虚拟工资存进罐子",
+                    subtitle = "每月这一天自动记录完整工资收入",
                     value = "每月 ${settings.payday} 号",
                     onClick = { showPaydayDialog = true },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SwitchRow(
                     title = "发薪日自动结算",
-                    subtitle = "关掉后需要手动点「提前入账」",
+                    subtitle = "关闭后不会自动记录工资收入",
                     checked = settings.autoSettleEnabled,
                     onChange = { value -> viewModel.updateSettings { it.copy(autoSettleEnabled = value) } },
                 )
@@ -193,23 +183,58 @@ fun SettingsScreen(
                     checked = settings.autoIncomeEnabled,
                     onChange = { value -> viewModel.updateSettings { it.copy(autoIncomeEnabled = value) } },
                 )
-                Spacer(Modifier.height(10.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    OutlinedButton(
-                        onClick = viewModel::settleCurrentPeriodEarly,
-                        modifier = Modifier.weight(1f),
-                    ) { Text("提前入账") }
-                    OutlinedButton(
-                        onClick = viewModel::requestDemoCelebration,
-                        modifier = Modifier.weight(1f),
-                    ) { Text("试播动画") }
-                }
+                Spacer(Modifier.height(12.dp))
+                OutlinedButton(
+                    onClick = viewModel::requestDemoCelebration,
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text("试播工资到账动画") }
             }
         }
 
         item {
             SectionCard {
-                SectionHeader(title = "攒钱目标", subtitle = "给罐子一个小目标")
+                SectionHeader(
+                    title = "存款与校准",
+                    subtitle = "收入增加、支出减少，漏记时用手里的真实余额纠偏",
+                )
+                Spacer(Modifier.height(10.dp))
+                SettingRow(
+                    title = "当前存款",
+                    subtitle = "账本推算值",
+                    value = if (settings.hideAmounts) {
+                        "¥••••"
+                    } else {
+                        "¥${Money.centsToYuan(savingsCents)}"
+                    },
+                    onClick = onCalibrateBalance,
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                SwitchRow(
+                    title = "每月提醒校准",
+                    subtitle = "每月 1 日提醒输入一次实际余额",
+                    checked = settings.balanceReminderEnabled,
+                    onChange = viewModel::setBalanceReminderEnabled,
+                )
+                Spacer(Modifier.height(12.dp))
+                OutlinedButton(
+                    onClick = onCalibrateBalance,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("更新为实际存款余额")
+                }
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    "支付宝、微信零钱和个人网银没有面向普通开发者的余额读取接口。" +
+                        "薪流不会监听通知或使用无障碍抓屏，校准差额会作为一条可追溯流水保存在本机。",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
+        item {
+            SectionCard {
+                SectionHeader(title = "存款目标", subtitle = "给存款设一个里程碑")
                 Spacer(Modifier.height(6.dp))
                 SettingRow(
                     title = "目标名称",
@@ -244,8 +269,9 @@ fun SettingsScreen(
                                 ) != PackageManager.PERMISSION_GRANTED
                             if (needsPermission) {
                                 permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            } else {
+                                viewModel.startTickerService()
                             }
-                            viewModel.startTickerService()
                         }
                     },
                 )
@@ -330,22 +356,11 @@ fun SettingsScreen(
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    "灵感来自 Jack-Cherish/zhuanlema 的实时工资计算，以及鲨鱼记账的流水记账体验；" +
-                        "不联网、不上传、不做金融建议，只是让打工人看见自己每一秒的劳动。",
+                    "纯本地记账与实时工资工具。不联网、不上传、不读取其他应用，" +
+                        "也不提供金融建议。",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                Spacer(Modifier.height(10.dp))
-                OutlinedButton(
-                    onClick = {
-                        val intent = android.content.Intent(
-                            android.content.Intent.ACTION_VIEW,
-                            android.net.Uri.parse("https://github.com/Jack-Cherish/zhuanlema"),
-                        )
-                        runCatching { context.startActivity(intent) }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text("查看灵感来源项目") }
             }
         }
     }
@@ -445,7 +460,7 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showClearDialog = false },
             title = { Text("清空所有数据？") },
-            text = { Text("会删除全部流水、自动结算记录与攒钱罐余额，无法恢复。") },
+            text = { Text("会删除全部流水、自动结算记录与存款余额，无法恢复。") },
             confirmButton = {
                 TextButton(
                     onClick = {

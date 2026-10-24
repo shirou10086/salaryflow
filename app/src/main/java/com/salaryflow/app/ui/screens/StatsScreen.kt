@@ -64,7 +64,6 @@ fun StatsScreen(
     val month by viewModel.currentMonth.collectAsStateWithLifecycle()
     val expense by viewModel.monthExpenseCents.collectAsStateWithLifecycle()
     val income by viewModel.monthIncomeCents.collectAsStateWithLifecycle()
-    val saving by viewModel.monthSavingCents.collectAsStateWithLifecycle()
     val categories by viewModel.monthCategoryTotals.collectAsStateWithLifecycle()
     val recentMonths by viewModel.recentMonths.collectAsStateWithLifecycle()
     val savingsSeries by viewModel.savingsSeries.collectAsStateWithLifecycle()
@@ -96,14 +95,19 @@ fun StatsScreen(
                 ) {
                     StatTile("本月支出", expense, hidden, BrandColors.expense)
                     StatTile("本月收入", income, hidden, BrandColors.savings)
-                    StatTile("存入攒钱罐", saving, hidden, BrandColors.savings)
+                    StatTile(
+                        "本月结余",
+                        income - expense,
+                        hidden,
+                        if (income >= expense) BrandColors.savings else BrandColors.expense,
+                    )
                 }
                 Spacer(Modifier.height(14.dp))
                 Text(
                     buildString {
                         append("收支结余 ")
                         append(if (hidden) "¥•••" else "¥${Money.centsToYuan(income - expense)}")
-                        append("，攒钱罐余额 ")
+                        append("，当前存款 ")
                         append(if (hidden) "¥•••" else "¥${Money.centsToYuan(savings)}")
                     },
                     style = MaterialTheme.typography.bodyMedium,
@@ -174,7 +178,7 @@ fun StatsScreen(
         item {
             SectionCard {
                 SectionHeader(
-                    title = "攒钱罐走势",
+                    title = "存款走势",
                     subtitle = "${month.monthValue} 月每日余额",
                 )
                 Spacer(Modifier.height(16.dp))
@@ -184,16 +188,20 @@ fun StatsScreen(
 
         item {
             SectionCard {
-                SectionHeader(title = "发薪日结算记录", subtitle = "自动寄存的每一笔都在账本里")
+                SectionHeader(
+                    title = "存款余额",
+                    subtitle = "收入与支出自动推算，实际余额可随时校准",
+                )
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    buildString {
-                        append("攒钱比例 ")
-                        append("${settings.savingsRatePercent}%")
-                        append("，发薪日按固定月薪结算：每次 ")
-                        append(if (hidden) "¥•••" else "¥${Money.centsToYuan(Money.ratioToCents(settings.savingsRate, settings.monthlySalaryCents))}")
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
+                    if (hidden) "当前存款 ¥•••" else "当前存款 ¥${Money.centsToYuan(savings)}",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = BrandColors.savings,
+                )
+                Spacer(Modifier.height(5.dp))
+                Text(
+                    "发薪日会记入完整工资收入；每月校准只新增一条调整记录，不改写历史流水。",
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

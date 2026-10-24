@@ -72,15 +72,22 @@ interface LedgerDao {
     fun observeExpenseByCategory(from: Long, to: Long): Flow<List<CategoryTotal>>
 
     @Query(
-        "SELECT COALESCE(SUM(CASE WHEN type = 'SAVING_IN' THEN amountCents ELSE -amountCents END), 0) " +
-            "FROM tx WHERE type IN ('SAVING_IN', 'SAVING_OUT')",
+        "SELECT COALESCE(SUM(CASE " +
+            "WHEN type = 'INCOME' THEN amountCents " +
+            "WHEN type = 'EXPENSE' THEN -amountCents " +
+            "WHEN type = 'SAVING_IN' AND category = 'balance_calibration' THEN amountCents " +
+            "WHEN type = 'SAVING_OUT' AND category = 'balance_calibration' THEN -amountCents " +
+            "ELSE 0 END), 0) FROM tx",
     )
     fun observeSavingsCents(): Flow<Long>
 
     @Query("SELECT * FROM tx WHERE settlementKey = :key LIMIT 1")
     suspend fun findBySettlementKey(key: String): TransactionEntity?
 
-    @Query("SELECT MAX(periodEnd) FROM tx WHERE settlementKey LIKE 'saving:%'")
+    @Query(
+        "SELECT MAX(periodEnd) FROM tx " +
+            "WHERE settlementKey LIKE 'saving:%' OR settlementKey LIKE 'income:%'",
+    )
     suspend fun latestSettledPeriodEnd(): String?
 
     @Query(
@@ -97,8 +104,12 @@ interface LedgerDao {
     suspend fun expenseSumBetween(from: Long, to: Long): Long
 
     @Query(
-        "SELECT COALESCE(SUM(CASE WHEN type = 'SAVING_IN' THEN amountCents ELSE -amountCents END), 0) " +
-            "FROM tx WHERE type IN ('SAVING_IN', 'SAVING_OUT')",
+        "SELECT COALESCE(SUM(CASE " +
+            "WHEN type = 'INCOME' THEN amountCents " +
+            "WHEN type = 'EXPENSE' THEN -amountCents " +
+            "WHEN type = 'SAVING_IN' AND category = 'balance_calibration' THEN amountCents " +
+            "WHEN type = 'SAVING_OUT' AND category = 'balance_calibration' THEN -amountCents " +
+            "ELSE 0 END), 0) FROM tx",
     )
     suspend fun savingsCentsNow(): Long
 

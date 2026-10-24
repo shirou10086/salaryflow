@@ -32,7 +32,11 @@ data class AppSettings(
     val lunchPaid: Boolean = false,
     /** bit0 = 周一 … bit6 = 周日。 */
     val workDaysMask: Int = 0b0011111,
-    val savingsRatePercent: Int = 20,
+    /**
+     * 旧版本用于发薪日额外转存。新版本以实际存款校准和收支流水为准，
+     * 保留字段仅用于兼容旧配置与计薪配置序列化。
+     */
+    val savingsRatePercent: Int = 0,
     val hideAmounts: Boolean = false,
     /** 通知栏刷新间隔，秒。 */
     val tickSeconds: Int = 1,
@@ -48,6 +52,9 @@ data class AppSettings(
     val lastSettlementAmountCents: Long = 0L,
     val themeMode: String = "system",
     val onboarded: Boolean = false,
+    val balanceReminderEnabled: Boolean = true,
+    val lastBalanceReminderMonth: String? = null,
+    val lastBalanceCalibrationAt: Long? = null,
 ) {
     val savingsRate: Double get() = savingsRatePercent.coerceIn(0, 100) / 100.0
 
@@ -102,6 +109,10 @@ class SettingsStore(private val context: Context) {
     suspend fun setServiceEnabled(enabled: Boolean) = update {
         it.copy(serviceEnabled = enabled, counterPaused = if (enabled) it.counterPaused else false)
     }
+
+    suspend fun markBalanceReminderSent(month: String) = update {
+        it.copy(lastBalanceReminderMonth = month)
+    }
 }
 
 private object Keys {
@@ -129,6 +140,9 @@ private object Keys {
     val lastSettlementAmountCents = longPreferencesKey("last_settlement_amount_cents")
     val themeMode = stringPreferencesKey("theme_mode")
     val onboarded = booleanPreferencesKey("onboarded")
+    val balanceReminderEnabled = booleanPreferencesKey("balance_reminder_enabled")
+    val lastBalanceReminderMonth = stringPreferencesKey("last_balance_reminder_month")
+    val lastBalanceCalibrationAt = longPreferencesKey("last_balance_calibration_at")
 }
 
 private fun Preferences.toAppSettings(): AppSettings {
@@ -158,6 +172,9 @@ private fun Preferences.toAppSettings(): AppSettings {
         lastSettlementAmountCents = this[Keys.lastSettlementAmountCents] ?: 0L,
         themeMode = this[Keys.themeMode] ?: defaults.themeMode,
         onboarded = this[Keys.onboarded] ?: defaults.onboarded,
+        balanceReminderEnabled = this[Keys.balanceReminderEnabled] ?: defaults.balanceReminderEnabled,
+        lastBalanceReminderMonth = this[Keys.lastBalanceReminderMonth],
+        lastBalanceCalibrationAt = this[Keys.lastBalanceCalibrationAt],
     )
 }
 
@@ -186,4 +203,11 @@ private fun MutablePreferences.writeFrom(settings: AppSettings) {
     this[Keys.lastSettlementAmountCents] = settings.lastSettlementAmountCents
     this[Keys.themeMode] = settings.themeMode
     this[Keys.onboarded] = settings.onboarded
+    this[Keys.balanceReminderEnabled] = settings.balanceReminderEnabled
+    settings.lastBalanceReminderMonth
+        ?.let { this[Keys.lastBalanceReminderMonth] = it }
+        ?: remove(Keys.lastBalanceReminderMonth)
+    settings.lastBalanceCalibrationAt
+        ?.let { this[Keys.lastBalanceCalibrationAt] = it }
+        ?: remove(Keys.lastBalanceCalibrationAt)
 }

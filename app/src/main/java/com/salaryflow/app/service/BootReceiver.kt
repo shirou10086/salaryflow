@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.salaryflow.app.appContainer
+import com.salaryflow.app.work.BalanceReminderScheduler
 import com.salaryflow.app.work.PaydaySettlementScheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +20,7 @@ class BootReceiver : BroadcastReceiver() {
             return
         }
         PaydaySettlementScheduler.ensureScheduled(context)
+        BalanceReminderScheduler.ensureScheduled(context)
 
         val pendingResult = goAsync()
         CoroutineScope(SupervisorJob() + Dispatchers.Default).launch {

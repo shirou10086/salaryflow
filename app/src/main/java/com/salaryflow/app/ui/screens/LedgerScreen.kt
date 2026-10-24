@@ -66,7 +66,7 @@ fun LedgerScreen(
     val monthTransactions by viewModel.monthTransactions.collectAsStateWithLifecycle()
     val expense by viewModel.monthExpenseCents.collectAsStateWithLifecycle()
     val income by viewModel.monthIncomeCents.collectAsStateWithLifecycle()
-    val saving by viewModel.monthSavingCents.collectAsStateWithLifecycle()
+    val monthBalance = income - expense
     var filter by remember { mutableStateOf(LedgerFilter.ALL) }
     var pendingDelete by remember { mutableStateOf<TransactionEntity?>(null) }
 
@@ -105,7 +105,12 @@ fun LedgerScreen(
                 ) {
                     SummaryBlock("支出", expense, settings.hideAmounts, BrandColors.expense)
                     SummaryBlock("收入", income, settings.hideAmounts, BrandColors.savings)
-                    SummaryBlock("攒钱", saving, settings.hideAmounts, BrandColors.savings)
+                    SummaryBlock(
+                        "本月结余",
+                        monthBalance,
+                        settings.hideAmounts,
+                        if (monthBalance >= 0) BrandColors.savings else BrandColors.expense,
+                    )
                 }
             }
         }

@@ -1,9 +1,7 @@
 package com.salaryflow.app.data
 
-import com.salaryflow.app.core.Money
 import com.salaryflow.app.core.SalaryClock
 import com.salaryflow.app.core.SettlementPeriod
-import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -12,13 +10,13 @@ data class SettlementResult(
     val period: SettlementPeriod,
     val periodsSettled: Int,
     val incomeCents: Long,
-    val savingCents: Long,
+    val landedCents: Long,
 )
 
 /**
  * 发薪日结算：
- * - 到期周期按「月薪 × 攒钱比例」写入攒钱罐（固定金额，不随当月工作日数量波动）；
- * - 可选同时写入一条工资收入，便于账本统计；
+ * - 到期后按完整月薪写入一条工资收入，存款余额会随账本自动增加；
+ * - 不再使用任意攒钱比例，避免和真实记账产生双重计算；
  * - 通过 settlementKey 保证多次触发也只入账一次；
  * - 支持补结算漏掉的周期（最多 24 期）。
  */
@@ -48,10 +46,8 @@ class PaydaySettlementManager(
         if (due.isEmpty()) return null
 
         var totalIncome = 0L
-        var totalSaving = 0L
         due.forEach { period ->
             val occurredAt = period.end.atTime(9, 0).atZone(zoneId).toInstant().toEpochMilli()
-            val saving = Money.ratioToCents(settings.savingsRate, settings.monthlySalaryCents)
 
             if (settings.autoIncomeEnabled) {
                 insertOnce(
@@ -68,22 +64,6 @@ class PaydaySettlementManager(
                 )
                 totalIncome += settings.monthlySalaryCents
             }
-
-            if (saving > 0) {
-                insertOnce(
-                    TransactionEntity(
-                        type = TxType.SAVING_IN,
-                        amountCents = saving,
-                        category = "auto_saving",
-                        note = "自动寄存 · 工资的 ${settings.savingsRatePercent}%",
-                        occurredAt = occurredAt,
-                        settlementKey = "saving:${period.key}",
-                        periodEnd = period.key,
-                        auto = true,
-                    ),
-                )
-                totalSaving += saving
-            }
         }
 
         val last = due.last()
@@ -91,44 +71,15 @@ class PaydaySettlementManager(
             it.copy(
                 lastSettledPeriodEnd = last.key,
                 pendingCelebrationKey = last.key,
-                lastSettlementAmountCents = totalSaving,
+                lastSettlementAmountCents = settings.monthlySalaryCents,
             )
         }
-        return SettlementResult(last, due.size, totalIncome, totalSaving)
-    }
-
-    /**
-     * 「提前入账」：把当前周期已经虚拟累积的部分按攒钱比例存进罐子。
-     * 只用于用户主动操作，不影响发薪日自动结算的去重。
-     */
-    suspend fun settleCurrentPeriodEarly(now: LocalDateTime = LocalDateTime.now(zoneId)): SettlementResult? {
-        val settings = settingsStore.current()
-        val clock = SalaryClock(settings.toSalaryConfig())
-        val period = clock.accruingPeriod(now)
-        val accrued = clock.accruedCentsIn(period, now)
-        val saving = Money.ratioToCents(settings.savingsRate, accrued.toLong())
-        if (saving <= 0) return null
-
-        val occurredAt = now.atZone(zoneId).toInstant().toEpochMilli()
-        insertOnce(
-            TransactionEntity(
-                type = TxType.SAVING_IN,
-                amountCents = saving,
-                category = "auto_saving",
-                note = "提前入账 · ${period.label} 已累积工资的 ${settings.savingsRatePercent}%",
-                occurredAt = occurredAt,
-                settlementKey = "manual:${period.key}:$occurredAt",
-                periodEnd = period.key,
-                auto = true,
-            ),
+        return SettlementResult(
+            period = last,
+            periodsSettled = due.size,
+            incomeCents = totalIncome,
+            landedCents = settings.monthlySalaryCents,
         )
-        settingsStore.update {
-            it.copy(
-                pendingCelebrationKey = "manual:$occurredAt",
-                lastSettlementAmountCents = saving,
-            )
-        }
-        return SettlementResult(period, 1, 0L, saving)
     }
 
     private suspend fun insertOnce(transaction: TransactionEntity) {

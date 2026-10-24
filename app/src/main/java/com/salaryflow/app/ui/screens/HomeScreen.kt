@@ -90,12 +90,14 @@ fun HomeScreen(
     onOpenLedger: () -> Unit,
     onQuickAdd: (TxType) -> Unit,
     onToggleService: () -> Unit,
+    onCalibrateBalance: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val savingsCents by viewModel.savingsCents.collectAsStateWithLifecycle()
     val todayExpenseCents by viewModel.todayExpenseCents.collectAsStateWithLifecycle()
     val monthExpenseCents by viewModel.monthExpenseCents.collectAsStateWithLifecycle()
+    val monthIncomeCents by viewModel.monthIncomeCents.collectAsStateWithLifecycle()
     val transactions by viewModel.transactions.collectAsStateWithLifecycle()
     val now by viewModel.nowTicker.collectAsStateWithLifecycle(initialValue = LocalDateTime.now())
 
@@ -119,7 +121,6 @@ fun HomeScreen(
     } else {
         clock.accruedCentsIn(displayPeriod, now)
     }
-    val autoSettlementCents = Money.ratioToCents(settings.savingsRate, settings.monthlySalaryCents)
     val goalProgress = if (settings.goalAmountCents <= 0) {
         0f
     } else {
@@ -167,29 +168,29 @@ fun HomeScreen(
         }
 
         item {
+            FundsSummaryCard(
+                savingsCents = savingsCents,
+                todayExpenseCents = todayExpenseCents,
+                monthExpenseCents = monthExpenseCents,
+                monthIncomeCents = monthIncomeCents,
+                goalName = settings.goalName,
+                goalAmountCents = settings.goalAmountCents,
+                goalProgress = goalProgress,
+                hidden = settings.hideAmounts,
+                onCalibrate = onCalibrateBalance,
+            )
+        }
+
+        item {
             IncomeArrivalCard(
                 periodLabel = displayPeriod.label,
                 paydayLabel = "${displayPeriod.end.monthValue}月${displayPeriod.end.dayOfMonth}日",
                 expectedCents = settings.monthlySalaryCents,
                 accruedCents = displayAccrued,
-                settlementCents = autoSettlementCents,
-                savingsRatePercent = settings.savingsRatePercent,
                 daysToPayday = daysToPayday,
                 landed = settledToday,
                 hidden = settings.hideAmounts,
-                onSettleEarly = viewModel::settleCurrentPeriodEarly,
                 onDemoCelebration = viewModel::requestDemoCelebration,
-            )
-        }
-
-        item {
-            FundsSummaryCard(
-                savingsCents = savingsCents,
-                todayExpenseCents = todayExpenseCents,
-                monthExpenseCents = monthExpenseCents,
-                goalName = settings.goalName,
-                goalProgress = goalProgress,
-                hidden = settings.hideAmounts,
             )
         }
 
@@ -507,35 +508,26 @@ private fun QuickEntryRow(
     onExpense: () -> Unit,
     onIncome: () -> Unit,
 ) {
-    SectionCard(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            QuickEntryButton(
-                modifier = Modifier.weight(1f),
-                icon = Icons.AutoMirrored.Rounded.TrendingDown,
-                title = "记支出",
-                subtitle = "花掉一笔",
-                accent = BrandColors.expense,
-                onClick = onExpense,
-            )
-            Box(
-                Modifier
-                    .padding(horizontal = 12.dp)
-                    .width(1.dp)
-                    .height(40.dp)
-                    .background(MaterialTheme.colorScheme.outlineVariant),
-            )
-            QuickEntryButton(
-                modifier = Modifier.weight(1f),
-                icon = Icons.AutoMirrored.Rounded.TrendingUp,
-                title = "记收入",
-                subtitle = "工资或奖金",
-                accent = BrandColors.savings,
-                onClick = onIncome,
-            )
-        }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        QuickEntryButton(
+            modifier = Modifier.weight(1f),
+            icon = Icons.AutoMirrored.Rounded.TrendingDown,
+            title = "记支出",
+            subtitle = "−",
+            accent = BrandColors.expense,
+            onClick = onExpense,
+        )
+        QuickEntryButton(
+            modifier = Modifier.weight(1f),
+            icon = Icons.AutoMirrored.Rounded.TrendingUp,
+            title = "记收入",
+            subtitle = "+",
+            accent = BrandColors.savings,
+            onClick = onIncome,
+        )
     }
 }
 
@@ -548,30 +540,43 @@ private fun QuickEntryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    Surface(
         modifier = modifier
-            .clip(RoundedCornerShape(14.dp))
-            .clickable(onClick = onClick)
-            .padding(vertical = 2.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .height(84.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(20.dp),
+        color = accent,
+        contentColor = Color.White,
     ) {
-        Box(
+        Row(
             modifier = Modifier
-                .size(36.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(accent.copy(alpha = 0.1f)),
-            contentAlignment = Alignment.Center,
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(icon, contentDescription = null, tint = accent, modifier = Modifier.size(19.dp))
-        }
-        Spacer(Modifier.width(10.dp))
-        Column {
-            Text(title, style = MaterialTheme.typography.titleMedium, color = accent)
-            Text(
-                subtitle,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(RoundedCornerShape(13.dp))
+                    .background(Color.White.copy(alpha = 0.14f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+            }
+            Spacer(Modifier.width(11.dp))
+            Column {
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                )
+                Text(
+                    subtitle,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.White.copy(alpha = 0.72f),
+                )
+            }
         }
     }
 }
@@ -581,34 +586,87 @@ private fun FundsSummaryCard(
     savingsCents: Long,
     todayExpenseCents: Long,
     monthExpenseCents: Long,
+    monthIncomeCents: Long,
     goalName: String,
+    goalAmountCents: Long,
     goalProgress: Float,
     hidden: Boolean,
+    onCalibrate: () -> Unit,
 ) {
     SectionCard {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top,
         ) {
-            SummaryMetric(
-                label = "已攒钱",
-                value = if (hidden) "¥••••" else "¥${Money.centsToYuan(savingsCents)}",
-                color = BrandColors.savings,
-            )
+            Column {
+                Text(
+                    "当前存款",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(5.dp))
+                AnimatedMoneyText(
+                    cents = savingsCents.toDouble(),
+                    hidden = hidden,
+                    style = MaterialTheme.typography.displayMedium,
+                    color = BrandColors.savings,
+                    animated = false,
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "由实际余额校准，收入和支出继续自动推算",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            TextButton(onClick = onCalibrate) {
+                Text("更新余额")
+            }
+        }
+
+        Spacer(Modifier.height(14.dp))
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(MaterialTheme.colorScheme.outlineVariant),
+        )
+        Spacer(Modifier.height(14.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
             SummaryMetric(
                 label = "今日支出",
                 value = if (hidden) "¥••••" else "¥${Money.centsToYuan(todayExpenseCents)}",
                 color = BrandColors.expense,
+            )
+            SummaryMetric(
+                label = "本月收入",
+                value = if (hidden) "¥••••" else "¥${Money.compactYuan(monthIncomeCents)}",
+                color = BrandColors.savings,
                 alignEnd = true,
             )
             SummaryMetric(
-                label = "本月支出",
-                value = if (hidden) "¥••••" else "¥${Money.compactYuan(monthExpenseCents)}",
-                color = MaterialTheme.colorScheme.onSurface,
+                label = "本月结余",
+                value = if (hidden) {
+                    "¥••••"
+                } else {
+                    val balance = monthIncomeCents - monthExpenseCents
+                    (if (balance >= 0) "+" else "−") + "¥${Money.compactYuan(kotlin.math.abs(balance))}"
+                },
+                color = if (monthIncomeCents >= monthExpenseCents) {
+                    MaterialTheme.colorScheme.onSurface
+                } else {
+                    BrandColors.expense
+                },
                 alignEnd = true,
             )
         }
-        Spacer(Modifier.height(16.dp))
+
+        Spacer(Modifier.height(18.dp))
         LinearProgressIndicator(
             progress = { goalProgress },
             modifier = Modifier
@@ -629,7 +687,12 @@ private fun FundsSummaryCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                if (hidden) "目标进度已隐藏" else "目标进度 ${(goalProgress * 100).toInt()}%",
+                if (hidden) {
+                    "目标进度已隐藏"
+                } else {
+                    "目标进度 ${(goalProgress * 100).toInt()}% · " +
+                        "¥${Money.compactYuan(savingsCents)} / ¥${Money.compactYuan(goalAmountCents)}"
+                },
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -661,12 +724,9 @@ private fun IncomeArrivalCard(
     paydayLabel: String,
     expectedCents: Long,
     accruedCents: Double,
-    settlementCents: Long,
-    savingsRatePercent: Int,
     daysToPayday: Long,
     landed: Boolean,
     hidden: Boolean,
-    onSettleEarly: () -> Unit,
     onDemoCelebration: () -> Unit,
 ) {
     val targetProgress = if (landed) {
@@ -696,12 +756,9 @@ private fun IncomeArrivalCard(
             paydayLabel = paydayLabel,
             expectedCents = expectedCents,
             accruedCents = accruedCents,
-            settlementCents = settlementCents,
-            savingsRatePercent = savingsRatePercent,
             daysToPayday = daysToPayday,
             hidden = hidden,
             railProgress = animatedProgress,
-            onSettleEarly = onSettleEarly,
             onDemoCelebration = onDemoCelebration,
         )
     }
@@ -714,12 +771,9 @@ private fun IncomeArrivalSurface(
     paydayLabel: String,
     expectedCents: Long,
     accruedCents: Double,
-    settlementCents: Long,
-    savingsRatePercent: Int,
     daysToPayday: Long,
     hidden: Boolean,
     railProgress: Float,
-    onSettleEarly: () -> Unit,
     onDemoCelebration: () -> Unit,
 ) {
     val shape = RoundedCornerShape(20.dp)
@@ -744,12 +798,9 @@ private fun IncomeArrivalSurface(
                 paydayLabel = paydayLabel,
                 expectedCents = expectedCents,
                 accruedCents = accruedCents,
-                settlementCents = settlementCents,
-                savingsRatePercent = savingsRatePercent,
                 daysToPayday = daysToPayday,
                 hidden = hidden,
                 railProgress = railProgress,
-                onSettleEarly = onSettleEarly,
                 onDemoCelebration = onDemoCelebration,
             )
         }
@@ -773,12 +824,9 @@ private fun IncomeArrivalSurface(
                 paydayLabel = paydayLabel,
                 expectedCents = expectedCents,
                 accruedCents = accruedCents,
-                settlementCents = settlementCents,
-                savingsRatePercent = savingsRatePercent,
                 daysToPayday = daysToPayday,
                 hidden = hidden,
                 railProgress = railProgress,
-                onSettleEarly = onSettleEarly,
                 onDemoCelebration = onDemoCelebration,
             )
         }
@@ -792,12 +840,9 @@ private fun IncomeArrivalBody(
     paydayLabel: String,
     expectedCents: Long,
     accruedCents: Double,
-    settlementCents: Long,
-    savingsRatePercent: Int,
     daysToPayday: Long,
     hidden: Boolean,
     railProgress: Float,
-    onSettleEarly: () -> Unit,
     onDemoCelebration: () -> Unit,
 ) {
     val accent = if (landed) BrandColors.savings else BrandColors.income
@@ -816,9 +861,9 @@ private fun IncomeArrivalBody(
                 Spacer(Modifier.height(2.dp))
                 Text(
                     if (landed) {
-                        "已自动记入账本，并寄存到攒钱罐"
+                        "已记入工资收入，并计入当前存款"
                     } else {
-                        "发薪日按 $savingsRatePercent% 自动寄存"
+                        "发薪日自动记入收入，存款同步增加"
                     },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -897,8 +942,8 @@ private fun IncomeArrivalBody(
                 color = accent,
             )
             IncomeMetric(
-                label = "到账后自动存",
-                value = if (hidden) "¥••••" else "¥${Money.centsToYuan(settlementCents)}",
+                label = "到账金额",
+                value = if (hidden) "¥••••" else "¥${Money.centsToYuan(expectedCents)}",
                 color = BrandColors.savings,
                 alignEnd = true,
             )
@@ -918,15 +963,17 @@ private fun IncomeArrivalBody(
                 )
                 Spacer(Modifier.width(7.dp))
                 Text(
-                    "已按 $savingsRatePercent% 自动寄存",
+                    "完整工资已计入存款与账本",
                     style = MaterialTheme.typography.labelMedium,
                     color = BrandColors.savings,
                     modifier = Modifier.weight(1f),
                 )
             } else {
-                TextButton(onClick = onSettleEarly) {
-                    Text("提前入账本期")
-                }
+                Text(
+                    "到账后自动转为实线",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
                 Spacer(Modifier.weight(1f))
             }
             Text(

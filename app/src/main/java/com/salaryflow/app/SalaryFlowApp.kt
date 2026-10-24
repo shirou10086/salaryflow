@@ -10,6 +10,7 @@ import com.salaryflow.app.data.LedgerRepository
 import com.salaryflow.app.data.PaydaySettlementManager
 import com.salaryflow.app.data.SalaryFlowDatabase
 import com.salaryflow.app.data.SettingsStore
+import com.salaryflow.app.work.BalanceReminderScheduler
 import com.salaryflow.app.work.PaydaySettlementScheduler
 
 class AppContainer(context: Context) {
@@ -32,6 +33,7 @@ class SalaryFlowApp : Application() {
         container = AppContainer(this)
         createNotificationChannels()
         PaydaySettlementScheduler.ensureScheduled(this)
+        BalanceReminderScheduler.ensureScheduled(this)
     }
 
     private fun createNotificationChannels() {
@@ -55,15 +57,26 @@ class SalaryFlowApp : Application() {
             description = getString(R.string.notification_channel_settlement_desc)
         }
 
+        val balanceChannel = NotificationChannel(
+            BALANCE_REMINDER_CHANNEL_ID,
+            getString(R.string.notification_channel_balance),
+            NotificationManager.IMPORTANCE_DEFAULT,
+        ).apply {
+            description = getString(R.string.notification_channel_balance_desc)
+        }
+
         manager.createNotificationChannel(liveChannel)
         manager.createNotificationChannel(settlementChannel)
+        manager.createNotificationChannel(balanceChannel)
     }
 
     companion object {
         const val LIVE_CHANNEL_ID = "salary_flow_live"
         const val SETTLEMENT_CHANNEL_ID = "salary_flow_settlement"
+        const val BALANCE_REMINDER_CHANNEL_ID = "salary_flow_balance_reminder"
         const val LIVE_NOTIFICATION_ID = 1001
         const val SETTLEMENT_NOTIFICATION_ID = 1002
+        const val BALANCE_REMINDER_NOTIFICATION_ID = 1003
     }
 }
 
