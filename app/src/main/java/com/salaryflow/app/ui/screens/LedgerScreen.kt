@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.automirrored.rounded.ReceiptLong
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.salaryflow.app.core.Money
@@ -86,7 +86,7 @@ fun LedgerScreen(
 
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 120.dp),
+        contentPadding = PaddingValues(start = 18.dp, end = 18.dp, top = 10.dp, bottom = 120.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         item {
@@ -105,7 +105,7 @@ fun LedgerScreen(
                 ) {
                     SummaryBlock("支出", expense, settings.hideAmounts, BrandColors.expense)
                     SummaryBlock("收入", income, settings.hideAmounts, BrandColors.savings)
-                    SummaryBlock("攒钱", saving, settings.hideAmounts, BrandColors.income)
+                    SummaryBlock("攒钱", saving, settings.hideAmounts, BrandColors.savings)
                 }
             }
         }
@@ -124,7 +124,7 @@ fun LedgerScreen(
         if (grouped.isEmpty()) {
             item {
                 EmptyState(
-                    emoji = "🧾",
+                    icon = Icons.AutoMirrored.Rounded.ReceiptLong,
                     title = "这个月还没有记录",
                     subtitle = "点右下角的加号，记下第一笔。",
                 )
@@ -237,8 +237,8 @@ private fun SummaryBlock(
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            if (hidden) "¥•••" else "¥${Money.centsToYuan(cents)}",
-            style = MaterialTheme.typography.titleLarge.copy(fontFamily = FontFamily.Monospace),
+            if (hidden) "¥•••" else "¥${Money.compactYuan(cents)}",
+            style = MaterialTheme.typography.titleLarge,
             color = color,
         )
     }

@@ -203,8 +203,8 @@ class SalaryTickerService : Service() {
         }
 
         val payday = when {
-            snapshot.settledToday -> "今日已结算 ✅"
-            snapshot.daysToPayday <= 0L -> "今天是发薪日 🧧"
+            snapshot.settledToday -> "本期工资已到账"
+            snapshot.daysToPayday <= 0L -> "今天是发薪日"
             else -> "距发薪日 ${snapshot.daysToPayday} 天"
         }
 

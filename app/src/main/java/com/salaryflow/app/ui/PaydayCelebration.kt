@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
@@ -354,7 +353,7 @@ fun PaydayCelebrationOverlay(
         ) {
             Spacer(Modifier.height(28.dp))
             Text(
-                "发薪日到账 🧧",
+                "工资已经到账",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White,
             )
@@ -368,7 +367,6 @@ fun PaydayCelebrationOverlay(
             Text(
                 amountText,
                 style = MaterialTheme.typography.displayLarge.copy(
-                    fontFamily = FontFamily.Monospace,
                     fontSize = amountSize,
                 ),
                 color = Color(0xFFFFE08A),

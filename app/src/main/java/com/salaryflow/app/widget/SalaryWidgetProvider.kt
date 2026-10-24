@@ -76,11 +76,11 @@ class SalaryWidgetProvider : AppWidgetProvider() {
 
         private fun statusText(settings: AppSettings, snapshot: SalarySnapshot): String = when {
             settings.counterPaused -> "已暂停 ⏸"
-            snapshot.status == WorkStatus.REST_DAY -> "休息日 🌴"
-            snapshot.status == WorkStatus.BEFORE_WORK -> "还没开工 ☕"
-            snapshot.status == WorkStatus.FINISHED -> "已下班 🎉"
-            snapshot.status == WorkStatus.UNPAID_BREAK -> "午休中 🍚"
-            else -> "搬砖中 💪"
+            snapshot.status == WorkStatus.REST_DAY -> "休息日"
+            snapshot.status == WorkStatus.BEFORE_WORK -> "还没开工"
+            snapshot.status == WorkStatus.FINISHED -> "已下班"
+            snapshot.status == WorkStatus.UNPAID_BREAK -> "午休中"
+            else -> "工作中"
         }
     }
 }

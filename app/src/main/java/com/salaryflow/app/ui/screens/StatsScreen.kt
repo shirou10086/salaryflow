@@ -31,28 +31,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.salaryflow.app.core.Money
 import com.salaryflow.app.data.Categories
 import com.salaryflow.app.ui.MonthPoint
 import com.salaryflow.app.ui.SalaryFlowViewModel
+import com.salaryflow.app.ui.components.CategoryBadge
 import com.salaryflow.app.ui.components.SectionCard
 import com.salaryflow.app.ui.components.SectionHeader
 import com.salaryflow.app.ui.theme.BrandColors
 import java.time.YearMonth
 
 private val donutPalette = listOf(
-    Color(0xFF0F7B63),
-    Color(0xFFE4572E),
-    Color(0xFFF2B33D),
-    Color(0xFF3D7EA6),
-    Color(0xFF8E6BBF),
-    Color(0xFF2FA8A0),
-    Color(0xFFC4646B),
-    Color(0xFF7A8B45),
-    Color(0xFF8A8A85),
+    Color(0xFF26775F),
+    Color(0xFFC5573F),
+    Color(0xFFB58437),
+    Color(0xFF567B8F),
+    Color(0xFF7E8870),
+    Color(0xFF9A6652),
+    Color(0xFF4D8C80),
+    Color(0xFF8B7C68),
+    Color(0xFF74766F),
 )
 
 @Composable
@@ -74,7 +74,7 @@ fun StatsScreen(
 
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 120.dp),
+        contentPadding = PaddingValues(start = 18.dp, end = 18.dp, top = 10.dp, bottom = 120.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         item {
@@ -96,7 +96,7 @@ fun StatsScreen(
                 ) {
                     StatTile("本月支出", expense, hidden, BrandColors.expense)
                     StatTile("本月收入", income, hidden, BrandColors.savings)
-                    StatTile("存入攒钱罐", saving, hidden, BrandColors.income)
+                    StatTile("存入攒钱罐", saving, hidden, BrandColors.savings)
                 }
                 Spacer(Modifier.height(14.dp))
                 Text(
@@ -147,21 +147,20 @@ fun StatsScreen(
                             categories.take(5).forEachIndexed { index, total ->
                                 val category = Categories.find(total.category)
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Box(
-                                        Modifier
-                                            .size(10.dp)
-                                            .clip(CircleShape)
-                                            .background(donutPalette[index % donutPalette.size]),
+                                    CategoryBadge(
+                                        categoryName = category.name,
+                                        size = 26,
+                                        contentColor = donutPalette[index % donutPalette.size],
                                     )
                                     Spacer(Modifier.width(8.dp))
                                     Text(
-                                        "${category.emoji} ${category.name}",
+                                        category.name,
                                         style = MaterialTheme.typography.labelLarge,
                                         modifier = Modifier.weight(1f),
                                     )
                                     Text(
                                         if (hidden) "¥•••" else "¥${Money.compactYuan(total.totalCents)}",
-                                        style = MaterialTheme.typography.labelMedium.copy(fontFamily = FontFamily.Monospace),
+                                        style = MaterialTheme.typography.labelMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 }
@@ -218,7 +217,7 @@ private fun StatTile(
         Spacer(Modifier.height(4.dp))
         Text(
             if (hidden) "¥•••" else "¥${Money.compactYuan(cents)}",
-            style = MaterialTheme.typography.titleLarge.copy(fontFamily = FontFamily.Monospace),
+            style = MaterialTheme.typography.titleLarge,
             color = color,
         )
     }

@@ -42,7 +42,7 @@ object SettlementNotifier {
 
         val notification = NotificationCompat.Builder(context, SalaryFlowApp.SETTLEMENT_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("发薪日到账 💰")
+            .setContentTitle("工资已经到账")
             .setContentText(text)
             .setStyle(
                 NotificationCompat.BigTextStyle()

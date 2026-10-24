@@ -3,6 +3,7 @@ package com.salaryflow.app.ui.components
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,8 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -52,10 +54,10 @@ fun SectionCard(
         modifier = modifier
             .fillMaxWidth()
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
-        shape = RoundedCornerShape(22.dp),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Column(Modifier.padding(18.dp)) { content() }
     }
@@ -74,7 +76,7 @@ fun SectionHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Column {
-            Text(title, style = MaterialTheme.typography.titleMedium)
+            Text(title, style = MaterialTheme.typography.titleLarge)
             if (subtitle != null) {
                 Text(
                     subtitle,
@@ -96,15 +98,15 @@ fun StatusChip(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(50),
+        shape = RoundedCornerShape(10.dp),
         color = containerColor,
         contentColor = contentColor,
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
         )
     }
 }
@@ -117,12 +119,10 @@ fun AnimatedMoneyText(
     style: TextStyle = MaterialTheme.typography.displayLarge,
     color: Color = Color.Unspecified,
     prefix: String = "¥",
-    digits: Int = 2,
     animated: Boolean = true,
 ) {
-    val target = cents.toFloat()
     val animatedValue by animateFloatAsState(
-        targetValue = target,
+        targetValue = cents.toFloat(),
         animationSpec = tween(durationMillis = 950, easing = LinearEasing),
         label = "money",
     )
@@ -155,11 +155,7 @@ fun StatBlock(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(4.dp))
-        Text(
-            value,
-            style = MaterialTheme.typography.titleLarge.copy(fontFamily = FontFamily.Monospace),
-            color = valueColor,
-        )
+        Text(value, style = MaterialTheme.typography.titleLarge, color = valueColor)
         if (sub != null) {
             Text(
                 sub,
@@ -171,36 +167,54 @@ fun StatBlock(
 }
 
 @Composable
-fun EmojiBadge(
-    emoji: String,
+fun CategoryBadge(
+    categoryName: String,
     modifier: Modifier = Modifier,
     size: Int = 42,
-    background: Color = MaterialTheme.colorScheme.surfaceVariant,
+    contentColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     Box(
         modifier = modifier
             .size(size.dp)
-            .clip(CircleShape)
-            .background(background),
+            .clip(RoundedCornerShape(size.dp / 3))
+            .background(contentColor.copy(alpha = 0.11f)),
         contentAlignment = Alignment.Center,
     ) {
-        Text(emoji, style = MaterialTheme.typography.titleMedium)
+        Text(
+            categoryName.take(1),
+            style = MaterialTheme.typography.titleMedium,
+            color = contentColor,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }
 
 @Composable
 fun EmptyState(
-    emoji: String,
+    icon: ImageVector,
     title: String,
     subtitle: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(vertical = 36.dp),
+        modifier = modifier.fillMaxWidth().padding(vertical = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(emoji, style = MaterialTheme.typography.displayMedium)
-        Spacer(Modifier.height(12.dp))
+        Surface(
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            modifier = Modifier.size(54.dp),
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+        }
+        Spacer(Modifier.height(14.dp))
         Text(title, style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(4.dp))
         Text(
@@ -218,27 +232,29 @@ fun PillSelect(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    selectedContainerColor: Color = MaterialTheme.colorScheme.primary,
+    selectedContentColor: Color = MaterialTheme.colorScheme.onPrimary,
 ) {
     Surface(
         modifier = modifier
-            .clip(RoundedCornerShape(50))
+            .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
             .then(
                 if (selected) Modifier
                 else Modifier.border(
                     1.dp,
                     MaterialTheme.colorScheme.outlineVariant,
-                    RoundedCornerShape(50),
+                    RoundedCornerShape(12.dp),
                 ),
             ),
-        shape = RoundedCornerShape(50),
-        color = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
-        contentColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+        shape = RoundedCornerShape(12.dp),
+        color = if (selected) selectedContainerColor else Color.Transparent,
+        contentColor = if (selected) selectedContentColor else MaterialTheme.colorScheme.onSurfaceVariant,
     ) {
         Text(
             text,
             style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
         )
     }
 }
@@ -263,7 +279,7 @@ fun TransactionRow(
 ) {
     val category = Categories.find(transaction.category)
     val (amountColor, sign) = when (transaction.type) {
-        TxType.EXPENSE -> BrandColors.expense to "-"
+        TxType.EXPENSE -> BrandColors.expense to "−"
         TxType.INCOME -> BrandColors.savings to "+"
         TxType.SAVING_IN -> BrandColors.savings to "→"
         TxType.SAVING_OUT -> MaterialTheme.colorScheme.onSurfaceVariant to "←"
@@ -272,10 +288,10 @@ fun TransactionRow(
         modifier = modifier
             .fillMaxWidth()
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
-            .padding(vertical = 10.dp),
+            .padding(vertical = 11.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        EmojiBadge(category.emoji)
+        CategoryBadge(category.name, contentColor = amountColor)
         Spacer(Modifier.size(12.dp))
         Column(Modifier.weight(1f)) {
             Text(category.name, style = MaterialTheme.typography.titleMedium)
@@ -294,8 +310,9 @@ fun TransactionRow(
         }
         Text(
             if (hidden) "$sign¥••••" else "$sign¥${Money.centsToYuan(transaction.amountCents)}",
-            style = MaterialTheme.typography.titleMedium.copy(fontFamily = FontFamily.Monospace),
+            style = MaterialTheme.typography.titleLarge.copy(fontSize = MaterialTheme.typography.titleMedium.fontSize),
             color = amountColor,
+            maxLines = 1,
         )
         if (trailing != null) {
             Spacer(Modifier.size(6.dp))

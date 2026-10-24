@@ -76,7 +76,6 @@ data class SettlementPeriod(
 
 data class DayMilestone(
     val time: LocalTime,
-    val emoji: String,
     val label: String,
 )
 
@@ -156,15 +155,15 @@ class SalaryClock(val config: SalaryConfig) {
         val schedule = config.schedule
         val list = mutableListOf<DayMilestone>()
         if (schedule.lunchEnabled) {
-            list += DayMilestone(schedule.lunchStart, "🍚", "午饭")
+            list += DayMilestone(schedule.lunchStart, "午饭")
         }
         val five = LocalTime.of(17, 0)
         if (five > schedule.startTime && five < schedule.endTime &&
             Duration.between(five, schedule.endTime).toMinutes() >= 30
         ) {
-            list += DayMilestone(five, "🕔", "17点")
+            list += DayMilestone(five, "17点")
         }
-        list += DayMilestone(schedule.endTime, "🏃", "下班")
+        list += DayMilestone(schedule.endTime, "下班")
         return list
     }
 
