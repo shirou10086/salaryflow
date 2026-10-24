@@ -94,10 +94,10 @@ fun QuickAddSheet(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Column {
+                Column(Modifier.weight(1f)) {
                     Text(
                         stringResource(sheetTitleRes),
                         style = MaterialTheme.typography.headlineSmall,
@@ -108,16 +108,22 @@ fun QuickAddSheet(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = accent.copy(alpha = 0.1f),
+                Button(
+                    onClick = {
+                        onSubmit(type, amountCents, categoryKey, note)
+                        onDismiss()
+                    },
+                    enabled = valid,
+                    modifier = Modifier.height(44.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = accent,
+                        contentColor = Color.White,
+                    ),
                 ) {
                     Text(
-                        stringResource(typeShortLabelRes(type)),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = accent,
+                        stringResource(R.string.quick_add_submit),
                         fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                     )
                 }
             }
@@ -188,33 +194,6 @@ fun QuickAddSheet(
                 shape = RoundedCornerShape(14.dp),
                 modifier = Modifier.fillMaxWidth(),
             )
-
-            Spacer(Modifier.height(22.dp))
-            Button(
-                onClick = {
-                    onSubmit(type, amountCents, categoryKey, note)
-                    onDismiss()
-                },
-                enabled = valid,
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = accent,
-                    contentColor = Color.White,
-                ),
-            ) {
-                Text(
-                    if (valid) {
-                        stringResource(
-                            R.string.quick_add_save_amount,
-                            Money.centsToYuan(amountCents),
-                        )
-                    } else {
-                        stringResource(R.string.quick_add_enter_amount)
-                    },
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
         }
     }
 }

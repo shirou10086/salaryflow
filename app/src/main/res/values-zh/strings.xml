@@ -23,16 +23,13 @@
     <string name="today">今天</string>
 
     <string name="notification_channel_live">工资通知</string>
-    <string name="notification_channel_live_desc">显示今日收入与总存款</string>
+    <string name="notification_channel_live_desc">实时显示今日已挣，并支持快速记收入和支出</string>
     <string name="notification_channel_settlement">发薪日结算</string>
     <string name="notification_channel_settlement_desc">发薪日工资到账提醒</string>
     <string name="notification_channel_balance">存款更新提醒</string>
     <string name="notification_channel_balance_desc">每月提醒核对当前存款</string>
 
-    <string name="notification_today_income">今日收入 %1$s</string>
-    <string name="notification_total_savings">总存款 %1$s</string>
-    <string name="notification_subtext_hidden">薪流 · 金额已隐藏</string>
-    <string name="notification_subtext">薪流</string>
+    <string name="notification_today_income">今天已挣 %1$s</string>
     <string name="notification_action_expense">记支出</string>
     <string name="notification_action_income">记收入</string>
 
@@ -136,7 +133,7 @@
     <string name="onboarding_schedule_error">下班时间需要晚于上班时间。</string>
     <string name="onboarding_savings_hint">可留空，之后也可以随时更新。</string>
     <string name="onboarding_finish">完成设置</string>
-    <string name="onboarding_finish_hint">完成后会开启通知，显示今日收入和总存款。</string>
+    <string name="onboarding_finish_hint">完成后会开启通知，实时显示今日已挣，并支持快速记账。</string>
     <string name="onboarding_set_work_start">设置上班时间</string>
     <string name="onboarding_set_work_end">设置下班时间</string>
 
@@ -174,9 +171,9 @@
     <string name="settings_goal_name">目标名称</string>
     <string name="settings_goal_amount">目标金额</string>
     <string name="settings_notification_section">通知栏</string>
-    <string name="settings_notification_section_subtitle">显示今日收入与总存款</string>
+    <string name="settings_notification_section_subtitle">实时显示今日已挣</string>
     <string name="settings_show_notification">显示工资通知</string>
-    <string name="settings_show_notification_hint">显示今日收入和总存款</string>
+    <string name="settings_show_notification_hint">实时显示今日已挣，并提供记收入和支出快捷按钮</string>
     <string name="settings_hide_amounts">隐藏金额</string>
     <string name="settings_hide_amounts_hint">通知栏与界面显示为隐藏值</string>
     <string name="settings_boot_start">开机自动开启</string>
@@ -235,8 +232,7 @@
     <string name="quick_add_category">分类</string>
     <string name="quick_add_note">备注</string>
     <string name="quick_add_optional">可选</string>
-    <string name="quick_add_save_amount">保存 ¥%1$s</string>
-    <string name="quick_add_enter_amount">请输入金额</string>
+    <string name="quick_add_submit">保存</string>
 
     <string name="stats_title">统计</string>
     <string name="stats_month_subtitle">%1$s</string>

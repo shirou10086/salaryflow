@@ -172,13 +172,7 @@ class SalaryTickerService : Service() {
         } else {
             "¥" + Money.centsToYuan(snapshot.todayEarnedCents)
         }
-        val savings = if (hidden) {
-            hiddenAmount
-        } else {
-            "¥" + Money.centsToYuan(snapshot.savingsCents)
-        }
         val title = getString(R.string.notification_today_income, earned)
-        val content = getString(R.string.notification_total_savings, savings)
 
         val contentIntent = PendingIntent.getActivity(
             this,
@@ -201,15 +195,6 @@ class SalaryTickerService : Service() {
         val builder = NotificationCompat.Builder(this, SalaryFlowApp.LIVE_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
-            .setContentText(content)
-            .setSubText(
-                if (hidden) {
-                    getString(R.string.notification_subtext_hidden)
-                } else {
-                    getString(R.string.notification_subtext)
-                },
-            )
-            .setStyle(NotificationCompat.BigTextStyle().bigText(content))
             .setContentIntent(contentIntent)
             .setOngoing(true)
             .setOnlyAlertOnce(true)

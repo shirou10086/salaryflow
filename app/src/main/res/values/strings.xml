@@ -23,16 +23,13 @@
     <string name="today">Today</string>
 
     <string name="notification_channel_live">Salary notification</string>
-    <string name="notification_channel_live_desc">Shows today\'s earnings and total savings</string>
+    <string name="notification_channel_live_desc">Shows today\'s live earnings with quick expense and income actions</string>
     <string name="notification_channel_settlement">Payday settlement</string>
     <string name="notification_channel_settlement_desc">Notifies you when salary lands</string>
     <string name="notification_channel_balance">Savings update reminder</string>
     <string name="notification_channel_balance_desc">Monthly reminder to review your savings balance</string>
 
-    <string name="notification_today_income">Today\'s income %1$s</string>
-    <string name="notification_total_savings">Total savings %1$s</string>
-    <string name="notification_subtext_hidden">SalaryFlow · amounts hidden</string>
-    <string name="notification_subtext">SalaryFlow</string>
+    <string name="notification_today_income">Earned today %1$s</string>
     <string name="notification_action_expense">Add expense</string>
     <string name="notification_action_income">Add income</string>
 
@@ -136,7 +133,7 @@
     <string name="onboarding_schedule_error">End time must be later than start time.</string>
     <string name="onboarding_savings_hint">Optional. You can update it at any time.</string>
     <string name="onboarding_finish">Finish setup</string>
-    <string name="onboarding_finish_hint">SalaryFlow will show today\'s income and total savings in notifications.</string>
+    <string name="onboarding_finish_hint">SalaryFlow will show your live earnings today and add quick expense and income actions to notifications.</string>
     <string name="onboarding_set_work_start">Set start time</string>
     <string name="onboarding_set_work_end">Set end time</string>
 
@@ -174,9 +171,9 @@
     <string name="settings_goal_name">Goal name</string>
     <string name="settings_goal_amount">Goal amount</string>
     <string name="settings_notification_section">Notification</string>
-    <string name="settings_notification_section_subtitle">Show today\'s income and total savings</string>
+    <string name="settings_notification_section_subtitle">Show today\'s live earnings</string>
     <string name="settings_show_notification">Show salary notification</string>
-    <string name="settings_show_notification_hint">Display today\'s income and total savings</string>
+    <string name="settings_show_notification_hint">Display today\'s live earnings with quick expense and income actions</string>
     <string name="settings_hide_amounts">Hide amounts</string>
     <string name="settings_hide_amounts_hint">Use hidden values in notifications and the app</string>
     <string name="settings_boot_start">Start after reboot</string>
@@ -235,8 +232,7 @@
     <string name="quick_add_category">Category</string>
     <string name="quick_add_note">Note</string>
     <string name="quick_add_optional">Optional</string>
-    <string name="quick_add_save_amount">Save ¥%1$s</string>
-    <string name="quick_add_enter_amount">Enter an amount</string>
+    <string name="quick_add_submit">Save</string>
 
     <string name="stats_title">Statistics</string>
     <string name="stats_month_subtitle">%1$s</string>
