@@ -132,7 +132,7 @@ fun OnboardingScreen(
                 Column {
                     Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge)
                     Text(
-                        "SalaryFlow",
+                        "WageJar",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

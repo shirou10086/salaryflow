@@ -99,7 +99,7 @@ class UpdateManager(private val context: Context) {
             throw IOException("Update package is too large")
         }
         val directory = File(context.filesDir, "updates").apply { mkdirs() }
-        val target = File(directory, "SalaryFlow-v${release.version}.apk")
+        val target = File(directory, "WageJar-v${release.version}.apk")
         val partial = File(directory, "${target.name}.part")
         partial.delete()
 
@@ -246,7 +246,7 @@ class UpdateManager(private val context: Context) {
             connectTimeout = CONNECT_TIMEOUT_MS
             readTimeout = READ_TIMEOUT_MS
             setRequestProperty("Accept", accept)
-            setRequestProperty("User-Agent", "SalaryFlow-Android")
+            setRequestProperty("User-Agent", "WageJar-Android")
         }
     }
 

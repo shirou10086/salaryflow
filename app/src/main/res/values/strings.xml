@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SalaryFlow</string>
+    <string name="app_name">WageJar</string>
 
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
@@ -43,7 +43,7 @@
 
     <string name="balance_reminder_title">Review your savings balance?</string>
     <string name="balance_reminder_text">Update it if the amount has changed.</string>
-    <string name="balance_reminder_big_text">Open SalaryFlow to update your current savings. Future income and expenses will be added automatically.</string>
+    <string name="balance_reminder_big_text">Open WageJar to update your current savings. Future income and expenses will be added automatically.</string>
     <string name="balance_reminder_action">Update savings</string>
 
     <string name="widget_description">Today\'s income and total savings</string>
@@ -136,7 +136,7 @@
     <string name="onboarding_schedule_error">End time must be later than start time.</string>
     <string name="onboarding_savings_hint">Optional. You can update it at any time.</string>
     <string name="onboarding_finish">Finish setup</string>
-    <string name="onboarding_finish_hint">SalaryFlow will show your live earnings today and add quick expense and income actions to notifications.</string>
+    <string name="onboarding_finish_hint">WageJar will show your live earnings today and add quick expense and income actions to notifications.</string>
     <string name="onboarding_set_work_start">Set start time</string>
     <string name="onboarding_set_work_end">Set end time</string>
 
@@ -300,7 +300,7 @@
     <string name="celebration_message">Every second of work is now visible in your savings.</string>
     <string name="celebration_dismiss">Keep this salary</string>
     <string name="celebration_open_ledger">View ledger</string>
-    <string name="celebration_jar_label">SalaryFlow savings</string>
+    <string name="celebration_jar_label">WageJar savings</string>
 
     <string name="transaction_auto_note">Payday auto-entry</string>
     <string name="transaction_balance_up_note">Balance adjusted upward</string>

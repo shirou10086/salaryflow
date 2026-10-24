@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">薪流</string>
+    <string name="app_name">薪罐</string>
 
     <string name="action_save">保存</string>
     <string name="action_cancel">取消</string>
@@ -43,7 +43,7 @@
 
     <string name="balance_reminder_title">本月存款需要更新吗？</string>
     <string name="balance_reminder_text">如果金额有变化，可以手动更新。</string>
-    <string name="balance_reminder_big_text">打开薪流更新当前存款，之后的收入和支出仍会自动累计。</string>
+    <string name="balance_reminder_big_text">打开薪罐更新当前存款，之后的收入和支出仍会自动累计。</string>
     <string name="balance_reminder_action">更新存款</string>
 
     <string name="widget_description">今日收入与总存款</string>
@@ -204,7 +204,7 @@
     <string name="settings_auto_update_hint">启动应用时每天检查一次，下载后由系统确认安装</string>
     <string name="settings_check_update">检查更新</string>
     <string name="settings_checking_update">正在检查…</string>
-    <string name="settings_update_install_hint">系统会在安装前再次确认；首次升级需允许薪流安装应用。</string>
+    <string name="settings_update_install_hint">系统会在安装前再次确认；首次升级需允许薪罐安装应用。</string>
     <string name="settings_language">语言</string>
     <string name="settings_language_hint">Android 13 及以上可单独设置应用语言，旧版本跟随系统</string>
     <string name="settings_language_value">中文 / English</string>
@@ -300,7 +300,7 @@
     <string name="celebration_message">每一秒的工作，都变成了看得见的存款。</string>
     <string name="celebration_dismiss">收下这笔钱</string>
     <string name="celebration_open_ledger">去账本看看</string>
-    <string name="celebration_jar_label">薪流存款</string>
+    <string name="celebration_jar_label">薪罐存款</string>
 
     <string name="transaction_auto_note">发薪日自动记账</string>
     <string name="transaction_balance_up_note">按实际存款上调余额</string>

@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SalaryFlow"
+rootProject.name = "WageJar"
 include(":app")
