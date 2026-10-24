@@ -352,42 +352,44 @@ fun SettingsScreen(
             }
         }
 
-        item {
-            SectionCard {
-                SectionHeader(
-                    title = stringResource(R.string.settings_update_section),
-                    subtitle = stringResource(R.string.settings_update_section_subtitle),
-                )
-                Spacer(Modifier.height(6.dp))
-                SwitchRow(
-                    title = stringResource(R.string.settings_auto_update),
-                    subtitle = stringResource(R.string.settings_auto_update_hint),
-                    checked = settings.autoUpdateEnabled,
-                    onChange = viewModel::setAutoUpdateEnabled,
-                )
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                OutlinedButton(
-                    onClick = viewModel::checkForUpdates,
-                    enabled = updateState != UpdateUiState.Checking &&
-                        updateState !is UpdateUiState.Downloading,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
+        if (BuildConfig.SELF_UPDATE_ENABLED) {
+            item {
+                SectionCard {
+                    SectionHeader(
+                        title = stringResource(R.string.settings_update_section),
+                        subtitle = stringResource(R.string.settings_update_section_subtitle),
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    SwitchRow(
+                        title = stringResource(R.string.settings_auto_update),
+                        subtitle = stringResource(R.string.settings_auto_update_hint),
+                        checked = settings.autoUpdateEnabled,
+                        onChange = viewModel::setAutoUpdateEnabled,
+                    )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    OutlinedButton(
+                        onClick = viewModel::checkForUpdates,
+                        enabled = updateState != UpdateUiState.Checking &&
+                            updateState !is UpdateUiState.Downloading,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(
+                            stringResource(
+                                if (updateState == UpdateUiState.Checking) {
+                                    R.string.settings_checking_update
+                                } else {
+                                    R.string.settings_check_update
+                                },
+                            ),
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
                     Text(
-                        stringResource(
-                            if (updateState == UpdateUiState.Checking) {
-                                R.string.settings_checking_update
-                            } else {
-                                R.string.settings_check_update
-                            },
-                        ),
+                        stringResource(R.string.settings_update_install_hint),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    stringResource(R.string.settings_update_install_hint),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
             }
         }
 

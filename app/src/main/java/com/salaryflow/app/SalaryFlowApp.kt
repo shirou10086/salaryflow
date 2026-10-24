@@ -11,6 +11,7 @@ import com.salaryflow.app.data.PaydaySettlementManager
 import com.salaryflow.app.data.SalaryFlowDatabase
 import com.salaryflow.app.data.SettingsStore
 import com.salaryflow.app.update.UpdateManager
+import com.salaryflow.app.update.createUpdateManager
 import com.salaryflow.app.work.BalanceReminderScheduler
 import com.salaryflow.app.work.PaydaySettlementScheduler
 
@@ -22,7 +23,7 @@ class AppContainer(context: Context) {
     val ledgerRepository: LedgerRepository = LedgerRepository(ledgerDao)
     val settingsStore: SettingsStore = SettingsStore(appContext)
     val settlementManager: PaydaySettlementManager = PaydaySettlementManager(ledgerDao, settingsStore)
-    val updateManager: UpdateManager = UpdateManager(appContext)
+    val updateManager: UpdateManager = createUpdateManager(appContext)
 }
 
 class SalaryFlowApp : Application() {

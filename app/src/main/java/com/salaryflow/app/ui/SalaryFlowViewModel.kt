@@ -191,16 +191,19 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun checkForUpdatesAutomatically() {
+        if (!BuildConfig.SELF_UPDATE_ENABLED) return
         if (autoUpdateCheckRequested) return
         autoUpdateCheckRequested = true
         requestUpdateCheck(manual = false)
     }
 
     fun checkForUpdates() {
+        if (!BuildConfig.SELF_UPDATE_ENABLED) return
         requestUpdateCheck(manual = true)
     }
 
     private fun requestUpdateCheck(manual: Boolean) {
+        if (!BuildConfig.SELF_UPDATE_ENABLED) return
         if (updateCheckJob?.isActive == true || updateDownloadJob?.isActive == true) return
         updateCheckJob = viewModelScope.launch {
             val settings = settingsStore.current()
@@ -235,6 +238,7 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun downloadUpdate() {
+        if (!BuildConfig.SELF_UPDATE_ENABLED) return
         val release = (_updateState.value as? UpdateUiState.Available)?.release ?: return
         if (updateDownloadJob?.isActive == true) return
         updateDownloadJob = viewModelScope.launch {
@@ -255,6 +259,7 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
     fun installPermissionIntent(): Intent = updateManager.installPermissionIntent()
 
     fun installReadyUpdate() {
+        if (!BuildConfig.SELF_UPDATE_ENABLED) return
         val ready = _updateState.value as? UpdateUiState.ReadyToInstall ?: return
         when (updateManager.install(ready.file)) {
             com.salaryflow.app.update.InstallResult.Started -> {
@@ -285,6 +290,7 @@ class SalaryFlowViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun setAutoUpdateEnabled(enabled: Boolean) {
+        if (!BuildConfig.SELF_UPDATE_ENABLED) return
         viewModelScope.launch {
             settingsStore.update { it.copy(autoUpdateEnabled = enabled) }
             if (enabled) {

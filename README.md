@@ -7,7 +7,7 @@
 ## 下载安装
 
 前往 [GitHub Releases](https://github.com/shirou10086/salaryflow/releases/latest) 下载已签名的
-[`WageJar-v0.3.0.apk`](https://github.com/shirou10086/salaryflow/releases/latest/download/WageJar-v0.3.0.apk)。
+[`WageJar-v0.4.0.apk`](https://github.com/shirou10086/salaryflow/releases/latest/download/WageJar-v0.4.0.apk)。
 
 - 最低支持 Android 8.0（API 26）；
 - 首次安装时，系统可能要求允许当前浏览器或文件管理器安装未知应用；
@@ -79,10 +79,14 @@ Android 12 及以下会跟随系统语言。
 
 ### 应用更新
 
+- GitHub 版内置自动更新；
 - 默认每天在应用启动时自动检查 GitHub 正式版本；
 - 发现新版本后可显示更新说明、下载进度并交给系统完成安装；
 - 安装前会校验 APK 包名、版本和签名，保留现有账本数据；
 - Android 出于安全限制，首次更新需要在系统页面允许薪罐安装应用。
+
+Google Play 版不申请“安装未知应用”权限，也不内置自更新，版本更新由 Google Play 管理。
+渠道配置和封闭测试步骤见 [Google Play 发布指南](docs/google-play-release.md)。
 
 ## 计算规则
 
@@ -98,27 +102,41 @@ Android 12 及以下会跟随系统语言。
 
 ## 构建
 
-环境要求：JDK 17、Android SDK（`compileSdk 35`、Build Tools 35.0.0）。
+环境要求：JDK 17、Android SDK 36、Build Tools 36.0.0。
 
 ```bash
 echo "sdk.dir=$HOME/Library/Android/sdk" > local.properties
-./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease
+./gradlew :app:testGithubDebugUnitTest :app:lintGithubDebug \
+  :app:assembleGithubRelease
+./gradlew :app:testPlayDebugUnitTest :app:lintPlayDebug \
+  :app:bundlePlayRelease
 ```
 
 产物：
 
 ```text
-app/build/outputs/apk/debug/app-debug.apk
-app/build/outputs/apk/release/app-release-unsigned.apk
+app/build/outputs/apk/github/release/app-github-release.apk
+app/build/outputs/bundle/playRelease/app-play-release.aab
+```
+
+若构建机没有签名环境变量，上述发布产物会是未签名版本。可用以下变量直接生成签名产物；
+值只应保存在本机环境或 CI Secret 中：
+
+```bash
+export SALARYFLOW_KEYSTORE_FILE="$HOME/.android/salaryflow-release.jks"
+export SALARYFLOW_KEYSTORE_PASSWORD="<keystore password>"
+export SALARYFLOW_KEY_ALIAS="salaryflow"
+export SALARYFLOW_KEY_PASSWORD="<key password>"
 ```
 
 安装 Debug 包：
 
 ```bash
-adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb install -r app/build/outputs/apk/github/debug/app-github-debug.apk
 ```
 
-发布版需要在仓库外使用自己的密钥签名，仓库不包含签名文件或密码。
+仓库不包含签名文件或密码。GitHub 和 Play 两个产物使用相同包名，不能同时安装在
+同一台设备上；若使用 Play App Signing，还要以 Play 控制台显示的签名证书为发布事实。
 
 ## 技术栈
 

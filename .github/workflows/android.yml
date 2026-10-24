@@ -20,17 +20,26 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Unit tests
-        run: ./gradlew :app:testDebugUnitTest --stacktrace
+      - name: Test and lint GitHub flavor
+        run: ./gradlew :app:testGithubDebugUnitTest :app:lintGithubDebug --stacktrace
 
-      - name: Android lint
-        run: ./gradlew :app:lintDebug --stacktrace
+      - name: Test and lint Play flavor
+        run: ./gradlew :app:testPlayDebugUnitTest :app:lintPlayDebug --stacktrace
 
-      - name: Assemble debug APK
-        run: ./gradlew :app:assembleDebug --stacktrace
+      - name: Assemble GitHub debug APK
+        run: ./gradlew :app:assembleGithubDebug --stacktrace
 
-      - name: Upload APK
+      - name: Assemble Play debug AAB
+        run: ./gradlew :app:bundlePlayDebug --stacktrace
+
+      - name: Upload GitHub debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: salaryflow-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: wagejar-github-debug-apk
+          path: app/build/outputs/apk/github/debug/app-github-debug.apk
+
+      - name: Upload Play debug AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: wagejar-play-debug-aab
+          path: app/build/outputs/bundle/playDebug/app-play-debug.aab

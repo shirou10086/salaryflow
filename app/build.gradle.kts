@@ -9,17 +9,41 @@ plugins {
 
 android {
     namespace = "com.salaryflow.app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.salaryflow.app"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 6
-        versionName = "0.3.0"
+        targetSdk = 36
+        versionCode = 7
+        versionName = "0.4.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
+
+    flavorDimensions += "distribution"
+    productFlavors {
+        create("github") {
+            dimension = "distribution"
+            buildConfigField("boolean", "SELF_UPDATE_ENABLED", "true")
+        }
+        create("play") {
+            dimension = "distribution"
+            buildConfigField("boolean", "SELF_UPDATE_ENABLED", "false")
+        }
+    }
+
+    val releaseSigningConfig = providers.environmentVariable("SALARYFLOW_KEYSTORE_FILE")
+        .orNull
+        ?.let { keystorePath ->
+            signingConfigs.create("release") {
+                storeFile = file(keystorePath)
+                storePassword = providers.environmentVariable("SALARYFLOW_KEYSTORE_PASSWORD").orNull
+                keyAlias = providers.environmentVariable("SALARYFLOW_KEY_ALIAS").orNull
+                    ?: "salaryflow"
+                keyPassword = providers.environmentVariable("SALARYFLOW_KEY_PASSWORD").orNull
+            }
+        }
 
     buildTypes {
         debug {
@@ -33,6 +57,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            releaseSigningConfig?.let { signingConfig = it }
         }
     }
 

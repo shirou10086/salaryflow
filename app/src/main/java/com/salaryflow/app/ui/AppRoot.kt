@@ -44,9 +44,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.salaryflow.app.BuildConfig
+import com.salaryflow.app.R
 import com.salaryflow.app.core.SalaryClock
 import com.salaryflow.app.core.TimeText
-import com.salaryflow.app.R
 import com.salaryflow.app.data.TxType
 import com.salaryflow.app.ui.screens.BalanceCalibrationSheet
 import com.salaryflow.app.ui.screens.HomeScreen
@@ -119,7 +120,7 @@ fun AppRoot(
     }
 
     LaunchedEffect(settingsLoaded, settings.onboarded) {
-        if (settingsLoaded && settings.onboarded) {
+        if (BuildConfig.SELF_UPDATE_ENABLED && settingsLoaded && settings.onboarded) {
             viewModel.checkForUpdatesAutomatically()
         }
     }
@@ -304,40 +305,42 @@ fun AppRoot(
         )
     }
 
-    when (val state = updateState) {
-        is UpdateUiState.Available -> {
-            AvailableUpdateDialog(
-                release = state.release,
-                onUpdate = viewModel::downloadUpdate,
-                onDismiss = viewModel::dismissUpdateState,
-            )
-        }
+    if (BuildConfig.SELF_UPDATE_ENABLED) {
+        when (val state = updateState) {
+            is UpdateUiState.Available -> {
+                AvailableUpdateDialog(
+                    release = state.release,
+                    onUpdate = viewModel::downloadUpdate,
+                    onDismiss = viewModel::dismissUpdateState,
+                )
+            }
 
-        is UpdateUiState.Downloading -> {
-            DownloadingUpdateDialog(progress = state.progress)
-        }
+            is UpdateUiState.Downloading -> {
+                DownloadingUpdateDialog(progress = state.progress)
+            }
 
-        is UpdateUiState.ReadyToInstall -> {
-            ReadyToInstallDialog(
-                onInstall = {
-                    if (viewModel.needsInstallPermission()) {
-                        installPermissionLauncher.launch(viewModel.installPermissionIntent())
-                    } else {
-                        viewModel.installReadyUpdate()
-                    }
-                },
-                onDismiss = viewModel::dismissUpdateState,
-            )
-        }
+            is UpdateUiState.ReadyToInstall -> {
+                ReadyToInstallDialog(
+                    onInstall = {
+                        if (viewModel.needsInstallPermission()) {
+                            installPermissionLauncher.launch(viewModel.installPermissionIntent())
+                        } else {
+                            viewModel.installReadyUpdate()
+                        }
+                    },
+                    onDismiss = viewModel::dismissUpdateState,
+                )
+            }
 
-        UpdateUiState.UpToDate, is UpdateUiState.Failed -> {
-            UpdateResultDialog(
-                state = state,
-                onDismiss = viewModel::dismissUpdateState,
-                onRetry = viewModel::retryUpdate,
-            )
-        }
+            UpdateUiState.UpToDate, is UpdateUiState.Failed -> {
+                UpdateResultDialog(
+                    state = state,
+                    onDismiss = viewModel::dismissUpdateState,
+                    onRetry = viewModel::retryUpdate,
+                )
+            }
 
-        UpdateUiState.Idle, UpdateUiState.Checking -> Unit
+            UpdateUiState.Idle, UpdateUiState.Checking -> Unit
+        }
     }
 }
