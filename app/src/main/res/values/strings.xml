@@ -30,7 +30,8 @@
     <string name="notification_channel_balance">Savings update reminder</string>
     <string name="notification_channel_balance_desc">Monthly reminder to review your savings balance</string>
 
-    <string name="notification_today_income">Today %1$s</string>
+    <string name="notification_today_label">Earned today</string>
+    <string name="notification_today_income">Earned today %1$s</string>
     <string name="notification_action_expense">Add expense</string>
     <string name="notification_action_income">Add income</string>
     <string name="notification_action_expense_short">Expense</string>

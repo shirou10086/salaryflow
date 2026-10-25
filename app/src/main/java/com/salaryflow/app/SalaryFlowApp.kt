@@ -50,6 +50,7 @@ class SalaryFlowApp : Application() {
             description = getString(R.string.notification_channel_live_desc)
             setShowBadge(false)
             enableVibration(false)
+            setSound(null, null)
         }
 
         val settlementChannel = NotificationChannel(
@@ -69,12 +70,14 @@ class SalaryFlowApp : Application() {
         }
 
         manager.createNotificationChannel(liveChannel)
+        LEGACY_LIVE_CHANNEL_IDS.forEach(manager::deleteNotificationChannel)
         manager.createNotificationChannel(settlementChannel)
         manager.createNotificationChannel(balanceChannel)
     }
 
     companion object {
-        const val LIVE_CHANNEL_ID = "salary_flow_live"
+        const val LIVE_CHANNEL_ID = "salary_flow_live_v3"
+        private val LEGACY_LIVE_CHANNEL_IDS = setOf("salary_flow_live", "salary_flow_live_v2")
         const val SETTLEMENT_CHANNEL_ID = "salary_flow_settlement"
         const val BALANCE_REMINDER_CHANNEL_ID = "salary_flow_balance_reminder"
         const val LIVE_NOTIFICATION_ID = 1001

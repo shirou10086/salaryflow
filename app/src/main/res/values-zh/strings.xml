@@ -30,7 +30,8 @@
     <string name="notification_channel_balance">存款更新提醒</string>
     <string name="notification_channel_balance_desc">每月提醒核对当前存款</string>
 
-    <string name="notification_today_income">今日 %1$s</string>
+    <string name="notification_today_label">今日已挣</string>
+    <string name="notification_today_income">今日已挣 %1$s</string>
     <string name="notification_action_expense">记支出</string>
     <string name="notification_action_income">记收入</string>
     <string name="notification_action_expense_short">支出</string>

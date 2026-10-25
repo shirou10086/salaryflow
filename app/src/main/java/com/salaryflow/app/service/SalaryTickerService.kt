@@ -174,6 +174,7 @@ class SalaryTickerService : Service() {
             "¥" + Money.centsToYuan(snapshot.todayEarnedCents)
         }
         val amountText = getString(R.string.notification_today_income, earned)
+        val labelText = getString(R.string.notification_today_label)
 
         val contentIntent = PendingIntent.getActivity(
             this,
@@ -194,7 +195,17 @@ class SalaryTickerService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         val compactViews = RemoteViews(packageName, R.layout.notification_live).apply {
-            setTextViewText(R.id.notification_live_amount, amountText)
+            setTextViewText(R.id.notification_live_label, labelText)
+            setTextViewText(R.id.notification_live_amount, earned)
+            setTextViewText(
+                R.id.notification_live_expense,
+                getString(R.string.notification_action_expense_short),
+            )
+            setTextViewText(
+                R.id.notification_live_income,
+                getString(R.string.notification_action_income_short),
+            )
+            setContentDescription(R.id.notification_live_root, amountText)
             setOnClickPendingIntent(R.id.notification_live_expense, expenseIntent)
             setOnClickPendingIntent(R.id.notification_live_income, incomeIntent)
         }
@@ -205,9 +216,9 @@ class SalaryTickerService : Service() {
             .setContentIntent(contentIntent)
             .setCustomContentView(compactViews)
             .setCustomBigContentView(compactViews)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .setSilent(true)
             .setShowWhen(false)
             .setCategory(NotificationCompat.CATEGORY_STATUS)
             .setVisibility(if (hidden) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PUBLIC)

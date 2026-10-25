@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="notification_amount_text">#F2F5F3</color>
+    <color name="notification_muted_text">#AAB8B1</color>
+    <color name="notification_expense_text">#FFD1C7</color>
+    <color name="notification_income_text">#BDEAD9</color>
+</resources>

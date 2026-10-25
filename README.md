@@ -7,7 +7,7 @@
 ## 下载安装
 
 前往 [GitHub Releases](https://github.com/shirou10086/salaryflow/releases/latest) 下载已签名的
-[`WageJar-v0.4.0.apk`](https://github.com/shirou10086/salaryflow/releases/latest/download/WageJar-v0.4.0.apk)。
+[`WageJar-v0.4.1.apk`](https://github.com/shirou10086/salaryflow/releases/latest/download/WageJar-v0.4.1.apk)。
 
 - 最低支持 Android 8.0（API 26）；
 - 首次安装时，系统可能要求允许当前浏览器或文件管理器安装未知应用；

@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="brand_cream">#F7F5F0</color>
+    <color name="notification_amount_text">#17231F</color>
+    <color name="notification_muted_text">#6B756F</color>
+    <color name="notification_expense_text">#A34633</color>
+    <color name="notification_income_text">#155C4A</color>
 </resources>
