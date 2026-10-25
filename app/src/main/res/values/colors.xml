@@ -5,4 +5,6 @@
     <color name="notification_muted_text">#6B756F</color>
     <color name="notification_expense_text">#A34633</color>
     <color name="notification_income_text">#155C4A</color>
+    <color name="notification_action_group_background">#E9EEEA</color>
+    <color name="notification_action_divider">#C8D0CB</color>
 </resources>

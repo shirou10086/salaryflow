@@ -7,7 +7,7 @@
 ## 下载安装
 
 前往 [GitHub Releases](https://github.com/shirou10086/salaryflow/releases/latest) 下载已签名的
-[`WageJar-v0.4.1.apk`](https://github.com/shirou10086/salaryflow/releases/latest/download/WageJar-v0.4.1.apk)。
+[`WageJar-v0.4.2.apk`](https://github.com/shirou10086/salaryflow/releases/latest/download/WageJar-v0.4.2.apk)。
 
 - 最低支持 Android 8.0（API 26）；
 - 首次安装时，系统可能要求允许当前浏览器或文件管理器安装未知应用；
@@ -35,8 +35,8 @@ Android 12 及以下会跟随系统语言。
 
 ![通知栏](docs/screenshots/notification.png)
 
-- 通知栏以单行持续显示今日已挣；
-- 可直接执行“记支出”和“记收入”；
+- 通知栏收起时以单行持续显示今日已挣；
+- 可直接执行“记支出”和“记收入”，无需先展开通知；
 - 支持隐藏金额、刷新频率和开机恢复设置；
 - 默认每秒刷新，也可调整为 5 秒、10 秒或 1 分钟。
 
