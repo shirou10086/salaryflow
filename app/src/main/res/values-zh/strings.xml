@@ -180,6 +180,8 @@
     <string name="settings_show_notification_hint">实时显示今日已挣，并提供记收入和支出快捷按钮</string>
     <string name="settings_hide_amounts">隐藏金额</string>
     <string name="settings_hide_amounts_hint">通知栏与界面显示为隐藏值</string>
+    <string name="settings_hide_on_lockscreen">锁屏时隐藏</string>
+    <string name="settings_hide_on_lockscreen_hint">解锁后才显示今日收入和快捷记账</string>
     <string name="settings_boot_start">开机自动开启</string>
     <string name="settings_boot_start_hint">重启手机后自动恢复</string>
     <string name="settings_refresh_rate">刷新频率</string>

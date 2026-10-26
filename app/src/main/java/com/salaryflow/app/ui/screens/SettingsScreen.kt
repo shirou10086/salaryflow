@@ -295,6 +295,15 @@ fun SettingsScreen(
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SwitchRow(
+                    title = stringResource(R.string.settings_hide_on_lockscreen),
+                    subtitle = stringResource(R.string.settings_hide_on_lockscreen_hint),
+                    checked = settings.hideOnLockscreen,
+                    onChange = { value ->
+                        viewModel.updateSettings { it.copy(hideOnLockscreen = value) }
+                    },
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                SwitchRow(
                     title = stringResource(R.string.settings_boot_start),
                     subtitle = stringResource(R.string.settings_boot_start_hint),
                     checked = settings.bootStartEnabled,

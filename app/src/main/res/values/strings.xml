@@ -180,6 +180,8 @@
     <string name="settings_show_notification_hint">Display today\'s live earnings with quick expense and income actions</string>
     <string name="settings_hide_amounts">Hide amounts</string>
     <string name="settings_hide_amounts_hint">Use hidden values in notifications and the app</string>
+    <string name="settings_hide_on_lockscreen">Hide on lock screen</string>
+    <string name="settings_hide_on_lockscreen_hint">Only show earnings and quick actions after unlocking</string>
     <string name="settings_boot_start">Start after reboot</string>
     <string name="settings_boot_start_hint">Restore the notification automatically</string>
     <string name="settings_refresh_rate">Refresh rate</string>

@@ -167,6 +167,7 @@ class SalaryTickerService : Service() {
 
     private fun buildNotification(settings: AppSettings, snapshot: SalarySnapshot): Notification {
         val hidden = settings.hideAmounts
+        val hiddenOnLockscreen = hidden || settings.hideOnLockscreen
         val hiddenAmount = getString(R.string.amount_hidden_short)
         val earned = if (hidden) {
             hiddenAmount
@@ -221,7 +222,13 @@ class SalaryTickerService : Service() {
             .setOnlyAlertOnce(true)
             .setShowWhen(false)
             .setCategory(NotificationCompat.CATEGORY_STATUS)
-            .setVisibility(if (hidden) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PUBLIC)
+            .setVisibility(
+                if (hiddenOnLockscreen) {
+                    NotificationCompat.VISIBILITY_SECRET
+                } else {
+                    NotificationCompat.VISIBILITY_PUBLIC
+                },
+            )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             builder.setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)

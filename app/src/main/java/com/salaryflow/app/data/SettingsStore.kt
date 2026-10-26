@@ -38,6 +38,8 @@ data class AppSettings(
      */
     val savingsRatePercent: Int = 0,
     val hideAmounts: Boolean = false,
+    /** 锁屏时隐藏整个实时薪资通知，解锁后恢复正常显示。 */
+    val hideOnLockscreen: Boolean = true,
     /** 通知栏刷新间隔，秒。 */
     val tickSeconds: Int = 1,
     val serviceEnabled: Boolean = false,
@@ -129,6 +131,7 @@ private object Keys {
     val workDaysMask = intPreferencesKey("work_days_mask")
     val savingsRatePercent = intPreferencesKey("savings_rate_percent")
     val hideAmounts = booleanPreferencesKey("hide_amounts")
+    val hideOnLockscreen = booleanPreferencesKey("hide_on_lockscreen")
     val tickSeconds = intPreferencesKey("tick_seconds")
     val serviceEnabled = booleanPreferencesKey("service_enabled")
     val counterPaused = booleanPreferencesKey("counter_paused")
@@ -163,6 +166,7 @@ private fun Preferences.toAppSettings(): AppSettings {
         workDaysMask = this[Keys.workDaysMask] ?: defaults.workDaysMask,
         savingsRatePercent = this[Keys.savingsRatePercent] ?: defaults.savingsRatePercent,
         hideAmounts = this[Keys.hideAmounts] ?: defaults.hideAmounts,
+        hideOnLockscreen = this[Keys.hideOnLockscreen] ?: defaults.hideOnLockscreen,
         tickSeconds = this[Keys.tickSeconds] ?: defaults.tickSeconds,
         serviceEnabled = this[Keys.serviceEnabled] ?: defaults.serviceEnabled,
         counterPaused = this[Keys.counterPaused] ?: defaults.counterPaused,
@@ -196,6 +200,7 @@ private fun MutablePreferences.writeFrom(settings: AppSettings) {
     this[Keys.workDaysMask] = settings.workDaysMask
     this[Keys.savingsRatePercent] = settings.savingsRatePercent
     this[Keys.hideAmounts] = settings.hideAmounts
+    this[Keys.hideOnLockscreen] = settings.hideOnLockscreen
     this[Keys.tickSeconds] = settings.tickSeconds
     this[Keys.serviceEnabled] = settings.serviceEnabled
     this[Keys.counterPaused] = settings.counterPaused
