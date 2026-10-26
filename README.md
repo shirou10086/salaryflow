@@ -6,12 +6,28 @@
 
 ## 下载安装
 
-前往 [GitHub Releases](https://github.com/shirou10086/salaryjar/releases/latest) 下载已签名的
-[`WageJar-v0.4.4.apk`](https://github.com/shirou10086/salaryjar/releases/latest/download/WageJar-v0.4.4.apk)。
+| 平台 | 直接下载 | 安装方式 |
+| --- | --- | --- |
+| Android | [`WageJar-v0.4.4.apk`](https://github.com/shirou10086/salaryjar/releases/latest/download/WageJar-v0.4.4.apk) | 下载 APK 后直接安装 |
+| iOS | 暂无预签名安装包 | 需要使用 Xcode 签名、AltStore/Sideloadly 侧载，或上架 TestFlight/App Store |
 
-- 最低支持 Android 8.0（API 26）；
-- 首次安装时，系统可能要求允许当前浏览器或文件管理器安装未知应用；
-- APK 使用独立发布证书签名，SHA-256 校验值附在对应 Release 中。
+Android 最低支持 Android 8.0（API 26）。首次安装时，系统可能要求允许当前浏览器或文件管理器
+安装未知应用。APK 使用独立发布证书签名，SHA-256 校验值附在对应 Release 中。
+
+### iOS 为什么没有直接下载链接
+
+iOS 不允许像 Android APK 一样直接下载安装。任何能在真机运行的 `.ipa` 都必须先使用 Apple
+开发者证书和对应设备的签名配置签名，GitHub 上的公开下载链接无法绕过这一限制。
+
+当前仓库提供完整的 SwiftUI 源码，并会在 macOS runner 的 iPhone 模拟器中自动编译和测试：
+
+- 查看 [iOS 模拟器构建与截图](https://github.com/shirou10086/salaryjar/actions/workflows/ios.yml)；
+- 按 [iOS 构建说明](ios/README.md) 在 Xcode 中运行模拟器；
+- 连接自己的 iPhone 后，可在 Xcode 的 Signing & Capabilities 中登录 Apple ID 并签名安装；
+- 如果要让其他人直接下载安装，需要 Apple Developer Program、TestFlight 或 App Store 审核。
+
+免费的 Xcode 个人签名通常只能在自己设备上短期使用；付费开发者账号签名的有效期更长，但仍受
+描述文件和设备限制。仓库目前没有 Apple 开发者账号签名，因此不会提供一个无法安装的假 `.ipa`。
 
 ## 首次设置
 

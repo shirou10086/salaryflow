@@ -12,6 +12,19 @@ The app includes:
 - savings balance calibration and a configurable savings goal
 - system-language support for English and Simplified Chinese
 
+## Installation
+
+There is no pre-signed iOS install package in GitHub Releases. iOS cannot distribute an
+unsigned `.ipa` like an Android APK. To run it on a real iPhone:
+
+1. Open the project in Xcode and configure Signing & Capabilities with your Apple ID.
+2. Select the connected iPhone and run the `WageJar` scheme.
+3. For other people to install it directly, publish through TestFlight or the App Store with an
+   Apple Developer Program account.
+
+The GitHub Actions workflow builds and tests the app in an iPhone simulator and publishes
+screenshots as artifacts. It does not publish a signed device build.
+
 ## Requirements
 
 - macOS with full Xcode installed and selected with `sudo xcode-select -s /Applications/Xcode.app`
