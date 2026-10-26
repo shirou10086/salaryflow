@@ -1,0 +1,73 @@
+name: iOS CI
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/ios.yml"
+      - "ios/**"
+  pull_request:
+    paths:
+      - ".github/workflows/ios.yml"
+      - "ios/**"
+  workflow_dispatch:
+
+jobs:
+  simulator:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate iOS project
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: Test scheduling package
+        working-directory: ios
+        run: swift test --package-path WageJarCore
+
+      - name: Select iPhone simulator
+        id: simulator
+        run: |
+          UDID="$(
+            xcrun simctl list devices available -j |
+              jq -r '[.devices[][] | select(.isAvailable and (.name | startswith("iPhone")))] | first | .udid'
+          )"
+          test -n "$UDID"
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+
+      - name: Build for simulator
+        working-directory: ios
+        run: |
+          xcodebuild \
+            -project WageJar.xcodeproj \
+            -scheme WageJar \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}" \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Launch in simulator
+        run: |
+          UDID="${{ steps.simulator.outputs.udid }}"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+
+          APP_PATH="ios/DerivedData/Build/Products/Debug-iphonesimulator/WageJar.app"
+          test -d "$APP_PATH"
+          xcrun simctl install "$UDID" "$APP_PATH"
+          xcrun simctl launch "$UDID" com.wagejar.app
+          sleep 3
+          xcrun simctl io "$UDID" screenshot ios-simulator.png
+
+      - name: Upload simulator screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: wagejar-ios-simulator-screenshot
+          path: ios-simulator.png

@@ -30,6 +30,10 @@ data class AppSettings(
     val lunchStartMinute: Int = 12 * 60,
     val lunchEndMinute: Int = 13 * 60,
     val lunchPaid: Boolean = false,
+    val dinnerEnabled: Boolean = false,
+    val dinnerStartMinute: Int = 18 * 60,
+    val dinnerEndMinute: Int = 18 * 60 + 30,
+    val dinnerPaid: Boolean = false,
     /** bit0 = 周一 … bit6 = 周日。 */
     val workDaysMask: Int = 0b0011111,
     /**
@@ -74,6 +78,10 @@ data class AppSettings(
             lunchStart = minuteToTime(lunchStartMinute),
             lunchEnd = minuteToTime(lunchEndMinute),
             lunchPaid = lunchPaid,
+            dinnerEnabled = dinnerEnabled,
+            dinnerStart = minuteToTime(dinnerStartMinute),
+            dinnerEnd = minuteToTime(dinnerEndMinute),
+            dinnerPaid = dinnerPaid,
         ),
     )
 
@@ -128,6 +136,10 @@ private object Keys {
     val lunchStartMinute = intPreferencesKey("lunch_start_minute")
     val lunchEndMinute = intPreferencesKey("lunch_end_minute")
     val lunchPaid = booleanPreferencesKey("lunch_paid")
+    val dinnerEnabled = booleanPreferencesKey("dinner_enabled")
+    val dinnerStartMinute = intPreferencesKey("dinner_start_minute")
+    val dinnerEndMinute = intPreferencesKey("dinner_end_minute")
+    val dinnerPaid = booleanPreferencesKey("dinner_paid")
     val workDaysMask = intPreferencesKey("work_days_mask")
     val savingsRatePercent = intPreferencesKey("savings_rate_percent")
     val hideAmounts = booleanPreferencesKey("hide_amounts")
@@ -163,6 +175,10 @@ private fun Preferences.toAppSettings(): AppSettings {
         lunchStartMinute = this[Keys.lunchStartMinute] ?: defaults.lunchStartMinute,
         lunchEndMinute = this[Keys.lunchEndMinute] ?: defaults.lunchEndMinute,
         lunchPaid = this[Keys.lunchPaid] ?: defaults.lunchPaid,
+        dinnerEnabled = this[Keys.dinnerEnabled] ?: defaults.dinnerEnabled,
+        dinnerStartMinute = this[Keys.dinnerStartMinute] ?: defaults.dinnerStartMinute,
+        dinnerEndMinute = this[Keys.dinnerEndMinute] ?: defaults.dinnerEndMinute,
+        dinnerPaid = this[Keys.dinnerPaid] ?: defaults.dinnerPaid,
         workDaysMask = this[Keys.workDaysMask] ?: defaults.workDaysMask,
         savingsRatePercent = this[Keys.savingsRatePercent] ?: defaults.savingsRatePercent,
         hideAmounts = this[Keys.hideAmounts] ?: defaults.hideAmounts,
@@ -197,6 +213,10 @@ private fun MutablePreferences.writeFrom(settings: AppSettings) {
     this[Keys.lunchStartMinute] = settings.lunchStartMinute
     this[Keys.lunchEndMinute] = settings.lunchEndMinute
     this[Keys.lunchPaid] = settings.lunchPaid
+    this[Keys.dinnerEnabled] = settings.dinnerEnabled
+    this[Keys.dinnerStartMinute] = settings.dinnerStartMinute
+    this[Keys.dinnerEndMinute] = settings.dinnerEndMinute
+    this[Keys.dinnerPaid] = settings.dinnerPaid
     this[Keys.workDaysMask] = settings.workDaysMask
     this[Keys.savingsRatePercent] = settings.savingsRatePercent
     this[Keys.hideAmounts] = settings.hideAmounts

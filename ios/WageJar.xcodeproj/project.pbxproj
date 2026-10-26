@@ -1,0 +1,407 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		000FBA03EF3379C32B9F01B3 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1341529D8A90586ABEB6C086 /* DashboardView.swift */; };
+		17AD9B0576436168D1B239FF /* WageJarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9539B0AC6ADDA9622A976786 /* WageJarApp.swift */; };
+		523E8B7C3C9EA2F2D81CB6D7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1C2AC311294AE5ED5F7C5CE /* SettingsView.swift */; };
+		533231E574CDC2FEDB291557 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C4301F509FC2D1F1A12C0ED8 /* Localizable.strings */; };
+		5D5802F4A238C4D442D5B5E2 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882E8338B44C2648BE07A31E /* AppSettings.swift */; };
+		6794B752F78E7A6BA26364BE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 973278BE066702B2B906FE16 /* InfoPlist.strings */; };
+		75A37BFC89C6866920E4EBE8 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD3D8793063D0817D3701554 /* OnboardingView.swift */; };
+		8BD623E8CA1119D16EE76F89 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E1B947D6A4F9C9C1889795 /* RootView.swift */; };
+		ADFE3C3A64D01FDAE57EF283 /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C839008DF63C065DDFB234B5 /* BrandTheme.swift */; };
+		EAB32F192114F636E35131EB /* WageJarCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9B33D393B258190B7377C199 /* WageJarCore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		121D33C717F08717D51BE0B1 /* WageJar.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WageJar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1341529D8A90586ABEB6C086 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		70606A365B13A59977A70E48 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		79E1B947D6A4F9C9C1889795 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		882E8338B44C2648BE07A31E /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		9539B0AC6ADDA9622A976786 /* WageJarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WageJarApp.swift; sourceTree = "<group>"; };
+		9571E3524C7E981F5BE95670 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		973278BE066702B2B906FE16 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		AD3D8793063D0817D3701554 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		C293D7DD525B7B4A9122165B /* WageJarCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WageJarCore; path = WageJarCore; sourceTree = SOURCE_ROOT; };
+		C839008DF63C065DDFB234B5 /* BrandTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandTheme.swift; sourceTree = "<group>"; };
+		E1C2AC311294AE5ED5F7C5CE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C97F1E48FC8916633E4DE572 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EAB32F192114F636E35131EB /* WageJarCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1B086105416CEDE7A1EFD381 = {
+			isa = PBXGroup;
+			children = (
+				FA71520B6C875A47259DE316 /* Packages */,
+				762F65C450DD452A7C53C8B7 /* WageJar */,
+				9798EEB89B23F3DE645C4582 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6F55C327740CD5882B92CFB7 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				973278BE066702B2B906FE16 /* InfoPlist.strings */,
+				C4301F509FC2D1F1A12C0ED8 /* Localizable.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		762F65C450DD452A7C53C8B7 /* WageJar */ = {
+			isa = PBXGroup;
+			children = (
+				882E8338B44C2648BE07A31E /* AppSettings.swift */,
+				C839008DF63C065DDFB234B5 /* BrandTheme.swift */,
+				1341529D8A90586ABEB6C086 /* DashboardView.swift */,
+				AD3D8793063D0817D3701554 /* OnboardingView.swift */,
+				79E1B947D6A4F9C9C1889795 /* RootView.swift */,
+				E1C2AC311294AE5ED5F7C5CE /* SettingsView.swift */,
+				9539B0AC6ADDA9622A976786 /* WageJarApp.swift */,
+				6F55C327740CD5882B92CFB7 /* Resources */,
+			);
+			path = WageJar;
+			sourceTree = "<group>";
+		};
+		9798EEB89B23F3DE645C4582 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				121D33C717F08717D51BE0B1 /* WageJar.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FA71520B6C875A47259DE316 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				C293D7DD525B7B4A9122165B /* WageJarCore */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		79255B91F9D4F08979550931 /* WageJar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 577DCC28869368B3049F9B05 /* Build configuration list for PBXNativeTarget "WageJar" */;
+			buildPhases = (
+				694EAB80908E1AFC1C330A52 /* Sources */,
+				2B45C9CEB86B141EC34EF58E /* Resources */,
+				C97F1E48FC8916633E4DE572 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WageJar;
+			packageProductDependencies = (
+				9B33D393B258190B7377C199 /* WageJarCore */,
+			);
+			productName = WageJar;
+			productReference = 121D33C717F08717D51BE0B1 /* WageJar.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7AE8CC8C27F7B49843978691 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					79255B91F9D4F08979550931 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 32F7FF7C82AFBA11DA58BA03 /* Build configuration list for PBXProject "WageJar" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+				"zh-Hans",
+			);
+			mainGroup = 1B086105416CEDE7A1EFD381;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				DC5ED39D4B521D7785978D70 /* XCLocalSwiftPackageReference "WageJarCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 9798EEB89B23F3DE645C4582 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				79255B91F9D4F08979550931 /* WageJar */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2B45C9CEB86B141EC34EF58E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6794B752F78E7A6BA26364BE /* InfoPlist.strings in Resources */,
+				533231E574CDC2FEDB291557 /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		694EAB80908E1AFC1C330A52 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D5802F4A238C4D442D5B5E2 /* AppSettings.swift in Sources */,
+				ADFE3C3A64D01FDAE57EF283 /* BrandTheme.swift in Sources */,
+				000FBA03EF3379C32B9F01B3 /* DashboardView.swift in Sources */,
+				75A37BFC89C6866920E4EBE8 /* OnboardingView.swift in Sources */,
+				8BD623E8CA1119D16EE76F89 /* RootView.swift in Sources */,
+				523E8B7C3C9EA2F2D81CB6D7 /* SettingsView.swift in Sources */,
+				17AD9B0576436168D1B239FF /* WageJarApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		C4301F509FC2D1F1A12C0ED8 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9571E3524C7E981F5BE95670 /* en */,
+				70606A365B13A59977A70E48 /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		25BF5C7A7F356A1108141151 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WageJar;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.wagejar.app;
+				PRODUCT_NAME = WageJar;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		51A71C07EFDE7D992FDCBC06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WageJar;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.wagejar.app;
+				PRODUCT_NAME = WageJar;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		A7F68586822715ABBC87A2A9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 11;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.4.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		E9A98E45058460DAEA299394 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 11;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.4.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		32F7FF7C82AFBA11DA58BA03 /* Build configuration list for PBXProject "WageJar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E9A98E45058460DAEA299394 /* Debug */,
+				A7F68586822715ABBC87A2A9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		577DCC28869368B3049F9B05 /* Build configuration list for PBXNativeTarget "WageJar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				51A71C07EFDE7D992FDCBC06 /* Debug */,
+				25BF5C7A7F356A1108141151 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		DC5ED39D4B521D7785978D70 /* XCLocalSwiftPackageReference "WageJarCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = WageJarCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9B33D393B258190B7377C199 /* WageJarCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = WageJarCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 7AE8CC8C27F7B49843978691 /* Project object */;
+}

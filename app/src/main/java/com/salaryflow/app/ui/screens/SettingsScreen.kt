@@ -146,6 +146,32 @@ fun SettingsScreen(
                     onChange = { value -> viewModel.updateSettings { it.copy(lunchPaid = value) } },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                SwitchRow(
+                    title = stringResource(R.string.settings_dinner),
+                    subtitle = stringResource(R.string.settings_dinner_hint),
+                    checked = settings.dinnerEnabled,
+                    onChange = { value -> viewModel.updateSettings { it.copy(dinnerEnabled = value) } },
+                )
+                if (settings.dinnerEnabled) {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    SettingRow(
+                        title = stringResource(R.string.settings_dinner_time),
+                        subtitle = stringResource(R.string.settings_dinner_scope_hint),
+                        value = "${TimeText.clock(AppSettings.minuteToTime(settings.dinnerStartMinute))} - " +
+                            TimeText.clock(AppSettings.minuteToTime(settings.dinnerEndMinute)),
+                        onClick = { editingTime = TimeField.DINNER_START },
+                    )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    SwitchRow(
+                        title = stringResource(R.string.settings_dinner_paid),
+                        subtitle = stringResource(R.string.settings_dinner_paid_hint),
+                        checked = settings.dinnerPaid,
+                        onChange = { value ->
+                            viewModel.updateSettings { it.copy(dinnerPaid = value) }
+                        },
+                    )
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 Text(
                     stringResource(R.string.settings_work_days),
                     style = MaterialTheme.typography.titleMedium,
@@ -537,13 +563,23 @@ fun SettingsScreen(
                         TimeField.WORK_END -> current.copy(workEndMinute = minute)
                         TimeField.LUNCH_START -> current.copy(lunchStartMinute = minute)
                         TimeField.LUNCH_END -> current.copy(lunchEndMinute = minute)
+                        TimeField.DINNER_START -> current.copy(dinnerStartMinute = minute)
+                        TimeField.DINNER_END -> current.copy(dinnerEndMinute = minute)
                     }
                 }
                 editingTime = null
             },
-            showLunchNextHint = field == TimeField.LUNCH_START,
+            nextStepHint = when (field) {
+                TimeField.LUNCH_START -> stringResource(R.string.time_lunch_next_hint)
+                TimeField.DINNER_START -> stringResource(R.string.time_dinner_next_hint)
+                else -> null
+            },
             onSecondStep = {
-                if (field == TimeField.LUNCH_START) editingTime = TimeField.LUNCH_END
+                editingTime = when (field) {
+                    TimeField.LUNCH_START -> TimeField.LUNCH_END
+                    TimeField.DINNER_START -> TimeField.DINNER_END
+                    else -> null
+                }
             },
         )
     }
@@ -574,13 +610,17 @@ private enum class TimeField(val titleRes: Int) {
     WORK_START(R.string.time_work_start),
     WORK_END(R.string.time_work_end),
     LUNCH_START(R.string.time_lunch_start),
-    LUNCH_END(R.string.time_lunch_end);
+    LUNCH_END(R.string.time_lunch_end),
+    DINNER_START(R.string.time_dinner_start),
+    DINNER_END(R.string.time_dinner_end);
 
     fun current(settings: AppSettings): LocalTime = when (this) {
         WORK_START -> AppSettings.minuteToTime(settings.workStartMinute)
         WORK_END -> AppSettings.minuteToTime(settings.workEndMinute)
         LUNCH_START -> AppSettings.minuteToTime(settings.lunchStartMinute)
         LUNCH_END -> AppSettings.minuteToTime(settings.lunchEndMinute)
+        DINNER_START -> AppSettings.minuteToTime(settings.dinnerStartMinute)
+        DINNER_END -> AppSettings.minuteToTime(settings.dinnerEndMinute)
     }
 }
 
@@ -727,7 +767,7 @@ private fun TimeInputDialog(
     initial: LocalTime,
     onDismiss: () -> Unit,
     onConfirm: (LocalTime) -> Unit,
-    showLunchNextHint: Boolean,
+    nextStepHint: String?,
     onSecondStep: () -> Unit = {},
 ) {
     val state = rememberTimePickerState(
@@ -741,9 +781,9 @@ private fun TimeInputDialog(
         text = {
             Column {
                 TimePicker(state = state)
-                if (showLunchNextHint) {
+                if (nextStepHint != null) {
                     Text(
-                        stringResource(R.string.time_lunch_next_hint),
+                        nextStepHint,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

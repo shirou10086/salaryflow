@@ -52,7 +52,7 @@
     <string name="widget_status_rest">Day off</string>
     <string name="widget_status_before_work">Not started</string>
     <string name="widget_status_finished">Off work</string>
-    <string name="widget_status_break">On break</string>
+    <string name="widget_status_break">Break</string>
     <string name="widget_amount_placeholder">¥0.00</string>
     <string name="widget_detail_placeholder">Today\'s income · Total savings ¥0.00</string>
     <string name="widget_detail_hidden">Today\'s income · Total savings %1$s</string>
@@ -74,7 +74,7 @@
     <string name="home_payday_today">Payday today</string>
     <string name="home_days_to_payday">Payday in %1$d days</string>
     <string name="status_working">Working</string>
-    <string name="status_break">On break</string>
+    <string name="status_break">Break</string>
     <string name="status_before_work">Before work</string>
     <string name="status_finished">Off work</string>
     <string name="status_rest_day">Day off</string>
@@ -154,6 +154,12 @@
     <string name="settings_lunch_hint">Default: 12:00–13:00</string>
     <string name="settings_lunch_paid">Pay during lunch</string>
     <string name="settings_lunch_paid_hint">Keep earnings increasing during lunch</string>
+    <string name="settings_dinner">Dinner break</string>
+    <string name="settings_dinner_hint">Optional second break; off by default</string>
+    <string name="settings_dinner_time">Dinner time</string>
+    <string name="settings_dinner_scope_hint">Only counts when it is inside your work hours</string>
+    <string name="settings_dinner_paid">Pay during dinner</string>
+    <string name="settings_dinner_paid_hint">Keep earnings increasing during dinner</string>
     <string name="settings_work_days">Work days</string>
     <string name="settings_payday_section">Payday and income</string>
     <string name="settings_payday_section_subtitle">Record the full salary automatically on payday</string>
@@ -241,6 +247,9 @@
     <string name="time_lunch_start">Lunch start</string>
     <string name="time_lunch_end">Lunch end</string>
     <string name="time_lunch_next_hint">The lunch end time will be set next.</string>
+    <string name="time_dinner_start">Dinner start</string>
+    <string name="time_dinner_end">Dinner end</string>
+    <string name="time_dinner_next_hint">The dinner end time will be set next.</string>
     <string name="default_goal_name">First savings goal</string>
 
     <string name="ledger_all">All</string>

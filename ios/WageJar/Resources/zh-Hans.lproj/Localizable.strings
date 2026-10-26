@@ -1,0 +1,43 @@
+"app.name" = "存钱罐";
+"tab.home" = "首页";
+"tab.settings" = "设置";
+
+"status.restDay" = "休息日";
+"status.beforeWork" = "未开工";
+"status.working" = "工作中";
+"status.break" = "休息中";
+"status.finished" = "已下班";
+
+"home.todayEarned" = "今天已挣";
+"home.perSecond" = "每秒";
+"home.dailyPay" = "日薪";
+"home.schedule" = "今日安排";
+
+"settings.title" = "设置";
+"settings.salarySection" = "薪资";
+"settings.monthlySalary" = "月薪";
+"settings.payday" = "发薪日";
+"settings.paidDays" = "每月计薪天数";
+"settings.workHours" = "工作时间";
+"settings.workStart" = "上班";
+"settings.workEnd" = "下班";
+"settings.breaks" = "休息时间";
+"settings.lunch" = "午休";
+"settings.lunchStart" = "午休开始";
+"settings.lunchEnd" = "午休结束";
+"settings.lunchPaid" = "午休也计薪";
+"settings.dinner" = "晚餐休息";
+"settings.dinnerStart" = "晚餐开始";
+"settings.dinnerEnd" = "晚餐结束";
+"settings.dinnerPaid" = "晚餐也计薪";
+"settings.dinnerHint" = "晚餐时间位于上下班时间内时才会影响工资计算。";
+"settings.display" = "显示";
+"settings.hideAmounts" = "隐藏金额";
+"settings.about" = "关于";
+"settings.version" = "版本";
+"settings.iosNotificationNote" = "iOS 不允许常驻通知每秒刷新。打开 WageJar 时会显示实时收入。";
+
+"onboarding.subtitle" = "看着每个工作日一秒一秒变成收入。";
+"onboarding.salaryPlaceholder" = "例如 10000";
+"onboarding.workHint" = "午休、晚餐、工作日和发薪日之后都可以在设置中自由调整。";
+"onboarding.finish" = "完成设置";

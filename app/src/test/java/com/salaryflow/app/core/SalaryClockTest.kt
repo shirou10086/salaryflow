@@ -89,6 +89,94 @@ class SalaryClockTest {
     }
 
     @Test
+    fun `configurable unpaid dinner is excluded from paid time and status`() {
+        val dinnerClock = SalaryClock(
+            config.copy(
+                schedule = config.schedule.copy(
+                    endTime = LocalTime.of(20, 0),
+                    dinnerEnabled = true,
+                    dinnerStart = LocalTime.of(18, 0),
+                    dinnerEnd = LocalTime.of(19, 0),
+                ),
+            ),
+        )
+        val monday = LocalDate.of(2026, 10, 19)
+
+        assertEquals(32_400L, dinnerClock.paidSecondsPerDay)
+        assertEquals(WorkStatus.UNPAID_BREAK, dinnerClock.status(monday.atTime(18, 30)))
+        assertEquals(
+            3_600.0,
+            dinnerClock.paidSecondsBetween(monday.atTime(17, 30), monday.atTime(19, 30)),
+            0.001,
+        )
+    }
+
+    @Test
+    fun `paid dinner keeps the configured break paid`() {
+        val paidDinnerClock = SalaryClock(
+            config.copy(
+                schedule = config.schedule.copy(
+                    endTime = LocalTime.of(20, 0),
+                    dinnerEnabled = true,
+                    dinnerStart = LocalTime.of(18, 0),
+                    dinnerEnd = LocalTime.of(19, 0),
+                    dinnerPaid = true,
+                ),
+            ),
+        )
+
+        assertEquals(36_000L, paidDinnerClock.paidSecondsPerDay)
+        assertEquals(
+            WorkStatus.WORKING,
+            paidDinnerClock.status(LocalDate.of(2026, 10, 19).atTime(18, 30)),
+        )
+    }
+
+    @Test
+    fun `overlapping unpaid breaks are deducted only once`() {
+        val overlappingClock = SalaryClock(
+            config.copy(
+                schedule = config.schedule.copy(
+                    endTime = LocalTime.of(20, 0),
+                    lunchStart = LocalTime.of(12, 0),
+                    lunchEnd = LocalTime.of(13, 0),
+                    dinnerEnabled = true,
+                    dinnerStart = LocalTime.of(12, 30),
+                    dinnerEnd = LocalTime.of(13, 30),
+                ),
+            ),
+        )
+
+        assertEquals(34_200L, overlappingClock.paidSecondsPerDay)
+        assertEquals(
+            listOf(
+                LocalTime.of(9, 0) to LocalTime.of(12, 0),
+                LocalTime.of(13, 30) to LocalTime.of(20, 0),
+            ),
+            overlappingClock.config.schedule.paidSegments,
+        )
+    }
+
+    @Test
+    fun `disabled dinner and out of range dinner do not change paid time`() {
+        val disabled = SalaryClock(
+            config.copy(schedule = config.schedule.copy(dinnerEnabled = false)),
+        )
+        val outsideWork = SalaryClock(
+            config.copy(
+                schedule = config.schedule.copy(
+                    dinnerEnabled = true,
+                    dinnerStart = LocalTime.of(18, 0),
+                    dinnerEnd = LocalTime.of(19, 0),
+                ),
+            ),
+        )
+
+        assertEquals(28_800L, disabled.paidSecondsPerDay)
+        assertEquals(28_800L, outsideWork.paidSecondsPerDay)
+    }
+
+    @Test
     fun `payday is clamped to the end of short months`() {
         val clamped = SalaryClock(config.copy(payday = 31))
         assertEquals(LocalDate.of(2026, 2, 28), clamped.paydayOf(YearMonth.of(2026, 2)))

@@ -19,7 +19,7 @@ import java.net.URL
 import java.security.MessageDigest
 
 private const val RELEASE_API_URL =
-    "https://api.github.com/repos/shirou10086/salaryflow/releases/latest"
+    "https://api.github.com/repos/shirou10086/salaryjar/releases/latest"
 private const val MAX_APK_BYTES = 100L * 1024L * 1024L
 
 fun createUpdateManager(context: Context): UpdateManager = GithubUpdateManager(context)

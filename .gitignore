@@ -12,3 +12,7 @@ app/release/
 *.keystore
 *.jks
 signing/
+.build/
+DerivedData/
+*.xcuserstate
+**/xcuserdata/

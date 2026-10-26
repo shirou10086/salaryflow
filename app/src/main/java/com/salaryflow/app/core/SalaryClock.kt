@@ -35,16 +35,49 @@ data class WorkSchedule(
     val lunchStart: LocalTime = LocalTime.of(12, 0),
     val lunchEnd: LocalTime = LocalTime.of(13, 0),
     val lunchPaid: Boolean = false,
+    val dinnerEnabled: Boolean = false,
+    val dinnerStart: LocalTime = LocalTime.of(18, 0),
+    val dinnerEnd: LocalTime = LocalTime.of(18, 30),
+    val dinnerPaid: Boolean = false,
 ) {
     /** 午休必须落在上下班区间内且时长大于 0 才生效。 */
     val lunchEnabled: Boolean
         get() = lunchEnd > lunchStart && lunchStart >= startTime && lunchEnd <= endTime
 
+    /** 晚餐休息仅在开启、位于上下班区间内且时长大于 0 时生效。 */
+    val dinnerActive: Boolean
+        get() = dinnerEnabled &&
+            dinnerEnd > dinnerStart &&
+            dinnerStart >= startTime &&
+            dinnerEnd <= endTime
+
     val paidSegments: List<Pair<LocalTime, LocalTime>>
-        get() = if (!lunchPaid && lunchEnabled) {
-            listOf(startTime to lunchStart, lunchEnd to endTime)
-        } else {
-            listOf(startTime to endTime)
+        get() {
+            val unpaidBreaks = buildList {
+                if (!lunchPaid && lunchEnabled) add(lunchStart to lunchEnd)
+                if (!dinnerPaid && dinnerActive) add(dinnerStart to dinnerEnd)
+            }
+            if (unpaidBreaks.isEmpty()) return listOf(startTime to endTime)
+
+            val mergedBreaks = mutableListOf<Pair<LocalTime, LocalTime>>()
+            unpaidBreaks.sortedBy { it.first }.forEach { breakRange ->
+                val previous = mergedBreaks.lastOrNull()
+                if (previous == null || breakRange.first > previous.second) {
+                    mergedBreaks += breakRange
+                } else {
+                    mergedBreaks[mergedBreaks.lastIndex] =
+                        previous.first to maxOf(previous.second, breakRange.second)
+                }
+            }
+
+            val segments = mutableListOf<Pair<LocalTime, LocalTime>>()
+            var cursor = startTime
+            mergedBreaks.forEach { (breakStart, breakEnd) ->
+                if (breakStart > cursor) segments += cursor to breakStart
+                if (breakEnd > cursor) cursor = breakEnd
+            }
+            if (cursor < endTime) segments += cursor to endTime
+            return segments
         }
 
     val paidSecondsPerDay: Long
@@ -100,6 +133,8 @@ class SalaryClock(val config: SalaryConfig) {
             time >= schedule.endTime -> WorkStatus.FINISHED
             schedule.lunchEnabled && !schedule.lunchPaid &&
                 time >= schedule.lunchStart && time < schedule.lunchEnd -> WorkStatus.UNPAID_BREAK
+            schedule.dinnerActive && !schedule.dinnerPaid &&
+                time >= schedule.dinnerStart && time < schedule.dinnerEnd -> WorkStatus.UNPAID_BREAK
             else -> WorkStatus.WORKING
         }
     }
@@ -153,6 +188,9 @@ class SalaryClock(val config: SalaryConfig) {
         if (schedule.lunchEnabled) {
             list += DayMilestone(schedule.lunchStart)
         }
+        if (schedule.dinnerActive) {
+            list += DayMilestone(schedule.dinnerStart)
+        }
         val five = LocalTime.of(17, 0)
         if (five > schedule.startTime && five < schedule.endTime &&
             Duration.between(five, schedule.endTime).toMinutes() >= 30
@@ -160,7 +198,7 @@ class SalaryClock(val config: SalaryConfig) {
             list += DayMilestone(five)
         }
         list += DayMilestone(schedule.endTime)
-        return list
+        return list.distinct().sortedBy(DayMilestone::time)
     }
 
     // ---------- 发薪日 ----------

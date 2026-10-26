@@ -1,6 +1,6 @@
 # Google Play 发布与封闭测试
 
-本文对应 WageJar / 薪罐 `0.4.3 (10)`，`applicationId` 为 `com.salaryflow.app`。
+本文对应 WageJar / 存钱罐 `0.4.4 (11)`，`applicationId` 为 `com.salaryflow.app`。
 当前 `compileSdk` 和 `targetSdk` 均为 Android 16（API 36）。
 
 ## 两个发布渠道
@@ -48,7 +48,8 @@ app/build/outputs/bundle/playRelease/app-play-release.aab
 
 ## Play Console 首次配置
 
-1. 在 Play Console 创建应用，默认语言可按目标市场选择，应用名可使用 `WageJar` 或 `薪罐`。
+1. 在 Play Console 创建应用，默认语言可按目标市场选择，应用名可使用 `WageJar` 或
+   `存钱罐`。
 2. 完成开发者账号验证。组织账号不受下面的 12 人规则限制；2023-11-13 之后创建的个人账号
    需要在申请生产权限前完成封闭测试。
 3. 完成 Dashboard 和“App content”必填项，包括隐私政策、Data safety、内容分级、
@@ -68,7 +69,7 @@ app/build/outputs/bundle/playRelease/app-play-release.aab
 14 天。内部测试轨道不计入这项要求。
 
 1. 在“Test and release > Testing > Closed testing”创建封闭测试轨道。
-2. 上传 `versionCode 10` 的 AAB，选择需要测试的国家或地区，确认没有阻断性错误后发布。
+2. 上传 `versionCode 11` 的 AAB，选择需要测试的国家或地区，确认没有阻断性错误后发布。
 3. 在 Testers 页面按 Google 账号邮箱逐个添加测试者，或添加一个包含测试者的 Google Group。
 4. 把该轨道的 opt-in URL 发给测试者。测试者必须登录自己的真实 Google 账号，打开链接，
    点击加入测试，再从 Google Play 安装应用。

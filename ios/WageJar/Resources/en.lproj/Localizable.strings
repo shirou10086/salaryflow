@@ -1,0 +1,43 @@
+"app.name" = "WageJar";
+"tab.home" = "Home";
+"tab.settings" = "Settings";
+
+"status.restDay" = "Day off";
+"status.beforeWork" = "Before work";
+"status.working" = "Working";
+"status.break" = "Break";
+"status.finished" = "Off work";
+
+"home.todayEarned" = "Earned today";
+"home.perSecond" = "Per second";
+"home.dailyPay" = "Daily pay";
+"home.schedule" = "Schedule";
+
+"settings.title" = "Settings";
+"settings.salarySection" = "Salary";
+"settings.monthlySalary" = "Monthly salary";
+"settings.payday" = "Payday";
+"settings.paidDays" = "Paid days per month";
+"settings.workHours" = "Work hours";
+"settings.workStart" = "Start";
+"settings.workEnd" = "End";
+"settings.breaks" = "Breaks";
+"settings.lunch" = "Lunch break";
+"settings.lunchStart" = "Lunch start";
+"settings.lunchEnd" = "Lunch end";
+"settings.lunchPaid" = "Pay during lunch";
+"settings.dinner" = "Dinner break";
+"settings.dinnerStart" = "Dinner start";
+"settings.dinnerEnd" = "Dinner end";
+"settings.dinnerPaid" = "Pay during dinner";
+"settings.dinnerHint" = "Dinner only affects pay when it is inside work hours.";
+"settings.display" = "Display";
+"settings.hideAmounts" = "Hide amounts";
+"settings.about" = "About";
+"settings.version" = "Version";
+"settings.iosNotificationNote" = "iOS does not allow an always-running notification counter. WageJar shows the live amount while the app is open.";
+
+"onboarding.subtitle" = "See every workday turn into money, one second at a time.";
+"onboarding.salaryPlaceholder" = "For example, 10000";
+"onboarding.workHint" = "You can customize lunch, dinner, workdays and payday later in Settings.";
+"onboarding.finish" = "Finish setup";
