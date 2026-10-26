@@ -50,16 +50,18 @@ jobs:
             -configuration Debug \
             -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}" \
             -derivedDataPath DerivedData \
+            -resultBundlePath WageJarUITests.xcresult \
             CODE_SIGNING_ALLOWED=NO \
             test
 
-      - name: Capture simulator screenshot
+      - name: Export test attachments
         run: |
-          UDID="${{ steps.simulator.outputs.udid }}"
-          xcrun simctl io "$UDID" screenshot ios-simulator.png
+          xcrun xcresulttool export attachments \
+            --path ios/WageJarUITests.xcresult \
+            --output-path ios/WageJarUITestAttachments
 
-      - name: Upload simulator screenshot
+      - name: Upload simulator test attachments
         uses: actions/upload-artifact@v4
         with:
           name: wagejar-ios-simulator-screenshot
-          path: ios-simulator.png
+          path: ios/WageJarUITestAttachments
