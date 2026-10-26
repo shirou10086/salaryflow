@@ -40,6 +40,17 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "55B20F54ED2D7B7BEBD7B5B1"
+               BuildableName = "WageJarUITests.xctest"
+               BlueprintName = "WageJarUITests"
+               ReferencedContainer = "container:WageJar.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

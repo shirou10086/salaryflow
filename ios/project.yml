@@ -38,3 +38,18 @@ targets:
         CODE_SIGN_STYLE: Automatic
     scheme:
       gatherCoverageData: true
+      testTargets:
+        - WageJarUITests
+  WageJarUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: WageJarUITests
+    dependencies:
+      - target: WageJar
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.wagejar.app.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: WageJar

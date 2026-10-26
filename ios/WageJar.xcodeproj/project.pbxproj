@@ -17,13 +17,26 @@
 		8BD623E8CA1119D16EE76F89 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E1B947D6A4F9C9C1889795 /* RootView.swift */; };
 		ADFE3C3A64D01FDAE57EF283 /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C839008DF63C065DDFB234B5 /* BrandTheme.swift */; };
 		EAB32F192114F636E35131EB /* WageJarCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9B33D393B258190B7377C199 /* WageJarCore */; };
+		EC05A1DBF5E0DAC293110C9B /* WageJarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82811863B1CAB279A3EC3CC5 /* WageJarUITests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3B22B30AD0D17D1E3F51727F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7AE8CC8C27F7B49843978691 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 79255B91F9D4F08979550931;
+			remoteInfo = WageJar;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		121D33C717F08717D51BE0B1 /* WageJar.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WageJar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1341529D8A90586ABEB6C086 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		70606A365B13A59977A70E48 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		79E1B947D6A4F9C9C1889795 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		807676EB91897CF37BEA6B3C /* WageJarUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WageJarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		82811863B1CAB279A3EC3CC5 /* WageJarUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WageJarUITests.swift; sourceTree = "<group>"; };
 		882E8338B44C2648BE07A31E /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		9539B0AC6ADDA9622A976786 /* WageJarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WageJarApp.swift; sourceTree = "<group>"; };
 		9571E3524C7E981F5BE95670 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -51,6 +64,7 @@
 			children = (
 				FA71520B6C875A47259DE316 /* Packages */,
 				762F65C450DD452A7C53C8B7 /* WageJar */,
+				713AB280583B0803E11B4B5F /* WageJarUITests */,
 				9798EEB89B23F3DE645C4582 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -62,6 +76,14 @@
 				C4301F509FC2D1F1A12C0ED8 /* Localizable.strings */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		713AB280583B0803E11B4B5F /* WageJarUITests */ = {
+			isa = PBXGroup;
+			children = (
+				82811863B1CAB279A3EC3CC5 /* WageJarUITests.swift */,
+			);
+			path = WageJarUITests;
 			sourceTree = "<group>";
 		};
 		762F65C450DD452A7C53C8B7 /* WageJar */ = {
@@ -83,6 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				121D33C717F08717D51BE0B1 /* WageJar.app */,
+				807676EB91897CF37BEA6B3C /* WageJarUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,6 +121,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		55B20F54ED2D7B7BEBD7B5B1 /* WageJarUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 248D86E3B930C02712A9B0B1 /* Build configuration list for PBXNativeTarget "WageJarUITests" */;
+			buildPhases = (
+				6FE0A589A78FFA4CBBEBA37E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4B56AB8C018D50E60183ADC3 /* PBXTargetDependency */,
+			);
+			name = WageJarUITests;
+			packageProductDependencies = (
+			);
+			productName = WageJarUITests;
+			productReference = 807676EB91897CF37BEA6B3C /* WageJarUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		79255B91F9D4F08979550931 /* WageJar */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 577DCC28869368B3049F9B05 /* Build configuration list for PBXNativeTarget "WageJar" */;
@@ -127,6 +168,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					55B20F54ED2D7B7BEBD7B5B1 = {
+						TestTargetID = 79255B91F9D4F08979550931;
+					};
 					79255B91F9D4F08979550931 = {
 						ProvisioningStyle = Automatic;
 					};
@@ -151,6 +195,7 @@
 			projectRoot = "";
 			targets = (
 				79255B91F9D4F08979550931 /* WageJar */,
+				55B20F54ED2D7B7BEBD7B5B1 /* WageJarUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -182,7 +227,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6FE0A589A78FFA4CBBEBA37E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EC05A1DBF5E0DAC293110C9B /* WageJarUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4B56AB8C018D50E60183ADC3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 79255B91F9D4F08979550931 /* WageJar */;
+			targetProxy = 3B22B30AD0D17D1E3F51727F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		C4301F509FC2D1F1A12C0ED8 /* Localizable.strings */ = {
@@ -219,6 +280,24 @@
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
+		};
+		39363F3C181CEE431B292482 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.wagejar.app.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = WageJar;
+			};
+			name = Debug;
 		};
 		51A71C07EFDE7D992FDCBC06 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -301,6 +380,24 @@
 			};
 			name = Release;
 		};
+		E9138EF8CCF1CC1FBD8D3683 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.wagejar.app.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = WageJar;
+			};
+			name = Release;
+		};
 		E9A98E45058460DAEA299394 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -369,6 +466,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		248D86E3B930C02712A9B0B1 /* Build configuration list for PBXNativeTarget "WageJarUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				39363F3C181CEE431B292482 /* Debug */,
+				E9138EF8CCF1CC1FBD8D3683 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		32F7FF7C82AFBA11DA58BA03 /* Build configuration list for PBXProject "WageJar" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
