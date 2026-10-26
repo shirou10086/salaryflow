@@ -3,6 +3,15 @@
 This directory contains the native SwiftUI version of WageJar. Its product version is aligned
 with Android `0.4.4 (11)`.
 
+The app includes:
+
+- a live salary counter based on the user's work schedule
+- configurable work hours, workdays, lunch and dinner breaks
+- expense and income records with categories and notes
+- monthly ledger filtering, deletion, balances and six-month statistics
+- savings balance calibration and a configurable savings goal
+- system-language support for English and Simplified Chinese
+
 ## Requirements
 
 - macOS with full Xcode installed and selected with `sudo xcode-select -s /Applications/Xcode.app`

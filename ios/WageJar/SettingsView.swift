@@ -1,8 +1,16 @@
 import SwiftUI
 import WageJarCore
+#if os(iOS)
+import UIKit
+#endif
 
 struct SettingsView: View {
     @EnvironmentObject private var store: SettingsStore
+    @EnvironmentObject private var ledger: LedgerStore
+    @Environment(\.openURL) private var openURL
+
+    @State private var showBalanceCalibration = false
+    @State private var showClearConfirmation = false
 
     var body: some View {
         NavigationStack {
@@ -10,10 +18,34 @@ struct SettingsView: View {
                 salarySection
                 workHoursSection
                 breakSection
-                appearanceSection
+                savingsSection
+                goalSection
+                displaySection
+                dataSection
                 aboutSection
             }
+            .accessibilityIdentifier("settings.screen")
             .navigationTitle("settings.title")
+        }
+        .sheet(isPresented: $showBalanceCalibration) {
+            BalanceCalibrationView(
+                currentCents: ledger.savingsCents,
+                hidden: store.settings.hideAmounts
+            ) { actualCents in
+                ledger.calibrateBalance(to: actualCents)
+            }
+        }
+        .confirmationDialog(
+            "settings.clearTitle",
+            isPresented: $showClearConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("settings.clearData", role: .destructive) {
+                ledger.clearAll()
+            }
+            Button("common.cancel", role: .cancel) {}
+        } message: {
+            Text("settings.clearHint")
         }
     }
 
@@ -26,42 +58,43 @@ struct SettingsView: View {
                         Double(store.settings.salary.monthlySalaryCents) / 100
                     },
                     set: { value in
-                        var settings = store.settings
-                        settings.salary.monthlySalaryCents = Int((value * 100).rounded())
-                        store.settings = settings
+                        updateSalary {
+                            $0.monthlySalaryCents = max(Int((value * 100).rounded()), 0)
+                        }
                     }
                 ),
-                format: .number.precision(.fractionLength(2))
+                format: .number.precision(.fractionLength(0...2))
             )
-            .decimalKeyboard()
-
-            Stepper(
-                value: Binding(
-                    get: { store.settings.salary.payday },
-                    set: { value in
-                        var settings = store.settings
-                        settings.salary.payday = value
-                        store.settings = settings
-                    }
-                ),
-                in: 1...31
-            ) {
-                LabeledContent("settings.payday", value: "\(store.settings.salary.payday)")
-            }
+            .keyboardType(.decimalPad)
+            .accessibilityIdentifier("settings.monthlySalary")
 
             TextField(
                 "settings.paidDays",
                 value: Binding(
                     get: { store.settings.salary.paidDaysPerMonth },
                     set: { value in
-                        var settings = store.settings
-                        settings.salary.paidDaysPerMonth = max(value, 1)
-                        store.settings = settings
+                        updateSalary {
+                            $0.paidDaysPerMonth = max(value, 1)
+                        }
                     }
                 ),
                 format: .number.precision(.fractionLength(0...2))
             )
-            .decimalKeyboard()
+            .keyboardType(.decimalPad)
+
+            Stepper(
+                value: Binding(
+                    get: { store.settings.salary.payday },
+                    set: { value in
+                        updateSalary {
+                            $0.payday = min(max(value, 1), 31)
+                        }
+                    }
+                ),
+                in: 1...31
+            ) {
+                LabeledContent("settings.payday", value: "\(store.settings.salary.payday)")
+            }
         }
     }
 
@@ -129,6 +162,7 @@ struct SettingsView: View {
                     }
                 )
             )
+            .accessibilityIdentifier("settings.dinner")
 
             if store.settings.salary.schedule.dinnerEnabled {
                 DatePicker(
@@ -157,7 +191,50 @@ struct SettingsView: View {
         }
     }
 
-    private var appearanceSection: some View {
+    private var savingsSection: some View {
+        Section("settings.savingsSection") {
+            LabeledContent(
+                "settings.currentSavings",
+                value: store.settings.hideAmounts
+                    ? "¥••••"
+                    : SalaryFormatting.yuan(ledger.savingsCents)
+            )
+            Button("settings.updateSavings") {
+                showBalanceCalibration = true
+            }
+        }
+    }
+
+    private var goalSection: some View {
+        Section("settings.goalSection") {
+            TextField(
+                "settings.goalName",
+                text: Binding(
+                    get: { store.settings.goalName },
+                    set: { value in
+                        var settings = store.settings
+                        settings.goalName = value
+                        store.settings = settings
+                    }
+                )
+            )
+            TextField(
+                "settings.goalAmount",
+                value: Binding(
+                    get: { Double(store.settings.goalAmountCents) / 100 },
+                    set: { value in
+                        var settings = store.settings
+                        settings.goalAmountCents = max(Int((value * 100).rounded()), 0)
+                        store.settings = settings
+                    }
+                ),
+                format: .number.precision(.fractionLength(0...2))
+            )
+            .keyboardType(.decimalPad)
+        }
+    }
+
+    private var displaySection: some View {
         Section("settings.display") {
             Toggle(
                 "settings.hideAmounts",
@@ -173,19 +250,43 @@ struct SettingsView: View {
         }
     }
 
+    private var dataSection: some View {
+        Section("settings.data") {
+            Button("settings.clearData", role: .destructive) {
+                showClearConfirmation = true
+            }
+        }
+    }
+
     private var aboutSection: some View {
         Section("settings.about") {
             LabeledContent("settings.version", value: "0.4.4 (11)")
+            Button {
+                #if os(iOS)
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    openURL(url)
+                }
+                #endif
+            } label: {
+                LabeledContent(
+                    "settings.language",
+                    value: String(localized: "settings.languageValue")
+                )
+            }
             Text("settings.iosNotificationNote")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
     }
 
-    private func updateSchedule(_ transform: (inout WorkSchedule) -> Void) {
+    private func updateSalary(_ transform: (inout SalaryConfig) -> Void) {
         var settings = store.settings
-        transform(&settings.salary.schedule)
+        transform(&settings.salary)
         store.settings = settings
+    }
+
+    private func updateSchedule(_ transform: (inout WorkSchedule) -> Void) {
+        updateSalary { transform(&$0.schedule) }
     }
 
     private func minuteBinding(
@@ -222,6 +323,8 @@ struct SettingsView: View {
 
 private extension Weekday {
     var localizedName: String {
-        Calendar.current.weekdaySymbols[rawValue - 1]
+        let symbols = Calendar.current.weekdaySymbols
+        guard symbols.indices.contains(rawValue - 1) else { return "\(rawValue)" }
+        return symbols[rawValue - 1]
     }
 }

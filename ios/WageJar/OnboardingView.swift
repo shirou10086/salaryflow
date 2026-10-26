@@ -44,6 +44,7 @@ struct OnboardingView: View {
                             TextField("onboarding.salaryPlaceholder", text: $salaryText)
                                 .decimalKeyboard()
                                 .textFieldStyle(.roundedBorder)
+                                .accessibilityIdentifier("onboarding.salary")
                         }
 
                         VStack(alignment: .leading, spacing: 8) {
@@ -52,6 +53,7 @@ struct OnboardingView: View {
                             TextField("15", text: $paydayText)
                                 .numberKeyboard()
                                 .textFieldStyle(.roundedBorder)
+                                .accessibilityIdentifier("onboarding.payday")
                         }
                     }
                     .padding(20)
@@ -78,6 +80,7 @@ struct OnboardingView: View {
                     .tint(BrandTheme.accent)
                     .foregroundStyle(BrandTheme.heroStart)
                     .disabled(salaryCents == nil || payday == nil)
+                    .accessibilityIdentifier("onboarding.finish")
                 }
                 .padding(24)
             }

@@ -1,5 +1,12 @@
 "app.name" = "WageJar";
+"common.cancel" = "Cancel";
+"common.save" = "Save";
+"common.delete" = "Delete";
+"common.expense" = "Expense";
+"common.income" = "Income";
 "tab.home" = "Home";
+"tab.ledger" = "Ledger";
+"tab.stats" = "Stats";
 "tab.settings" = "Settings";
 
 "status.restDay" = "Day off";
@@ -9,9 +16,85 @@
 "status.finished" = "Off work";
 
 "home.todayEarned" = "Earned today";
+"home.earnedToday" = "Earned today";
 "home.perSecond" = "Per second";
 "home.dailyPay" = "Daily pay";
 "home.schedule" = "Schedule";
+"home.dayProgress" = "Day progress";
+"home.dayOff" = "Day off";
+"home.daysToPayday" = "Payday in %d days";
+"home.monthlyOverview" = "Monthly overview";
+"home.adjustSavings" = "Adjust savings";
+"home.savings" = "Savings";
+"home.todayExpense" = "Today's expense";
+"home.defaultGoal" = "Savings goal";
+"home.recent" = "Recent transactions";
+"home.noTransactions" = "No transactions yet.";
+"home.viewLedger" = "View ledger";
+"home.showAmounts" = "Show amounts";
+"home.hideAmounts" = "Hide amounts";
+
+"quickAdd.title" = "Add transaction";
+"quickAdd.expense" = "Add expense";
+"quickAdd.income" = "Add income";
+"quickAdd.amount" = "Amount";
+"quickAdd.category" = "Category";
+"quickAdd.note" = "Note";
+"quickAdd.optional" = "Optional";
+"quickAdd.expenseTitle" = "New expense";
+"quickAdd.incomeTitle" = "New income";
+
+"category.food" = "Food";
+"category.transport" = "Transport";
+"category.shopping" = "Shopping";
+"category.housing" = "Housing";
+"category.fun" = "Entertainment";
+"category.health" = "Health";
+"category.study" = "Study";
+"category.social" = "Social";
+"category.other" = "Other";
+"category.salary" = "Salary";
+"category.bonus" = "Bonus";
+"category.invest" = "Investment";
+"category.side" = "Side income";
+"category.otherIncome" = "Other income";
+"category.saving" = "Savings adjustment";
+
+"balance.title" = "Adjust savings";
+"balance.current" = "Current savings";
+"balance.currentHint" = "This is calculated from your recorded income and expenses.";
+"balance.updateTitle" = "Set actual savings";
+"balance.updateHint" = "Enter the balance shown in your bank account. WageJar records the difference as an adjustment.";
+"balance.increase" = "Increase";
+"balance.decrease" = "Decrease";
+"balance.unchanged" = "No change";
+
+"ledger.all" = "All";
+"ledger.saving" = "Savings";
+"ledger.monthExpense" = "Month expense";
+"ledger.monthIncome" = "Month income";
+"ledger.monthBalance" = "Month balance";
+"ledger.emptyTitle" = "No records";
+"ledger.emptySubtitle" = "Add an expense or income to start your ledger.";
+"ledger.dayExpense" = "Expenses %@";
+"ledger.deleteTitle" = "Delete transaction?";
+"ledger.deleteHint" = "This cannot be undone.";
+"ledger.previousMonth" = "Previous month";
+"ledger.currentMonth" = "Back to this month";
+"ledger.nextMonth" = "Next month";
+
+"stats.title" = "Stats";
+"stats.monthlyReport" = "Monthly report";
+"stats.balance" = "Balance";
+"stats.summaryHidden" = "Amounts are hidden.";
+"stats.summary" = "This month's balance is %@, and your current savings is %@.";
+"stats.sixMonthExpense" = "Six-month expense";
+"stats.sixMonthExpenseHint" = "See how your spending changes over time.";
+"stats.expenseCategories" = "Expense categories";
+"stats.expenseCategoriesHint" = "This month's largest spending categories.";
+"stats.noExpense" = "No expenses recorded this month.";
+"stats.savings" = "Savings";
+"stats.savingsHint" = "Income minus expenses, including your balance adjustments.";
 
 "settings.title" = "Settings";
 "settings.salarySection" = "Salary";
@@ -33,6 +116,18 @@
 "settings.dinnerHint" = "Dinner only affects pay when it is inside work hours.";
 "settings.display" = "Display";
 "settings.hideAmounts" = "Hide amounts";
+"settings.savingsSection" = "Savings";
+"settings.currentSavings" = "Current savings";
+"settings.updateSavings" = "Set actual savings";
+"settings.goalSection" = "Savings goal";
+"settings.goalName" = "Goal name";
+"settings.goalAmount" = "Goal amount";
+"settings.data" = "Data";
+"settings.clearTitle" = "Clear all records?";
+"settings.clearData" = "Clear all records";
+"settings.clearHint" = "This removes all transactions from this device.";
+"settings.language" = "Language";
+"settings.languageValue" = "System language";
 "settings.about" = "About";
 "settings.version" = "Version";
 "settings.iosNotificationNote" = "iOS does not allow an always-running notification counter. WageJar shows the live amount while the app is open.";

@@ -86,6 +86,26 @@ final class SalaryClockTests: XCTestCase {
         XCTAssertEqual(clock.paidSecondsPerDay, 28_800)
     }
 
+    func testLedgerBalanceIncludesIncomeExpenseAndCalibration() {
+        let transactions = [
+            LedgerTransaction(type: .income, amountCents: 10_000, category: "salary"),
+            LedgerTransaction(type: .expense, amountCents: 3_000, category: "food"),
+            LedgerTransaction(
+                type: .savingIn,
+                amountCents: 500,
+                category: LedgerMath.balanceCalibrationCategory
+            ),
+            LedgerTransaction(
+                type: .savingOut,
+                amountCents: 200,
+                category: LedgerMath.balanceCalibrationCategory
+            ),
+            LedgerTransaction(type: .savingIn, amountCents: 9_999, category: "manual_saving"),
+        ]
+
+        XCTAssertEqual(LedgerMath.savingsCents(transactions: transactions), 7_300)
+    }
+
     private func date(day: Int, hour: Int, minute: Int) -> Date {
         calendar.date(
             from: DateComponents(

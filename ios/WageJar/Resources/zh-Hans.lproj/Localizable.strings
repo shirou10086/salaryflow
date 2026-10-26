@@ -1,5 +1,12 @@
 "app.name" = "存钱罐";
+"common.cancel" = "取消";
+"common.save" = "保存";
+"common.delete" = "删除";
+"common.expense" = "支出";
+"common.income" = "收入";
 "tab.home" = "首页";
+"tab.ledger" = "账本";
+"tab.stats" = "统计";
 "tab.settings" = "设置";
 
 "status.restDay" = "休息日";
@@ -9,9 +16,85 @@
 "status.finished" = "已下班";
 
 "home.todayEarned" = "今天已挣";
+"home.earnedToday" = "今天已挣";
 "home.perSecond" = "每秒";
 "home.dailyPay" = "日薪";
 "home.schedule" = "今日安排";
+"home.dayProgress" = "今日进度";
+"home.dayOff" = "今天休息";
+"home.daysToPayday" = "距发薪日 %d 天";
+"home.monthlyOverview" = "本月概览";
+"home.adjustSavings" = "校准余额";
+"home.savings" = "存款";
+"home.todayExpense" = "今日支出";
+"home.defaultGoal" = "存款目标";
+"home.recent" = "最近记录";
+"home.noTransactions" = "还没有收支记录。";
+"home.viewLedger" = "查看账本";
+"home.showAmounts" = "显示金额";
+"home.hideAmounts" = "隐藏金额";
+
+"quickAdd.title" = "记一笔";
+"quickAdd.expense" = "记支出";
+"quickAdd.income" = "记收入";
+"quickAdd.amount" = "金额";
+"quickAdd.category" = "分类";
+"quickAdd.note" = "备注";
+"quickAdd.optional" = "可选";
+"quickAdd.expenseTitle" = "新增支出";
+"quickAdd.incomeTitle" = "新增收入";
+
+"category.food" = "餐饮";
+"category.transport" = "交通";
+"category.shopping" = "购物";
+"category.housing" = "住房";
+"category.fun" = "娱乐";
+"category.health" = "医疗";
+"category.study" = "学习";
+"category.social" = "社交";
+"category.other" = "其他";
+"category.salary" = "工资";
+"category.bonus" = "奖金";
+"category.invest" = "理财";
+"category.side" = "副业";
+"category.otherIncome" = "其他收入";
+"category.saving" = "余额调整";
+
+"balance.title" = "校准余额";
+"balance.current" = "当前存款";
+"balance.currentHint" = "根据已记录的收支自动计算。";
+"balance.updateTitle" = "填写实际存款";
+"balance.updateHint" = "输入银行卡或钱包里的实际余额，差额会自动记为一次调整。";
+"balance.increase" = "增加";
+"balance.decrease" = "减少";
+"balance.unchanged" = "没有变化";
+
+"ledger.all" = "全部";
+"ledger.saving" = "余额调整";
+"ledger.monthExpense" = "本月支出";
+"ledger.monthIncome" = "本月收入";
+"ledger.monthBalance" = "本月结余";
+"ledger.emptyTitle" = "暂无记录";
+"ledger.emptySubtitle" = "记一笔支出或收入，开始你的账本。";
+"ledger.dayExpense" = "支出 %@";
+"ledger.deleteTitle" = "删除这笔记录？";
+"ledger.deleteHint" = "删除后无法恢复。";
+"ledger.previousMonth" = "上个月";
+"ledger.currentMonth" = "回到本月";
+"ledger.nextMonth" = "下个月";
+
+"stats.title" = "统计";
+"stats.monthlyReport" = "月度报告";
+"stats.balance" = "本月结余";
+"stats.summaryHidden" = "金额已隐藏。";
+"stats.summary" = "本月结余 %@，当前存款 %@。";
+"stats.sixMonthExpense" = "近六个月支出";
+"stats.sixMonthExpenseHint" = "看看支出随时间的变化。";
+"stats.expenseCategories" = "支出分类";
+"stats.expenseCategoriesHint" = "本月支出最多的分类。";
+"stats.noExpense" = "本月还没有支出记录。";
+"stats.savings" = "存款";
+"stats.savingsHint" = "收入减去支出，并包含余额校准调整。";
 
 "settings.title" = "设置";
 "settings.salarySection" = "薪资";
@@ -33,6 +116,18 @@
 "settings.dinnerHint" = "晚餐时间位于上下班时间内时才会影响工资计算。";
 "settings.display" = "显示";
 "settings.hideAmounts" = "隐藏金额";
+"settings.savingsSection" = "存款";
+"settings.currentSavings" = "当前存款";
+"settings.updateSavings" = "校准实际存款";
+"settings.goalSection" = "存款目标";
+"settings.goalName" = "目标名称";
+"settings.goalAmount" = "目标金额";
+"settings.data" = "数据";
+"settings.clearTitle" = "清空所有记录？";
+"settings.clearData" = "清空所有记录";
+"settings.clearHint" = "这会删除此设备上的全部收支记录。";
+"settings.language" = "语言";
+"settings.languageValue" = "跟随系统语言";
 "settings.about" = "关于";
 "settings.version" = "版本";
 "settings.iosNotificationNote" = "iOS 不允许常驻通知每秒刷新。打开 WageJar 时会显示实时收入。";

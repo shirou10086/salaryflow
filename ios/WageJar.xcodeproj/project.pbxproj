@@ -12,12 +12,18 @@
 		523E8B7C3C9EA2F2D81CB6D7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1C2AC311294AE5ED5F7C5CE /* SettingsView.swift */; };
 		533231E574CDC2FEDB291557 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C4301F509FC2D1F1A12C0ED8 /* Localizable.strings */; };
 		5D5802F4A238C4D442D5B5E2 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882E8338B44C2648BE07A31E /* AppSettings.swift */; };
+		5E2D53A4E239A1E3986A13E6 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = F22B3B49AEFBB29E8E5608B9 /* Components.swift */; };
 		6794B752F78E7A6BA26364BE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 973278BE066702B2B906FE16 /* InfoPlist.strings */; };
+		751E5D9A9BC26F5C76D15A3C /* QuickAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8081A71F906F779AA8E8E418 /* QuickAddView.swift */; };
 		75A37BFC89C6866920E4EBE8 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD3D8793063D0817D3701554 /* OnboardingView.swift */; };
+		7654F575B65473F550DC1474 /* LedgerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D3288C0E36C667EBC31356 /* LedgerView.swift */; };
+		7C75A34E44C240B58B07279E /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288C67E807508AA28A04A55F /* StatsView.swift */; };
 		8BD623E8CA1119D16EE76F89 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E1B947D6A4F9C9C1889795 /* RootView.swift */; };
+		A5F282C537DF84609CA29B16 /* LedgerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A13BF68683CB95F9EA4A7D /* LedgerStore.swift */; };
 		ADFE3C3A64D01FDAE57EF283 /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C839008DF63C065DDFB234B5 /* BrandTheme.swift */; };
 		EAB32F192114F636E35131EB /* WageJarCore in Frameworks */ = {isa = PBXBuildFile; productRef = 9B33D393B258190B7377C199 /* WageJarCore */; };
 		EC05A1DBF5E0DAC293110C9B /* WageJarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82811863B1CAB279A3EC3CC5 /* WageJarUITests.swift */; };
+		FAA9F659060AEC684651ED43 /* BalanceCalibrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C4E3374BDD91EEFCE0790F /* BalanceCalibrationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,18 +39,24 @@
 /* Begin PBXFileReference section */
 		121D33C717F08717D51BE0B1 /* WageJar.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WageJar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1341529D8A90586ABEB6C086 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		288C67E807508AA28A04A55F /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		70606A365B13A59977A70E48 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		79E1B947D6A4F9C9C1889795 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		807676EB91897CF37BEA6B3C /* WageJarUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = WageJarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8081A71F906F779AA8E8E418 /* QuickAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickAddView.swift; sourceTree = "<group>"; };
 		82811863B1CAB279A3EC3CC5 /* WageJarUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WageJarUITests.swift; sourceTree = "<group>"; };
 		882E8338B44C2648BE07A31E /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		88D3288C0E36C667EBC31356 /* LedgerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerView.swift; sourceTree = "<group>"; };
 		9539B0AC6ADDA9622A976786 /* WageJarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WageJarApp.swift; sourceTree = "<group>"; };
 		9571E3524C7E981F5BE95670 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		973278BE066702B2B906FE16 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		AD3D8793063D0817D3701554 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		C1A13BF68683CB95F9EA4A7D /* LedgerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerStore.swift; sourceTree = "<group>"; };
 		C293D7DD525B7B4A9122165B /* WageJarCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WageJarCore; path = WageJarCore; sourceTree = SOURCE_ROOT; };
 		C839008DF63C065DDFB234B5 /* BrandTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandTheme.swift; sourceTree = "<group>"; };
+		D6C4E3374BDD91EEFCE0790F /* BalanceCalibrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceCalibrationView.swift; sourceTree = "<group>"; };
 		E1C2AC311294AE5ED5F7C5CE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F22B3B49AEFBB29E8E5608B9 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,11 +102,17 @@
 			isa = PBXGroup;
 			children = (
 				882E8338B44C2648BE07A31E /* AppSettings.swift */,
+				D6C4E3374BDD91EEFCE0790F /* BalanceCalibrationView.swift */,
 				C839008DF63C065DDFB234B5 /* BrandTheme.swift */,
+				F22B3B49AEFBB29E8E5608B9 /* Components.swift */,
 				1341529D8A90586ABEB6C086 /* DashboardView.swift */,
+				C1A13BF68683CB95F9EA4A7D /* LedgerStore.swift */,
+				88D3288C0E36C667EBC31356 /* LedgerView.swift */,
 				AD3D8793063D0817D3701554 /* OnboardingView.swift */,
+				8081A71F906F779AA8E8E418 /* QuickAddView.swift */,
 				79E1B947D6A4F9C9C1889795 /* RootView.swift */,
 				E1C2AC311294AE5ED5F7C5CE /* SettingsView.swift */,
+				288C67E807508AA28A04A55F /* StatsView.swift */,
 				9539B0AC6ADDA9622A976786 /* WageJarApp.swift */,
 				6F55C327740CD5882B92CFB7 /* Resources */,
 			);
@@ -218,11 +236,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D5802F4A238C4D442D5B5E2 /* AppSettings.swift in Sources */,
+				FAA9F659060AEC684651ED43 /* BalanceCalibrationView.swift in Sources */,
 				ADFE3C3A64D01FDAE57EF283 /* BrandTheme.swift in Sources */,
+				5E2D53A4E239A1E3986A13E6 /* Components.swift in Sources */,
 				000FBA03EF3379C32B9F01B3 /* DashboardView.swift in Sources */,
+				A5F282C537DF84609CA29B16 /* LedgerStore.swift in Sources */,
+				7654F575B65473F550DC1474 /* LedgerView.swift in Sources */,
 				75A37BFC89C6866920E4EBE8 /* OnboardingView.swift in Sources */,
+				751E5D9A9BC26F5C76D15A3C /* QuickAddView.swift in Sources */,
 				8BD623E8CA1119D16EE76F89 /* RootView.swift in Sources */,
 				523E8B7C3C9EA2F2D81CB6D7 /* SettingsView.swift in Sources */,
+				7C75A34E44C240B58B07279E /* StatsView.swift in Sources */,
 				17AD9B0576436168D1B239FF /* WageJarApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
