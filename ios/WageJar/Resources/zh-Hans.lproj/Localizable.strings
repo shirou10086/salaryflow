@@ -9,6 +9,10 @@
 "tab.stats" = "统计";
 "tab.settings" = "设置";
 
+"date.today" = "今天";
+"date.yesterday" = "昨天";
+"date.dayBeforeYesterday" = "前天";
+
 "status.restDay" = "休息日";
 "status.beforeWork" = "未开工";
 "status.working" = "工作中";

@@ -43,6 +43,40 @@ enum SalaryFormatting {
         date.formatted(date: .omitted, time: .shortened)
     }
 
+    /// 与今天相差的自然日天数。
+    static func dayOffset(_ date: Date, calendar: Calendar = .current, now: Date = Date()) -> Int {
+        calendar.dateComponents(
+            [.day],
+            from: calendar.startOfDay(for: date),
+            to: calendar.startOfDay(for: now)
+        ).day ?? Int.max
+    }
+
+    /// 今天 / 昨天 / 前天；更早显示日期，跨年时补上年份。
+    static func dayLabel(_ date: Date, calendar: Calendar = .current, now: Date = Date()) -> String {
+        switch dayOffset(date, calendar: calendar, now: now) {
+        case 0:
+            return String(localized: "date.today")
+        case 1:
+            return String(localized: "date.yesterday")
+        case 2:
+            return String(localized: "date.dayBeforeYesterday")
+        default:
+            return calendar.component(.year, from: date) == calendar.component(.year, from: now)
+                ? day(date)
+                : date.formatted(.dateTime.year().month().day())
+        }
+    }
+
+    /// 「今天 12:30」这类流水时间戳，更早的记录显示日期。
+    static func transactionTimestamp(
+        _ date: Date,
+        calendar: Calendar = .current,
+        now: Date = Date()
+    ) -> String {
+        "\(dayLabel(date, calendar: calendar, now: now)) \(time(date))"
+    }
+
     static func day(_ date: Date) -> String {
         date.formatted(.dateTime.month().day())
     }

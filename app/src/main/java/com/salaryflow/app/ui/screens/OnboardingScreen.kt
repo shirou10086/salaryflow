@@ -128,14 +128,18 @@ fun OnboardingScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                val appName = stringResource(R.string.app_name)
+                val latinName = stringResource(R.string.app_name_latin)
                 BrandMark()
                 Column {
-                    Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge)
-                    Text(
-                        "WageJar",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    Text(appName, style = MaterialTheme.typography.titleLarge)
+                    if (!appName.equals(latinName, ignoreCase = true)) {
+                        Text(
+                            latinName,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
 

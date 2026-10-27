@@ -1,7 +1,7 @@
 # WageJar iOS
 
 This directory contains the native SwiftUI version of WageJar. Its product version is aligned
-with Android `0.4.4 (11)`.
+with Android `0.4.5 (12)`.
 
 The app includes:
 

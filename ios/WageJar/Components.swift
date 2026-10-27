@@ -128,16 +128,10 @@ struct TransactionRow: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(LocalizedStringKey(CategoryCatalog.titleKey(for: transaction.category)))
                     .font(.body.weight(.semibold))
-                if !transaction.note.isEmpty {
-                    Text(transaction.note)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                } else {
-                    Text(SalaryFormatting.time(transaction.occurredAt))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                Text(detailText)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
             Spacer(minLength: 8)
             Text(hidden ? "¥•••" : amountText)
@@ -168,6 +162,11 @@ struct TransactionRow: View {
         case .savingOut:
             BrandTheme.warning
         }
+    }
+
+    private var detailText: String {
+        let timestamp = SalaryFormatting.transactionTimestamp(transaction.occurredAt)
+        return transaction.note.isEmpty ? timestamp : "\(transaction.note) · \(timestamp)"
     }
 }
 

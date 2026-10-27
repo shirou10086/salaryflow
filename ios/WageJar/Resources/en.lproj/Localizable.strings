@@ -9,6 +9,10 @@
 "tab.stats" = "Stats";
 "tab.settings" = "Settings";
 
+"date.today" = "Today";
+"date.yesterday" = "Yesterday";
+"date.dayBeforeYesterday" = "Day before yesterday";
+
 "status.restDay" = "Day off";
 "status.beforeWork" = "Before work";
 "status.working" = "Working";

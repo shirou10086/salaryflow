@@ -300,17 +300,17 @@ private fun TopBarIconButton(
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = Modifier.size(40.dp),
+        modifier = Modifier.size(48.dp),
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        IconButton(onClick = onClick) {
+        IconButton(onClick = onClick, modifier = Modifier.size(48.dp)) {
             Icon(
                 icon,
                 contentDescription = contentDescription,
                 tint = if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(21.dp),
             )
         }
     }

@@ -281,10 +281,12 @@ private fun StatTile(
 @Composable
 private fun BarChart(points: List<MonthPoint>, hidden: Boolean) {
     if (points.isEmpty()) {
-        Spacer(Modifier.height(120.dp))
+        Spacer(Modifier.height(72.dp))
         return
     }
     val maxValue = remember(points) { points.maxOfOrNull { it.expenseCents }?.coerceAtLeast(1L) ?: 1L }
+    // 留出顶部余量，最高的一根柱子不会贴住网格线。
+    val scaleMax = maxValue * 1.14f
     val barColor = BrandColors.expense
     val gridColor = MaterialTheme.colorScheme.outlineVariant
     val labelStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -307,7 +309,7 @@ private fun BarChart(points: List<MonthPoint>, hidden: Boolean) {
             }
 
             points.forEachIndexed { index, point ->
-                val ratio = point.expenseCents.toFloat() / maxValue
+                val ratio = point.expenseCents.toFloat() / scaleMax
                 val barHeight = (chartHeight * ratio).coerceAtLeast(if (point.expenseCents > 0) 6f else 0f)
                 val left = slot * index + (slot - barWidth) / 2f
                 drawRoundRect(
@@ -372,7 +374,7 @@ private fun DonutChart(values: List<Long>, modifier: Modifier = Modifier) {
 @Composable
 private fun SavingsLineChart(series: List<Long>, hidden: Boolean) {
     if (series.size < 2) {
-        Spacer(Modifier.height(120.dp))
+        Spacer(Modifier.height(72.dp))
         return
     }
     val maxValue = (series.maxOrNull() ?: 0L).coerceAtLeast(1L).toFloat()
@@ -382,11 +384,19 @@ private fun SavingsLineChart(series: List<Long>, hidden: Boolean) {
 
     Column {
         Canvas(modifier = Modifier.fillMaxWidth().height(140.dp)) {
+            val horizontalInset = 7f
+            val chartWidth = (size.width - horizontalInset * 2f).coerceAtLeast(1f)
             val path = Path()
             val fill = Path()
+            fun pointX(index: Int): Float =
+                horizontalInset + chartWidth * index / (series.size - 1).toFloat()
+
+            fun pointY(value: Long): Float =
+                size.height - (value - minValue) / range * size.height * 0.86f - size.height * 0.07f
+
             series.forEachIndexed { index, value ->
-                val x = size.width * index / (series.size - 1).toFloat()
-                val y = size.height - (value - minValue) / range * size.height * 0.86f - size.height * 0.07f
+                val x = pointX(index)
+                val y = pointY(value)
                 if (index == 0) {
                     path.moveTo(x, y)
                     fill.moveTo(x, size.height)
@@ -396,7 +406,7 @@ private fun SavingsLineChart(series: List<Long>, hidden: Boolean) {
                     fill.lineTo(x, y)
                 }
             }
-            fill.lineTo(size.width, size.height)
+            fill.lineTo(pointX(series.lastIndex), size.height)
             fill.close()
             drawPath(
                 path = fill,
@@ -408,7 +418,7 @@ private fun SavingsLineChart(series: List<Long>, hidden: Boolean) {
             drawCircle(
                 color = lineColor,
                 radius = 7f,
-                center = Offset(size.width, size.height - (series.last() - minValue) / range * size.height * 0.86f - size.height * 0.07f),
+                center = Offset(pointX(series.lastIndex), pointY(series.last())),
             )
         }
         Row(

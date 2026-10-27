@@ -8,7 +8,7 @@
 
 | 平台 | 直接下载 | 安装方式 |
 | --- | --- | --- |
-| Android | [`WageJar-v0.4.4.apk`](https://github.com/shirou10086/salaryjar/releases/latest/download/WageJar-v0.4.4.apk) | 下载 APK 后直接安装 |
+| Android | [`WageJar-v0.4.5.apk`](https://github.com/shirou10086/salaryjar/releases/latest/download/WageJar-v0.4.5.apk) | 下载 APK 后直接安装 |
 | iOS | 暂无预签名安装包 | 需要使用 Xcode 签名、AltStore/Sideloadly 侧载，或上架 TestFlight/App Store |
 
 Android 最低支持 Android 8.0（API 26）。首次安装时，系统可能要求允许当前浏览器或文件管理器
@@ -107,7 +107,7 @@ Google Play 版不申请“安装未知应用”权限，也不内置自更新�
 
 ### iOS 版
 
-仓库内包含与 Android 版本号对齐的 SwiftUI 工程，当前版本为 `0.4.4 (11)`：
+仓库内包含与 Android 版本号对齐的 SwiftUI 工程，当前版本为 `0.4.5 (12)`：
 
 ```bash
 cd ios

@@ -289,8 +289,9 @@ private fun DayHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
-            TimeText.day(date) + " · " + TimeText.weekday(date.dayOfWeek),
+            TimeText.dayLabel(date) + " · " + TimeText.weekday(date.dayOfWeek),
             style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
         )
         if (expense > 0) {
             Text(

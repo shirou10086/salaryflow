@@ -7,6 +7,7 @@ import java.time.YearMonth
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.time.temporal.ChronoUnit
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Locale
@@ -67,6 +68,51 @@ object TimeText {
     fun fullDay(date: LocalDate, locale: Locale = Locale.getDefault()): String {
         val pattern = if (locale.language.startsWith("zh")) "yyyy年M月d日" else "MMM d, yyyy"
         return date.format(DateTimeFormatter.ofPattern(pattern, locale))
+    }
+
+    /** 今天 / 昨天 / 前天；更早的日期返回 null，由调用方展示具体日期。 */
+    fun relativeDayLabel(
+        date: LocalDate,
+        today: LocalDate = LocalDate.now(),
+        locale: Locale = Locale.getDefault(),
+    ): String? {
+        val chinese = locale.language.startsWith("zh")
+        return when (ChronoUnit.DAYS.between(date, today)) {
+            0L -> if (chinese) "今天" else "Today"
+            1L -> if (chinese) "昨天" else "Yesterday"
+            2L -> if (chinese) "前天" else "Day before yesterday"
+            else -> null
+        }
+    }
+
+    /** 同一年只显示月日，跨年时补上年份。 */
+    fun dayWithYear(
+        date: LocalDate,
+        today: LocalDate = LocalDate.now(),
+        locale: Locale = Locale.getDefault(),
+    ): String = if (date.year == today.year) day(date, locale) else fullDay(date, locale)
+
+    /** 账本分组标题：最近三天用今天/昨天/前天，更早用日期。 */
+    fun dayLabel(
+        date: LocalDate,
+        today: LocalDate = LocalDate.now(),
+        locale: Locale = Locale.getDefault(),
+    ): String = relativeDayLabel(date, today, locale) ?: dayWithYear(date, today, locale)
+
+    /**
+     * 流水时间戳：最近三天用「今天 12:30」这类相对写法，更早显示日期。
+     */
+    fun transactionTimestamp(
+        epochMillis: Long,
+        today: LocalDate = LocalDate.now(),
+        zoneId: ZoneId = ZoneId.systemDefault(),
+        locale: Locale = Locale.getDefault(),
+    ): String {
+        val dateTime = java.time.Instant.ofEpochMilli(epochMillis).atZone(zoneId)
+        val date = dateTime.toLocalDate()
+        val time = clock(dateTime.toLocalTime())
+        val label = relativeDayLabel(date, today, locale) ?: dayWithYear(date, today, locale)
+        return "$label $time"
     }
 
     fun monthYear(month: YearMonth, locale: Locale = Locale.getDefault()): String {

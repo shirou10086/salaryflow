@@ -260,7 +260,7 @@ struct SettingsView: View {
 
     private var aboutSection: some View {
         Section("settings.about") {
-            LabeledContent("settings.version", value: "0.4.4 (11)")
+            LabeledContent("settings.version", value: "0.4.5 (12)")
             Button {
                 #if os(iOS)
                 if let url = URL(string: UIApplication.openSettingsURLString) {

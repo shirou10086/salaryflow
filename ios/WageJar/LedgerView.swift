@@ -117,7 +117,7 @@ struct LedgerView: View {
                             VStack(alignment: .leading, spacing: 9) {
                                 HStack {
                                     Text(
-                                        "\(SalaryFormatting.day(group.date)) · \(SalaryFormatting.weekday(group.date))"
+                                        "\(SalaryFormatting.dayLabel(group.date)) · \(SalaryFormatting.weekday(group.date))"
                                     )
                                     .font(.headline)
                                     Spacer()

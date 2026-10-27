@@ -46,8 +46,6 @@ import com.salaryflow.app.data.Categories
 import com.salaryflow.app.data.TxType
 import com.salaryflow.app.data.TransactionEntity
 import com.salaryflow.app.ui.theme.BrandColors
-import java.time.Instant
-import java.time.ZoneId
 
 @Composable
 fun SectionCard(
@@ -67,7 +65,6 @@ fun SectionCard(
         Column(Modifier.padding(18.dp)) { content() }
     }
 }
-
 @Composable
 fun SectionHeader(
     title: String,
@@ -170,7 +167,6 @@ fun StatBlock(
         }
     }
 }
-
 @Composable
 fun CategoryBadge(
     categoryName: String,
@@ -311,7 +307,7 @@ fun TransactionRow(
             val detail = buildString {
                 if (noteText.isNotBlank()) append(noteText)
                 if (isNotEmpty()) append(" · ")
-                append(transaction.occurredAt.asTimeText())
+                append(TimeText.transactionTimestamp(transaction.occurredAt))
                 if (transaction.auto) {
                     append(" · ")
                     append(automaticLabel)
@@ -336,9 +332,3 @@ fun TransactionRow(
         }
     }
 }
-
-fun Long.asTimeText(): String =
-    Instant.ofEpochMilli(this)
-        .atZone(ZoneId.systemDefault())
-        .toLocalTime()
-        .let(TimeText::clock)
